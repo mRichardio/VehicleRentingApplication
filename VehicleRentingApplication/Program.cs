@@ -19,6 +19,8 @@ namespace VehicleRentingApplication
 
             // Better hierarchy {In Progress}
 
+            // Hello laptop!
+
             int selected; // For menu selection
             Customer currentUser = null;
             
