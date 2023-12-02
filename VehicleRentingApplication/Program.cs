@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Reflection.Emit;
 using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Diagnostics;
 
 namespace VehicleRentingApplication
 {
@@ -19,23 +22,69 @@ namespace VehicleRentingApplication
 
             // Better hierarchy {In Progress}
 
-            // Hello laptop! .2
+            // IMPORTANT
+
+            // FIX TRUCK/MOTORBIKE CLASS TO BE MORE INLINE WITH CAR CLASS <<<<< // todo
+            // MAKE TRUCK/MOTORBIKES READABLE AND WRITABLE THEN ADD THOSE OBJECTS TO THE VEHICLES LIST. <<<<< // todo
 
             int selected; // For menu selection
             Customer currentUser = null;
             
             Dictionary<int, Users> users = new Dictionary<int, Users>(); // Stores all of the users of the system e.g. Staff, Customers
+
+            Dictionary<string, Car> cars = new Dictionary<string, Car>();
+            //Dictionary<string, Truck> trucks = new Dictionary<string, Truck>();
+            //Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
+            Dictionary<string, Vehicle> vehicles = new();
+
             AddUser(new Customer("Matthew", "Richards")); // REMOVE AFTER TESTING
 
-            Dictionary<int, Vehicle> vehicles = new Dictionary<int, Vehicle>(); // Stores all the vehicles e.g. Cars, Motorbikes
-            AddVehicle(new Car(2002, 4, 5, true, new Colour(255, 255, 255), new Registration("BD51 SMR"), "Audi", "A3")); // REMOVE AFTER TESTING
-            AddVehicle(new Car(2015, 4, 5, false, new Colour(255, 0, 255), new Registration("RG38 KJE"), "Nissan", "GTR")); // REMOVE AFTER TESTING
-            AddVehicle(new Car(2022, 4, 3, true, new Colour(255, 0, 0), new Registration("JU24 OPE"), "Ford", "Focus")); // REMOVE AFTER TESTING
+            //JsonSerializerOptions options = new JsonSerializerOptions
+            //{
+            //    Converters = { new VehicleConverter() },
+            //    WriteIndented = true
+            //};
+
+            // Read
+
+            string jsonReadCars = File.ReadAllText("cars.json");
+
+            cars = JsonSerializer.Deserialize<Dictionary<string, Car>>(jsonReadCars/*, options*/);
+
+            //AddCar(new Car(2002, 4, 5, true, "Audi", "A3", new Colour(255, 255, 255), new Registration("BD51 SMR"))); // REMOVE AFTER TESTING
+            //AddCar(new Car(2015, 4, 5, false, "Nissan", "GTR", new Colour(255, 0, 255), new Registration("RG38 KJE"))); // REMOVE AFTER TESTING
+            //AddCar(new Car(2022, 4, 3, true, "Ford", "Focus", new Colour(255, 0, 0), new Registration("JU24 OPE"))); // REMOVE AFTER TESTING
+
+
+            foreach (var car in cars)
+            {
+                vehicles.Add(car.Key, car.Value);
+            }
+
+            //// Check if the deserialization was successful
+            //if (cars != null)
+            //{
+            //    foreach (var kvp in vehicles)
+            //    {
+            //        string key = kvp.Key;
+            //        Vehicle vehicle = kvp.Value;
+
+            //        Console.WriteLine($"Key: {key}, Type: {vehicle.type}, ModelYear: {vehicle.modelYear}, Manufacturer: {vehicle.manufacturer}, Model: {vehicle.model}");
+            //    }
+            //}
+            //else
+            //{
+            //    Console.WriteLine("Failed to deserialize JSON data.");
+            //}
+
+            // Write
+            string jsonWrite = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
+            File.WriteAllText("cars.json", jsonWrite);
 
             // Program
             while (true)
             {
-                Menu mainMenu = new Menu(new string[] { "View Cars", "Your Cars", "View Profile" });
+                Menu mainMenu = new Menu(new string[] { "View Vehicles", "Your Vehicles", "View Profile" });
                 mainMenu.DisplayMenu();
                 try { selected = Convert.ToInt32(Console.ReadLine()); }
                 catch (Exception e)
@@ -50,6 +99,24 @@ namespace VehicleRentingApplication
                     case 1:
                         Console.Clear();
                         Console.WriteLine("You entered 1.");
+
+                        if (cars != null)
+                        {
+                            foreach (var kvp in vehicles)
+                            {
+                                string key = kvp.Key;
+                                Vehicle vehicle = kvp.Value;
+
+                                Console.WriteLine($"Key: {key}, Type: {vehicle.type}, ModelYear: {vehicle.modelYear}, Manufacturer: {vehicle.manufacturer}, Model: {vehicle.model}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("They are currentlty no vehicles available to rent.");
+                        }
+                        Console.WriteLine("Press Any button to continue....");
+                        Console.ReadLine();
+                        Console.Clear();
                         break;
 
                     case 2:
@@ -73,32 +140,36 @@ namespace VehicleRentingApplication
 
             void AddUser(Users user) { users.Add(users.Count + 1, user); }
 
-            void AddVehicle(Vehicle vehicle) { vehicles.Add(vehicles.Count + 1, vehicle); }
+            void AddCar(Car car) { cars.Add($"C-{cars.Count+1}", car); }
+            //void AddVehicle(Vehicle vehicle) { vehicles.Add(vehicles.Count + 1, vehicle); }
+            //void AddVehicle(Vehicle vehicle) { vehicles.Add(vehicles.Count + 1, vehicle); }
 
             // return users.Exists(customer => customer.username == user && customer.password == pass); // Good for finding people!
-
-            // This is prob gonna need a rework !!!!
-            // I decided to create this function that returns the users choice back as it allows for less code duplication as this function will work with any menu.
-            //int DisplayMenu(List<Menu> options)
-            //{
-            //    int choice;
-            //    while (true)
-            //    {
-            //        Console.Clear();
-
-            //        Console.WriteLine("--- Main Menu ---\n");
-
-            //        if (currentCustomer != null) { Console.WriteLine($"[ Name: {currentCustomer.firstName} {currentCustomer.lastName} | Credits: {currentCustomer.credits} | Rented Vehicles: {currentCustomer.vehicleCount}/{currentCustomer.rentLimit} ]\n"); }
-
-            //        foreach (var option in options) { Console.WriteLine($"{option.optionID}. {option.optionInfo}"); }
-
-            //        Console.WriteLine("\nSelect an option from this menu...");
-            //        choice = int.Parse(Console.ReadLine());
-
-            //        if (options.Exists(option => option.optionID == choice)) { return choice; }
-            //        else { Console.WriteLine("Invalid choice. Please enter a valid option from the list (e.g, '2' or '1')."); }
-            //    }
-            //} 
         }
+
+        //internal class VehicleConverter : JsonConverter<Vehicle>
+        //{
+        //    public override Vehicle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        //    {
+        //        // Read the JSON data and determine the concrete type (e.g., Car)
+        //        using (JsonDocument doc = JsonDocument.ParseValue(ref reader))
+        //        {
+        //            JsonElement root = doc.RootElement;
+        //            string type = root.GetProperty("type").GetString();
+
+        //            return type switch
+        //            {
+        //                "Car" => JsonSerializer.Deserialize<Car>(root.GetRawText(), options),
+        //                _ => throw new JsonException($"Unsupported vehicle type: {type}")
+        //            };
+        //        }
+        //    }
+
+        //    public override void Write(Utf8JsonWriter writer, Vehicle value, JsonSerializerOptions options)
+        //    {
+        //        // Serialize the vehicle object
+        //        JsonSerializer.Serialize(writer, value, value.GetType(), options);
+        //    }
+        //}
     }
 }

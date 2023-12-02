@@ -1,19 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace VehicleRentingApplication
 {
     internal class Car : Vehicle
     {
-        private int doorCount;
-        private int wheelCount; // This is not in base because some vehicles don't have wheels!
+        public int doorCount { get; set; }
+        public int wheelCount { get; set; }
 
-        public Car(int modelYear, int wheelCount, int doorCount, bool isAutomatic, Colour paint, Registration reg, string manufacturer, string model)
+        // Override the type property from the base class
+        public override string type => "Car";
+
+        public Car(int modelYear, int wheelCount, int doorCount, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg)
         {
-            type = "Car";
             this.modelYear = modelYear;
             this.manufacturer = manufacturer;
             this.model = model;

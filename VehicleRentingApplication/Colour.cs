@@ -8,9 +8,9 @@ namespace VehicleRentingApplication
 {
     internal class Colour
     {
-        private int r;
-        private int g;
-        private int b;
+        public int r { get; set; }
+        public int g { get; set; }
+        public int b { get; set; }
 
         public Colour(int r, int g, int b)
         {

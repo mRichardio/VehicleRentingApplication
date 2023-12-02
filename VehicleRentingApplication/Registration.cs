@@ -8,7 +8,7 @@ namespace VehicleRentingApplication
 {
     internal class Registration
     {
-        private string reg;
+        public string reg { get; set; }
 
         public Registration(string reg)
         {
