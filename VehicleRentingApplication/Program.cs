@@ -46,41 +46,12 @@ namespace VehicleRentingApplication
 
             AddUser(new Customer("Matthew", "Richards")); // REMOVE AFTER TESTING
 
-            // Read
-
-            // Cars Read
-
-            try
-            {
-                string jsonReadCars = File.ReadAllText("cars.json");
-                cars = JsonSerializer.Deserialize<Dictionary<string, Car>>(jsonReadCars);
-                foreach (var car in cars) { vehicles.Add(car.Key, car.Value); }
-            }
-            catch (JsonException e) { Console.WriteLine("[ERROR]: No cars found..."); }
-
-            try
-            {
-                // Trucks Read
-                string jsonReadTrucks = File.ReadAllText("trucks.json");
-                trucks = JsonSerializer.Deserialize<Dictionary<string, Truck>>(jsonReadTrucks);
-                foreach (var truck in trucks) { vehicles.Add(truck.Key, truck.Value); }
-            }
-            catch (JsonException e) { Console.WriteLine("[ERROR]: No trucks found..."); }
-
-            try
-            {
-                // Motorbikes Read
-                string jsonReadMotorbikes = File.ReadAllText("motorbikes.json");
-                motorbikes = JsonSerializer.Deserialize<Dictionary<string, Motorbike>>(jsonReadMotorbikes);
-                foreach (var motorbike in motorbikes) { vehicles.Add(motorbike.Key, motorbike.Value); }
-            }
-            catch (JsonException e) { Console.WriteLine("[ERROR]: No motorbikes found..."); }
-
+            // Reads vehicle data from file
+            UpdateVehicleLists();
 
             //AddCar(new Car(2002, 4, 5, true, "Audi", "A3", new Colour(255, 255, 255), new Registration("BD51 SMR"))); // REMOVE AFTER TESTING
             //AddCar(new Car(2015, 4, 5, false, "Nissan", "GTR", new Colour(255, 0, 255), new Registration("RG38 KJE"))); // REMOVE AFTER TESTING
             //AddCar(new Car(2022, 4, 3, true, "Ford", "Focus", new Colour(255, 0, 0), new Registration("JU24 OPE"))); // REMOVE AFTER TESTING
-
 
             // Check if the deserialization was successful
             if (cars != null && motorbikes != null && trucks != null)
@@ -92,19 +63,10 @@ namespace VehicleRentingApplication
                 Console.WriteLine("Failed to deserialize JSON data.");
             }
 
-            // Write
+            WriteToFiles();
 
-            // Cars Write
-            string jsonWriteCars = JsonSerializer.Serialize(cars, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("cars.json", jsonWriteCars);
 
-            // Trucks Write
-            string jsonWriteTrucks = JsonSerializer.Serialize(trucks, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("trucks.json", jsonWriteTrucks);
 
-            // Motorbikes Write
-            string jsonWriteMotorbikes = JsonSerializer.Serialize(motorbikes, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("motorbikes.json", jsonWriteMotorbikes);
 
             // Program
             while (true)
@@ -127,6 +89,7 @@ namespace VehicleRentingApplication
 
                         if (cars != null)
                         {
+                            UpdateVehicleLists();
                             foreach (var kvp in vehicles)
                             {
                                 string key = kvp.Key;
@@ -164,12 +127,13 @@ namespace VehicleRentingApplication
 
                         switch (staffOption)
                         {
-
                             case 1:
                                 Console.Clear();
                                 Console.WriteLine("Enter vehicle type: ");
                                 string vehicleType = Console.ReadLine().ToLower().Trim();
                                 HandleVehicleInput(vehicleType);
+                                WriteToFiles();
+                                UpdateVehicleLists();
                                 break;
 
                             case 2:
@@ -195,9 +159,12 @@ namespace VehicleRentingApplication
 
             void AddUser(Users user) { users.Add(users.Count + 1, user); }
 
-            void AddCar(Car car) { vehicles.Add($"C-{cars.Count+1}", car); }
-            void AddTruck(Truck truck) { vehicles.Add($"T-{trucks.Count+1}", truck); }
-            void AddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count+1}", motorbike); }
+            void VehiclesAddCar(Car car) { vehicles.Add($"C-{cars.Count+1}", car); }
+            void AddCar(Car car) { cars.Add($"C-{cars.Count+1}", car); }
+            void VehiclesAddTruck(Truck truck) { vehicles.Add($"T-{trucks.Count+1}", truck); }
+            void AddTruck(Truck truck) { trucks.Add($"T-{trucks.Count+1}", truck); }
+            void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count+1}", motorbike); }
+            void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"M-{motorbikes.Count+1}", motorbike); }
 
             void HandleVehicleInput(string vehicleType)
             {
@@ -206,7 +173,8 @@ namespace VehicleRentingApplication
                     case "car":
                         Car newCar = new Car();
                         newCar = newCar.CreateCar();
-                        AddCar(newCar);
+                        VehiclesAddCar(newCar); // Adds car to vehicle dictionary
+                        AddCar(newCar); // Adds car to car dictionary for writing to json
                         break;
 
                     case "truck":
@@ -221,6 +189,61 @@ namespace VehicleRentingApplication
                         Console.WriteLine("Unknown vehicle type. (try: car, truck, motorbike)");
                         break;
                 }
+            }
+
+            void WriteDictionaryToJsonFile<T>(Dictionary<string, T> dictionary, string fileName)
+            {
+                string jsonContent = JsonSerializer.Serialize(dictionary, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(fileName, jsonContent);
+            }
+
+            // Reads objects from json file, then places them in their dictionary
+            void ReadAndDeserializeJsonFile<T>(string fileName, Dictionary<string, T> vehicleDictionary, string vehicleType) where T : Vehicle
+            {
+                try
+                {
+                    string jsonContent = File.ReadAllText(fileName);
+                    var vehicles = JsonSerializer.Deserialize<Dictionary<string, T>>(jsonContent);
+
+                    foreach (var vehicle in vehicles)
+                    {
+                        if (!vehicleDictionary.ContainsKey(vehicle.Key))
+                        {
+                            vehicleDictionary.Add(vehicle.Key, vehicle.Value);
+                        }
+                    }
+                }
+                catch (JsonException)
+                {
+                    Console.WriteLine($"[ERROR]: No {vehicleType} found...");
+                }
+            }
+
+            void UpdateVehicleLists()
+            {
+                // Read Vehicles from file.
+                ReadAndDeserializeJsonFile("cars.json", cars, "cars");
+                ReadAndDeserializeJsonFile("trucks.json", trucks, "trucks");
+                ReadAndDeserializeJsonFile("motorbikes.json", motorbikes, "motorbikes");
+
+                // Combines all vehicles into one dictionary.
+                AddVehiclesToDictionary(vehicles, cars, trucks, motorbikes);
+            }
+
+            void WriteToFiles()
+            {
+                // Write Vehicles to file.
+                WriteDictionaryToJsonFile(cars, "cars.json");
+                WriteDictionaryToJsonFile(trucks, "trucks.json");
+                WriteDictionaryToJsonFile(motorbikes, "motorbikes.json");
+            }
+
+            // Combines all separate dictionaries into one. (I had to do it this way as 'Vehicle' is an abstract class)
+            void AddVehiclesToDictionary(Dictionary<string, Vehicle> vehicles, Dictionary<string, Car> cars, Dictionary<string, Truck> trucks, Dictionary<string, Motorbike> motorbikes)
+            {
+                cars.ToList().ForEach(car => vehicles[car.Key] = car.Value);
+                trucks.ToList().ForEach(truck => vehicles[truck.Key] = truck.Value);
+                motorbikes.ToList().ForEach(motorbike => vehicles[motorbike.Key] = motorbike.Value);
             }
 
             // return users.Exists(customer => customer.username == user && customer.password == pass); // Good for finding people!
