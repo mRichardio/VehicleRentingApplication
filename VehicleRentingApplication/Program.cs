@@ -18,10 +18,6 @@ namespace VehicleRentingApplication
 
             // Better hierarchy {In Progress}
 
-            // Ensure that when a new car is created, it is also wrote to the json file.
-
-            // Add all read and write functionality into separate void functions!
-
             // Add remove vehicle functionality
 
             // Add an interface.
@@ -32,6 +28,14 @@ namespace VehicleRentingApplication
 
             // ---[ Side Quests ]---
             //  Hide staff menu behind a staff password
+
+            // ---[ Topic Demonstration ]---
+            // Dealing with data // Collection [DONE] // Algorithms [In Progress]
+            // Command Line Interface [TODO]
+            // Robustness [TODO]
+            // Object-Oriented Programming [In Progress (Need an interface then should be done)] // LOOK BACK AT SCHEDULE!!!! <<<<<
+            // Data Persistence [In Progress (Fully used JSON Serialisation, but need to ask about binary!!!!!)] IMPORTANT <<<<<<<
+            // Writing Fast Code [TODO]
 
 
             int selected; // For menu selection
@@ -65,9 +69,6 @@ namespace VehicleRentingApplication
 
             WriteToFiles();
 
-
-
-
             // Program
             while (true)
             {
@@ -87,9 +88,11 @@ namespace VehicleRentingApplication
                         Console.Clear();
                         Console.WriteLine("---| Available Vehicles |---\n");
 
-                        if (cars != null)
+                        if (vehicles != null)
                         {
+                            Console.WriteLine($"\n{vehicles.Count} Results found\n");
                             UpdateVehicleLists();
+
                             foreach (var kvp in vehicles)
                             {
                                 string key = kvp.Key;
@@ -101,8 +104,52 @@ namespace VehicleRentingApplication
                         {
                             Console.WriteLine("They are currentlty no vehicles available to rent.");
                         }
-                        Console.WriteLine("\nPress ENTER to continue...");
-                        Console.ReadLine();
+                        Console.WriteLine("\n[Search] [Filter] [Back]");
+                        string choice = Console.ReadLine().Trim().ToLower();
+                        if (choice == "search")
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter Vehicle ID");
+                            string vehID = Console.ReadLine().Trim().ToUpper();
+
+                            var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
+                            if (selectedVehicle.Key != null)
+                            {
+                                string key = selectedVehicle.Key;
+                                Vehicle vehicle = selectedVehicle.Value;
+
+                                Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                            }
+                            else { Console.WriteLine($"No vehicle found with ID: {vehID}"); }
+
+                            Console.WriteLine("\nPress ENTER to continue...");
+                            Console.ReadLine();
+                        }
+                        else if (choice == "filter") 
+                        {
+                            IEnumerable<Vehicle> filteredVehicles;
+                            Console.Clear();
+                            Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
+                            string filterChoice = Console.ReadLine().Trim().ToLower();
+                            if (filterChoice == "manufacturer" || filterChoice == "1")
+                            {
+                                Console.WriteLine("Enter manufacturer: ");
+                                string inputManufacturer = Console.ReadLine().Trim().ToLower();
+                                
+                                filteredVehicles = vehicles
+                                        .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
+                                        .Select(vehicle => vehicle.Value);
+
+                                foreach (var vehicle in filteredVehicles)
+                                {
+                                    Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                                }
+
+                                Console.WriteLine("\nPress ENTER to continue...");
+                                Console.ReadLine();
+                            }
+                        }
+                        else { Console.WriteLine($"{choice} not found.")}
                         Console.Clear();
                         break;
 

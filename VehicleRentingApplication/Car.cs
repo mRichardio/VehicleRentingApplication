@@ -30,42 +30,6 @@ namespace VehicleRentingApplication
 
         public Car CreateCar()
         {
-            //Console.WriteLine("---| Car Creation |---\n");
-            //Console.WriteLine("Manufacturer:");
-            //string manufacturer = Console.ReadLine();
-            //Console.WriteLine("Model:");
-            //string model = Console.ReadLine();
-            //Console.WriteLine("Is the vehicle automatic: ");
-            //string input = Console.ReadLine().Trim().ToLower();
-            //bool isAuto;
-            //while(true)
-            //{
-            //    if (input == "yes" || input == "y") { isAuto = true; break; }
-            //    else if (input == "no" || input == "n") { isAuto = false; break; }
-            //    else { Console.WriteLine("Invalid input (try 'yes' or 'no')"); }
-            //}
-            //int year = 0;
-            //while (true)
-            //{
-            //    try
-            //    {
-            //        Console.WriteLine("Enter manufacture year: ");
-            //        year = Convert.ToInt32(Console.ReadLine());
-            //    }
-            //    catch (FormatException) { Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)"); }
-            //    break;
-            //}
-
-            //Colour colour = null;
-            //colour = colour.CreateColour();
-
-            //Registration reg = null;
-            //reg = reg.CreateReg();
-
-            //Car car = new Car(year, isAuto, manufacturer, model, colour, reg);
-
-            //return car;
-
             Console.WriteLine("---| Car Creation |---\n");
 
             Console.WriteLine("Manufacturer:");
