@@ -11,6 +11,7 @@ namespace VehicleRentingApplication
         public int doorCount { get; set; }
         public int wheelCount { get; set; }
         public int storageCapacity { get; set; }
+        public override string type => "Truck";
 
         public Truck(string type, int modelYear, int doorCount, bool isAutomatic, int wheelCount, int storageCapacity, Colour paint, Registration reg)
         {

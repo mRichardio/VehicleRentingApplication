@@ -5,6 +5,8 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Diagnostics;
+using System.Reflection.Metadata;
+using System.ComponentModel.Design;
 
 namespace VehicleRentingApplication
 {
@@ -15,25 +17,21 @@ namespace VehicleRentingApplication
             // ---[ Main Quests ]---
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
-
             // Better hierarchy {In Progress}
-
             // Add remove vehicle functionality
-
-            // Add an interface.
-
-            // Create user read/write from json file. (Need to think of a way for the system to recognise a new user. MAYBE UNIQUE CODE??)
-
             // Start working on renting functionality (before a car is rented a unique id for the user should be used, to add up total rented count.)
+            // Add functionality to view profile
 
             // ---[ Side Quests ]---
-            //  Hide staff menu behind a staff password
+            // Hide staff menu behind a staff password
+            // Add a Min and Max year for vehicle in filters
+            // Test what happens if the json files become null
 
             // ---[ Topic Demonstration ]---
-            // Dealing with data // Collection [TODO, Use HashSet] // Algorithms [In Progress]
+            // Dealing with data // Collection [DONE] // Algorithms [In Progress] - Need a multi-line algorithm
             // Command Line Interface [TODO]
-            // Robustness [TODO]
-            // Object-Oriented Programming [In Progress (Need an interface then should be done)] // LOOK BACK AT SCHEDULE!!!! <<<<<
+            // Robustness [TODO] Refer to Topic Demonstration tasks on robustness
+            // Object-Oriented Programming [Think DONE but Check this!!] Look at topic demonstration tasks on OOP to double check I have included everything
             // Data Persistence [In Progress (Fully used JSON Serialisation, but need to ask about binary!!!!!)] IMPORTANT <<<<<<<
             // Writing Fast Code [TODO]
 
@@ -41,23 +39,18 @@ namespace VehicleRentingApplication
             int selected; // For menu selection
             Customer currentUser = null;
 
-            HashSet<Users> users = new HashSet<Users>();
+            HashSet<Customer> customers = new HashSet<Customer>();
 
-            //Dictionary<int, Users> users = new Dictionary<int, Users>(); // Stores all of the users of the system e.g. Staff, Customers
+            HashSet<Staff> staff = new HashSet<Staff>();
 
             Dictionary<string, Car> cars = new Dictionary<string, Car>();
             Dictionary<string, Truck> trucks = new Dictionary<string, Truck>();
             Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
             Dictionary<string, Vehicle> vehicles = new();
 
-            AddUser(new Customer("Matthew", "Richards")); // REMOVE AFTER TESTING
-
             // Reads vehicle data from file
             UpdateVehicleLists();
-
-            //AddCar(new Car(2002, 4, 5, true, "Audi", "A3", new Colour(255, 255, 255), new Registration("BD51 SMR"))); // REMOVE AFTER TESTING
-            //AddCar(new Car(2015, 4, 5, false, "Nissan", "GTR", new Colour(255, 0, 255), new Registration("RG38 KJE"))); // REMOVE AFTER TESTING
-            //AddCar(new Car(2022, 4, 3, true, "Ford", "Focus", new Colour(255, 0, 0), new Registration("JU24 OPE"))); // REMOVE AFTER TESTING
+            UpdateAccounts();
 
             // Check if the deserialization was successful
             if (cars != null && motorbikes != null && trucks != null)
@@ -70,10 +63,47 @@ namespace VehicleRentingApplication
             }
 
             WriteVehiclesToFiles();
+            WriteAccountsToFiles();
 
-            // Program
+            // Program Code
+
             while (true)
             {
+
+                // Identity Verification
+                while (true)
+                {
+                    Console.Clear();
+                    Console.WriteLine("Are you already registered?: ");
+                    string userInput = Console.ReadLine().ToLower().Trim();
+                    if (userInput == "y" || userInput == "yes")
+                    {
+                        while (true)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Enter your access code: ");
+                            string userCode = Console.ReadLine().Trim();
+                            bool IsVerified = VerifyIdentity(userCode);
+                            if (IsVerified) { break; }
+                        }
+                        break;
+                    }
+                    else if (userInput == "n" || userInput == "no")
+                    {
+                        Customer newCustomer = new();
+                        newCustomer.RegisterName();
+                        currentUser = newCustomer;
+                        customers.Add(currentUser);
+                        UpdateAccounts();
+                        WriteAccountsToFiles();
+                        break;
+                    }
+                }
+
+                // Main Program
+                Console.Clear();
+                Console.WriteLine($"Welcome {currentUser.firstName} {currentUser.lastName}.\n");
+
                 Menu mainMenu = new Menu(new string[] { "View Vehicles", "Your Vehicles", "View Profile", "Staff Menu" });
                 mainMenu.DisplayMenu();
                 try { selected = Convert.ToInt32(Console.ReadLine()); }
@@ -177,7 +207,7 @@ namespace VehicleRentingApplication
                         Console.Clear();
                         Console.WriteLine("---| Staff Menu |---");
 
-                        Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle" });
+                        Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
                         staffMenu.DisplayMenu();
 
                         int staffOption = int.Parse(Console.ReadLine());
@@ -195,7 +225,17 @@ namespace VehicleRentingApplication
 
                             case 2:
                                 Console.Clear();
-                                Console.WriteLine("You entered 2.");
+                                Console.WriteLine("You entered 2. Remove Vehicle");
+                                break;
+
+                            case 3:
+                                Console.Clear();
+                                Console.WriteLine("You entered 2. View Staff");
+                                break;
+
+                            case 4:
+                                Console.Clear();
+                                Console.WriteLine("You entered 2. View Customers");
                                 break;
 
                             default:
@@ -214,7 +254,7 @@ namespace VehicleRentingApplication
 
             // Functions
 
-            void AddUser(Users user) { users.Add(users.Count + 1, user); }
+            //void AddUser(Users user) { users.Add(users.Count + 1, user); }
 
             void VehiclesAddCar(Car car) { vehicles.Add($"C-{cars.Count+1}", car); }
             void AddCar(Car car) { cars.Add($"C-{cars.Count+1}", car); }
@@ -222,6 +262,17 @@ namespace VehicleRentingApplication
             void AddTruck(Truck truck) { trucks.Add($"T-{trucks.Count+1}", truck); }
             void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count+1}", motorbike); }
             void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"M-{motorbikes.Count+1}", motorbike); }
+
+            bool VerifyIdentity(string code)
+            {
+                Customer selectedCustomer = customers.FirstOrDefault(c => c.accessCode == code);
+                if (selectedCustomer != null)
+                {
+                    currentUser = selectedCustomer;
+                    return true;
+                }
+                else { return false; }
+            }
 
             string FindVehicleByID(string vehID)
             {
@@ -305,10 +356,29 @@ namespace VehicleRentingApplication
                 }
             }
 
+            void WriteHashToJsonFile<T>(HashSet<T> hash, string fileName)
+            {
+                string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(fileName, jsonContent);
+            }
+
             void WriteDictionaryToJsonFile<T>(Dictionary<string, T> dictionary, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(dictionary, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(fileName, jsonContent);
+            }
+
+            void ReadAndDeserializeJsonHashFile<T>(string fileName, HashSet<T> hash)
+            {
+                try
+                {
+                    string jsonContent = File.ReadAllText(fileName);
+                    var accounts = JsonSerializer.Deserialize<HashSet<T>>(jsonContent);
+                }
+                catch (JsonException)
+                {
+                    Console.WriteLine($"[ERROR]: No accounts found...");
+                }
             }
 
             // Reads objects from json file, then places them in their dictionary
@@ -344,12 +414,26 @@ namespace VehicleRentingApplication
                 AddVehiclesToDictionary(vehicles, cars, trucks, motorbikes);
             }
 
+            void UpdateAccounts()
+            {
+                // Read Accounts from file.
+                ReadAndDeserializeJsonHashFile("customers.json", customers);
+                ReadAndDeserializeJsonHashFile("staff.json", staff);
+            }
+
             void WriteVehiclesToFiles()
             {
                 // Write Vehicles to file.
                 WriteDictionaryToJsonFile(cars, "cars.json");
                 WriteDictionaryToJsonFile(trucks, "trucks.json");
                 WriteDictionaryToJsonFile(motorbikes, "motorbikes.json");
+            }
+
+            void WriteAccountsToFiles()
+            {
+                // Write Accounts to file.
+                WriteHashToJsonFile(customers, "customers.json");
+                WriteHashToJsonFile(staff, "staff.json");
             }
 
             // Combines all separate dictionaries into one. (I had to do it this way as 'Vehicle' is an abstract class)

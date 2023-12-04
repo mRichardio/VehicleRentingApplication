@@ -18,5 +18,8 @@ namespace VehicleRentingApplication
         public bool isAutomatic { get; set; }
         public Colour paint { get; set; }
         public Registration reg { get; set; }
+
+        // Will need some member functions for vehicle here!
+
     }
 }

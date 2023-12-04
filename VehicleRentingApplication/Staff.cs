@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace VehicleRentingApplication
 {
-    internal class Staff : Users
+    internal class Staff : Account
     {
         private double totalSales;
 

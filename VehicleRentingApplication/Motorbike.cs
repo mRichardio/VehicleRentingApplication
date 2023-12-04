@@ -10,6 +10,8 @@ namespace VehicleRentingApplication
     {
         public int wheelCount { get; set; }
 
+        public override string type => "Motorbike";
+
         public Motorbike(string type, int modelYear, bool isAutomatic, int wheelCount, Colour paint, Registration reg)
         {
             this.type = type;
