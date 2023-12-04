@@ -30,7 +30,7 @@ namespace VehicleRentingApplication
             //  Hide staff menu behind a staff password
 
             // ---[ Topic Demonstration ]---
-            // Dealing with data // Collection [DONE] // Algorithms [In Progress]
+            // Dealing with data // Collection [TODO, Use HashSet] // Algorithms [In Progress]
             // Command Line Interface [TODO]
             // Robustness [TODO]
             // Object-Oriented Programming [In Progress (Need an interface then should be done)] // LOOK BACK AT SCHEDULE!!!! <<<<<
@@ -40,8 +40,10 @@ namespace VehicleRentingApplication
 
             int selected; // For menu selection
             Customer currentUser = null;
-            
-            Dictionary<int, Users> users = new Dictionary<int, Users>(); // Stores all of the users of the system e.g. Staff, Customers
+
+            HashSet<Users> users = new HashSet<Users>();
+
+            //Dictionary<int, Users> users = new Dictionary<int, Users>(); // Stores all of the users of the system e.g. Staff, Customers
 
             Dictionary<string, Car> cars = new Dictionary<string, Car>();
             Dictionary<string, Truck> trucks = new Dictionary<string, Truck>();
@@ -67,7 +69,7 @@ namespace VehicleRentingApplication
                 Console.WriteLine("Failed to deserialize JSON data.");
             }
 
-            WriteToFiles();
+            WriteVehiclesToFiles();
 
             // Program
             while (true)
@@ -106,32 +108,27 @@ namespace VehicleRentingApplication
                         }
                         Console.WriteLine("\n[Search] [Filter] [Back]");
                         string choice = Console.ReadLine().Trim().ToLower();
-                        if (choice == "search")
+                        if (choice == "search" || choice == "1" || choice == "s")
                         {
                             Console.Clear();
                             Console.WriteLine("Enter Vehicle ID");
                             string vehID = Console.ReadLine().Trim().ToUpper();
 
                             var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
-                            if (selectedVehicle.Key != null)
-                            {
-                                string key = selectedVehicle.Key;
-                                Vehicle vehicle = selectedVehicle.Value;
 
-                                Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
-                            }
-                            else { Console.WriteLine($"No vehicle found with ID: {vehID}"); }
+                            Console.WriteLine(FindVehicleByID(vehID));
 
                             Console.WriteLine("\nPress ENTER to continue...");
                             Console.ReadLine();
                         }
-                        else if (choice == "filter") 
+
+                        else if (choice == "filter" || choice == "2" || choice == "f") 
                         {
                             IEnumerable<Vehicle> filteredVehicles;
                             Console.Clear();
                             Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
                             string filterChoice = Console.ReadLine().Trim().ToLower();
-                            if (filterChoice == "manufacturer" || filterChoice == "1")
+                            if (filterChoice == "manufacturer" || filterChoice == "1" || filterChoice == "m")
                             {
                                 Console.WriteLine("Enter manufacturer: ");
                                 string inputManufacturer = Console.ReadLine().Trim().ToLower();
@@ -148,8 +145,21 @@ namespace VehicleRentingApplication
                                 Console.WriteLine("\nPress ENTER to continue...");
                                 Console.ReadLine();
                             }
+                            else if (filterChoice == "year" || filterChoice == "2" || filterChoice == "y")
+                            {
+                                Console.WriteLine("Enter specific year (or try 'before 2005' / 'after 2005'): ");
+                                string inputYear = Console.ReadLine().Trim().ToLower();
+
+                                foreach (var vehicle in FindVehiclesByYear(inputYear))
+                                {
+                                    Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                                }
+
+                                Console.WriteLine("\nPress ENTER to continue...");
+                                Console.ReadLine();
+                            }
                         }
-                        else { Console.WriteLine($"{choice} not found.")}
+                        else { Console.WriteLine($"{choice} not found."); }
                         Console.Clear();
                         break;
 
@@ -179,7 +189,7 @@ namespace VehicleRentingApplication
                                 Console.WriteLine("Enter vehicle type: ");
                                 string vehicleType = Console.ReadLine().ToLower().Trim();
                                 HandleVehicleInput(vehicleType);
-                                WriteToFiles();
+                                WriteVehiclesToFiles();
                                 UpdateVehicleLists();
                                 break;
 
@@ -212,6 +222,63 @@ namespace VehicleRentingApplication
             void AddTruck(Truck truck) { trucks.Add($"T-{trucks.Count+1}", truck); }
             void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count+1}", motorbike); }
             void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"M-{motorbikes.Count+1}", motorbike); }
+
+            string FindVehicleByID(string vehID)
+            {
+                var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
+
+                if (selectedVehicle.Key != null)
+                {
+                    string key = selectedVehicle.Key;
+                    Vehicle vehicle = selectedVehicle.Value;
+
+                    return $"ID: {key}, Vehicle Type: {vehicle.type}\n" +
+                                      $"Year: {vehicle.modelYear}\n" +
+                                      $"Manufacturer: {vehicle.manufacturer}\n" +
+                                      $"Model: {vehicle.model}\n";
+                }
+                else
+                {
+                    return $"No vehicle found with ID: {vehID}";
+                }
+            }
+
+            List<Vehicle> FindVehiclesByYear(string year)
+            {
+                List<Vehicle> foundVehicles = new();
+                try
+                {
+                    if (year.Contains("before"))
+                    {
+                        year = year.Replace("before", "").Trim();
+                        int targetYear = Convert.ToInt32(year);
+                        foundVehicles = vehicles
+                            .Where(v => v.Value.modelYear < targetYear)
+                            .Select(v => v.Value)
+                            .ToList();
+                    }
+                    else if (year.Contains("after"))
+                    {
+                        year = year.Replace("after", "").Trim();
+                        int targetYear = Convert.ToInt32(year);
+                        foundVehicles = vehicles
+                            .Where(v => v.Value.modelYear > targetYear)
+                            .Select(v => v.Value)
+                            .ToList();
+                    }
+                    else
+                    {
+                        int targetYear = Convert.ToInt32(year);
+                        foundVehicles = vehicles
+                            .Where(v => v.Value.modelYear == targetYear)
+                            .Select(v => v.Value)
+                            .ToList();
+                    }
+                }
+                catch (Exception) { Console.WriteLine("TEMP ERROR"); }
+                return foundVehicles;
+                
+            }
 
             void HandleVehicleInput(string vehicleType)
             {
@@ -277,7 +344,7 @@ namespace VehicleRentingApplication
                 AddVehiclesToDictionary(vehicles, cars, trucks, motorbikes);
             }
 
-            void WriteToFiles()
+            void WriteVehiclesToFiles()
             {
                 // Write Vehicles to file.
                 WriteDictionaryToJsonFile(cars, "cars.json");
