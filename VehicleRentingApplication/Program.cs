@@ -257,7 +257,21 @@ namespace VehicleRentingApplication
 
                             case 3:
                                 Console.Clear();
-                                Console.WriteLine("You entered 2. View Staff");
+                                //Console.WriteLine("You entered 2. View Staff");
+                                Console.WriteLine("---| Staff List |---");
+                                if (staff == null)
+                                {
+                                    foreach (var s in staff)
+                                    {
+                                        Console.WriteLine($"\nName: {s.firstName} {s.lastName}\n\nAccount: {s.GetType()}\nAccess Code: {s.accessCode}\n");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"\nStaff list is empty...\n");    
+                                }
+                                Console.WriteLine("Press ENTER to continue...");
+                                Console.ReadLine();
                                 break;
 
                             case 4:
