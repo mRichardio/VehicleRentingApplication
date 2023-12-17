@@ -23,7 +23,7 @@ namespace VehicleRentingApplication
             const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             StringBuilder codeBuilder = new StringBuilder();
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 3; i++)
             {
                 int index = random.Next(characters.Length);
                 codeBuilder.Append(characters[index]);
