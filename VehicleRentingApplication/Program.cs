@@ -196,8 +196,21 @@ namespace VehicleRentingApplication
 
                     case 2:
                         Console.Clear();
-                        Console.WriteLine("You entered 2.");
-                        break;
+                        Console.WriteLine("---| Currently Rented Vehicles |---");
+                        if (currentUser.GetRentedVehicles() != null)
+                        {
+                            foreach (var vehicle in currentUser.GetRentedVehicles())
+                            {
+                                Console.WriteLine($"Type: {vehicle.GetType()}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nYear: {vehicle.modelYear}\nRegistration: {vehicle.reg}\nColour: {vehicle.paint}\n\n");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("\nYou have no vehicles to display.\n");
+                        }
+                        Console.WriteLine("Press ENTER to continue...");
+                        Console.ReadLine();
+                        break;  
 
                     case 3:
                         Console.Clear();

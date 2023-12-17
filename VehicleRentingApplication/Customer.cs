@@ -12,6 +12,8 @@ namespace VehicleRentingApplication
         public int rentLimit {get; private set;}
         public int vehicleCount { get; private set; }
 
+        private List<Vehicle> rentedVehicles; // I have set this list to private so it can't be altered with.
+
         public Customer()
         {
             this.rentLimit = 3;
@@ -24,8 +26,13 @@ namespace VehicleRentingApplication
             this.lastName = lname;
             this.rentLimit = 3;
             this.vehicleCount = 0;
+            rentedVehicles = new List<Vehicle>(rentLimit);
+            // List made with capacity to make better performance, also increases the scope of the application
+            // as if the rent limit were to increase there could be performance issues.
         }
 
         public override string GetType() { return "Customer"; }
+        public List<Vehicle> GetRentedVehicles() { return this.rentedVehicles; }
+        public void AddRentedVehicle(Vehicle vehicle) { rentedVehicles.Add(vehicle); }
     }
 }
