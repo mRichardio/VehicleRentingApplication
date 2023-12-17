@@ -74,7 +74,6 @@ namespace VehicleRentingApplication
 
             while (true)
             {
-
                 //Identity Verification
                 while (currentUser == null)
                 {
@@ -95,19 +94,18 @@ namespace VehicleRentingApplication
                     }
                     else if (userInput == "n" || userInput == "no")
                     {
-                        Customer newCustomer = new();
-                        newCustomer.RegisterName();
+                        var (firstName, lastName) = RegisterName();
+                        Customer newCustomer = new Customer(firstName, lastName);
                         currentUser = newCustomer;
                         customers.Add(currentUser);
                         WriteAccountsToFiles();
-                        //UpdateAccounts();
                         break;
                     }
                 }
 
                 // Main Program
                 Console.Clear();
-                //Console.WriteLine($"Welcome {currentUser.firstName} {currentUser.lastName}.\n");
+                // Displays the main menu
                 Menu mainMenu = new Menu(new string[] {"View Vehicles", "Your Vehicles", "View Profile", "Staff Menu" });
                 mainMenu.DisplayMenu();
 
@@ -130,16 +128,14 @@ namespace VehicleRentingApplication
                             Console.WriteLine($"\n{vehicles.Count} Results found\n");
                             UpdateVehicleLists();
 
-                            foreach (var kvp in vehicles)
+                            foreach (var (key, vehicle) in vehicles)
                             {
-                                string key = kvp.Key;
-                                Vehicle vehicle = kvp.Value;
                                 Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
                             }
                         }
                         else
                         {
-                            Console.WriteLine("They are currentlty no vehicles available to rent.");
+                            Console.WriteLine("No vehicles available to rent.");
                         }
                         Console.WriteLine("\n[Search] [Filter] [Back]");
                         string choice = Console.ReadLine().Trim().ToLower();
@@ -156,12 +152,12 @@ namespace VehicleRentingApplication
                             Console.WriteLine("\nPress ENTER to continue...");
                             Console.ReadLine();
                         }
-
                         else if (choice == "filter" || choice == "2" || choice == "f")
                         {
                             IEnumerable<Vehicle> filteredVehicles;
                             Console.Clear();
                             Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
+
                             string filterChoice = Console.ReadLine().Trim().ToLower();
                             if (filterChoice == "manufacturer" || filterChoice == "1" || filterChoice == "m")
                             {
@@ -205,13 +201,17 @@ namespace VehicleRentingApplication
 
                     case 3:
                         Console.Clear();
-                        Console.WriteLine("You entered 3.");
+                        Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
+                        Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
+                        Console.WriteLine($"\nRented Vehicles: [{currentUser.vehicleCount}/{currentUser.rentLimit}]\n\nPress ENTER to continue...");
+                        Console.ReadLine();
                         break;
 
                     case 4:
                         Console.Clear();
                         Console.WriteLine("---| Staff Menu |---");
-
+                        
+                        // Displays the staff menu
                         Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
                         staffMenu.DisplayMenu();
 
@@ -276,6 +276,17 @@ namespace VehicleRentingApplication
             void AddTruck(Truck truck) { trucks.Add($"T-{trucks.Count + 1}", truck); }
             void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count + 1}", motorbike); }
             void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"M-{motorbikes.Count + 1}", motorbike); }
+
+            (string FirstName, string LastName) RegisterName() // Uses a tuple to return to strings. Easier than creating two functions.
+            {
+                Console.WriteLine("Enter your firstname: ");
+                string fname = Console.ReadLine().Trim();
+
+                Console.WriteLine("Enter your lastname: ");
+                string lname = Console.ReadLine().Trim();
+
+                return (fname, lname);
+            }
 
             bool VerifyIdentity(string code)
             {
@@ -389,6 +400,17 @@ namespace VehicleRentingApplication
                 }
             }
 
+            static void ReadAccountsJSON<T>(string fileName, HashSet<T> hash)
+            {
+                string jsonContent = File.ReadAllText(fileName);
+                var items = JsonSerializer.Deserialize<HashSet<T>>(jsonContent);
+
+                foreach (var item in items)
+                {
+                    hash.Add(item);
+                }
+            }
+
             void WriteAccountJSON<T>(HashSet<T> hash, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
@@ -401,57 +423,18 @@ namespace VehicleRentingApplication
                 File.WriteAllText(fileName, jsonContent);
             }
 
-            //void ReadAndDeserializeJsonCustomerFile(string fileName, HashSet<Customer> hash)
-            //{
-            //    try
-            //    {
-            //        string jsonContent = File.ReadAllText(fileName);
-            //        var accounts = JsonSerializer.Deserialize<HashSet<Customer>>(jsonContent);
-
-            //        foreach (var customer in customers)
-            //        {
-            //            if (!hash.Contains(customer))
-            //            {
-            //                accounts.Add(customer);
-            //            }
-            //        }
-            //    }
-            //    catch (JsonException)
-            //    {
-            //        Console.WriteLine($"[ERROR]: No accounts found...");
-            //    }
-            //}
-
-            static void ReadAccountsJSON<T>(string fileName, HashSet<T> hash)
-            {
-                string jsonContent = File.ReadAllText(fileName);
-                var items = JsonSerializer.Deserialize<HashSet<T>>(jsonContent);
-
-                foreach (var item in items)
-                {
-                    hash.Add(item);
-                }
-            }
-
             // Reads objects from json file, then places them in their dictionary
             void ReadVehicleJSON<T>(string fileName, Dictionary<string, T> vehicleDictionary, string vehicleType) where T : Vehicle
             {
-                try
-                {
-                    string jsonContent = File.ReadAllText(fileName);
-                    var vehicles = JsonSerializer.Deserialize<Dictionary<string, T>>(jsonContent);
+                string jsonContent = File.ReadAllText(fileName);
+                var vehicles = JsonSerializer.Deserialize<Dictionary<string, T>>(jsonContent);
 
-                    foreach (var vehicle in vehicles)
-                    {
-                        if (!vehicleDictionary.ContainsKey(vehicle.Key))
-                        {
-                            vehicleDictionary.Add(vehicle.Key, vehicle.Value);
-                        }
-                    }
-                }
-                catch (JsonException)
+                foreach (var vehicle in vehicles)
                 {
-                    Console.WriteLine($"[ERROR]: No {vehicleType} found...");
+                    if (!vehicleDictionary.ContainsKey(vehicle.Key))
+                    {
+                        vehicleDictionary.Add(vehicle.Key, vehicle.Value);
+                    }
                 }
             }
 
@@ -497,7 +480,6 @@ namespace VehicleRentingApplication
                 trucks.ToList().ForEach(truck => vehicles[truck.Key] = truck.Value);
                 motorbikes.ToList().ForEach(motorbike => vehicles[motorbike.Key] = motorbike.Value);
             }
-
             // return users.Exists(customer => customer.username == user && customer.password == pass); // Good for finding people!
         }
     }

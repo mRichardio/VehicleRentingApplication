@@ -12,16 +12,14 @@ namespace VehicleRentingApplication
         public int rentLimit {get; private set;}
         public int vehicleCount { get; private set; }
 
-        public Customer() // constructor for registering customers
+        public Customer()
         {
-            this.accessCode = GenerateAccessCode();
             this.rentLimit = 3;
-            this.vehicleCount = 0;
         }
 
-        public Customer(string fname, string lname, string accessCode)
+        public Customer(string fname, string lname)
         {
-            this.accessCode = accessCode;
+            this.accessCode = GenerateAccessCode();
             this.firstName = fname;
             this.lastName = lname;
             this.rentLimit = 3;
@@ -29,14 +27,5 @@ namespace VehicleRentingApplication
         }
 
         public override string GetType() { return "Customer"; }
-
-        public void RegisterName() // This function is only used here as staff wont be able to register themselves.
-        {
-            Console.WriteLine("Enter your firstname: ");
-            this.firstName = Console.ReadLine().Trim();
-
-            Console.WriteLine("Enter your lastname: ");
-            this.lastName = Console.ReadLine().Trim();
-        }
     }
 }

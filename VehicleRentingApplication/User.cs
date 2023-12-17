@@ -9,7 +9,7 @@ namespace VehicleRentingApplication
 {
     internal interface IUser
     {
-        public string accessCode { get; protected set; }
+        public string accessCode { get; set; }
         public string firstName { get; protected set; }
         public string lastName { get; protected set; }
 
