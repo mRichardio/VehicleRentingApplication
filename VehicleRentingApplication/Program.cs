@@ -35,12 +35,14 @@ namespace VehicleRentingApplication
             // Data Persistence [In Progress (Fully used JSON Serialisation, but need to ask about binary!!!!!)] IMPORTANT <<<<<<<
             // Writing Fast Code [TODO]
 
+            // Make sure to combine topics
+            // Also talk about why you have done something in a certain way
+
 
             int selected; // For menu selection
             Customer currentUser = null;
 
             HashSet<Customer> customers = new HashSet<Customer>();
-
             HashSet<Staff> staff = new HashSet<Staff>();
 
             Dictionary<string, Car> cars = new Dictionary<string, Car>();
@@ -70,46 +72,46 @@ namespace VehicleRentingApplication
             while (true)
             {
 
-                // Identity Verification
-                while (true)
-                {
-                    Console.Clear();
-                    Console.WriteLine("Are you already registered?: ");
-                    string userInput = Console.ReadLine().ToLower().Trim();
-                    if (userInput == "y" || userInput == "yes")
-                    {
-                        while (true)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Enter your access code: ");
-                            string userCode = Console.ReadLine().Trim();
-                            bool IsVerified = VerifyIdentity(userCode);
-                            if (IsVerified) { break; }
-                        }
-                        break;
-                    }
-                    else if (userInput == "n" || userInput == "no")
-                    {
-                        Customer newCustomer = new();
-                        newCustomer.RegisterName();
-                        currentUser = newCustomer;
-                        customers.Add(currentUser);
-                        UpdateAccounts();
-                        WriteAccountsToFiles();
-                        break;
-                    }
-                }
+                //Identity Verification
+                //while (true)
+                //{
+                //    Console.Clear();
+                //    Console.WriteLine("Are you already registered?: ");
+                //    string userInput = Console.ReadLine().ToLower().Trim();
+                //    if (userInput == "y" || userInput == "yes")
+                //    {
+                //        while (true)
+                //        {
+                //            Console.Clear();
+                //            Console.WriteLine("Enter your access code: ");
+                //            string userCode = Console.ReadLine().Trim();
+                //            bool IsVerified = VerifyIdentity(userCode);
+                //            if (IsVerified) { break; }
+                //        }
+                //        break;
+                //    }
+                //    else if (userInput == "n" || userInput == "no")
+                //    {
+                //        Customer newCustomer = new();
+                //        newCustomer.RegisterName();
+                //        currentUser = newCustomer;
+                //        customers.Add(currentUser);
+                //        UpdateAccounts();
+                //        WriteAccountsToFiles();
+                //        break;
+                //    }
+                //}
 
                 // Main Program
                 Console.Clear();
-                Console.WriteLine($"Welcome {currentUser.firstName} {currentUser.lastName}.\n");
+                //Console.WriteLine($"Welcome {currentUser.firstName} {currentUser.lastName}.\n");
 
                 Menu mainMenu = new Menu(new string[] { "View Vehicles", "Your Vehicles", "View Profile", "Staff Menu" });
                 mainMenu.DisplayMenu();
                 try { selected = Convert.ToInt32(Console.ReadLine()); }
                 catch (Exception e)
                 {
-                    Console.Clear(); 
+                    Console.Clear();
                     Console.WriteLine($"[Error]: {e.Message}\n"); // NEEDS CHANGING TO A FRIENDLIER MESSAGE
                     continue;
                 }
@@ -152,7 +154,7 @@ namespace VehicleRentingApplication
                             Console.ReadLine();
                         }
 
-                        else if (choice == "filter" || choice == "2" || choice == "f") 
+                        else if (choice == "filter" || choice == "2" || choice == "f")
                         {
                             IEnumerable<Vehicle> filteredVehicles;
                             Console.Clear();
@@ -162,7 +164,7 @@ namespace VehicleRentingApplication
                             {
                                 Console.WriteLine("Enter manufacturer: ");
                                 string inputManufacturer = Console.ReadLine().Trim().ToLower();
-                                
+
                                 filteredVehicles = vehicles
                                         .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
                                         .Select(vehicle => vehicle.Value);
@@ -220,12 +222,21 @@ namespace VehicleRentingApplication
                                 string vehicleType = Console.ReadLine().ToLower().Trim();
                                 HandleVehicleInput(vehicleType);
                                 WriteVehiclesToFiles();
-                                UpdateVehicleLists();
                                 break;
 
                             case 2:
                                 Console.Clear();
                                 Console.WriteLine("You entered 2. Remove Vehicle");
+                                Console.WriteLine("Enter vehicle ID: ");
+                                string inputID = Console.ReadLine().ToUpper().Trim();
+                                if (vehicles.ContainsKey(inputID))
+                                {
+                                    removeVehicleByID(inputID);
+                                    WriteVehiclesToFiles();
+                                    Console.WriteLine($"Vehicle: {inputID}, has been removed from the system.\nPress ENTER to continue...");
+                                    Console.ReadLine();
+                                }
+                                else { Console.WriteLine($"Vehicle with ID: {inputID} not found.\nPress ENTER to continue..."); Console.ReadLine(); }
                                 break;
 
                             case 3:
@@ -256,12 +267,12 @@ namespace VehicleRentingApplication
 
             //void AddUser(Users user) { users.Add(users.Count + 1, user); }
 
-            void VehiclesAddCar(Car car) { vehicles.Add($"C-{cars.Count+1}", car); }
-            void AddCar(Car car) { cars.Add($"C-{cars.Count+1}", car); }
-            void VehiclesAddTruck(Truck truck) { vehicles.Add($"T-{trucks.Count+1}", truck); }
-            void AddTruck(Truck truck) { trucks.Add($"T-{trucks.Count+1}", truck); }
-            void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count+1}", motorbike); }
-            void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"M-{motorbikes.Count+1}", motorbike); }
+            void VehiclesAddCar(Car car) { vehicles.Add($"C-{cars.Count + 1}", car); }
+            void AddCar(Car car) { cars.Add($"C-{cars.Count + 1}", car); }
+            void VehiclesAddTruck(Truck truck) { vehicles.Add($"T-{trucks.Count + 1}", truck); }
+            void AddTruck(Truck truck) { trucks.Add($"T-{trucks.Count + 1}", truck); }
+            void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count + 1}", motorbike); }
+            void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"M-{motorbikes.Count + 1}", motorbike); }
 
             bool VerifyIdentity(string code)
             {
@@ -291,6 +302,25 @@ namespace VehicleRentingApplication
                 else
                 {
                     return $"No vehicle found with ID: {vehID}";
+                }
+            }
+
+            void removeVehicleByID(string vehID)
+            {
+                if (vehID.StartsWith("C"))
+                {
+                    var selectedVehicle = cars.FirstOrDefault(v => v.Key == vehID);
+                    if (selectedVehicle.Key != null) { cars.Remove(selectedVehicle.Key); }
+                }
+                if (vehID.StartsWith("T"))
+                {
+                    var selectedVehicle = trucks.FirstOrDefault(v => v.Key == vehID);
+                    if (selectedVehicle.Key != null) { trucks.Remove(selectedVehicle.Key); }
+                }
+                if (vehID.StartsWith("M"))
+                {
+                    var selectedVehicle = motorbikes.FirstOrDefault(v => v.Key == vehID);
+                    if (selectedVehicle.Key != null) { motorbikes.Remove(selectedVehicle.Key); }
                 }
             }
 
@@ -328,7 +358,7 @@ namespace VehicleRentingApplication
                 }
                 catch (Exception) { Console.WriteLine("TEMP ERROR"); }
                 return foundVehicles;
-                
+
             }
 
             void HandleVehicleInput(string vehicleType)
@@ -338,7 +368,7 @@ namespace VehicleRentingApplication
                     case "car":
                         Car newCar = new Car();
                         newCar = newCar.CreateCar();
-                        VehiclesAddCar(newCar); // Adds car to vehicle dictionary
+                        //VehiclesAddCar(newCar); // Adds car to vehicle dictionary
                         AddCar(newCar); // Adds car to car dictionary for writing to json
                         break;
 
@@ -405,6 +435,8 @@ namespace VehicleRentingApplication
 
             void UpdateVehicleLists()
             {
+                vehicles.Clear();
+
                 // Read Vehicles from file.
                 ReadAndDeserializeJsonFile("cars.json", cars, "cars");
                 ReadAndDeserializeJsonFile("trucks.json", trucks, "trucks");
