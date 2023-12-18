@@ -207,6 +207,7 @@ namespace VehicleRentingApplication
                             {
                                 Car car = cars[rentCarID];
                                 RentCar(car, rentCarID);
+                                WriteVehiclesToFiles();
                             }
                             else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
                         }
@@ -218,6 +219,7 @@ namespace VehicleRentingApplication
                             {
                                 Truck truck = trucks[rentTruckID];
                                 RentTruck(truck, rentTruckID);
+                                WriteVehiclesToFiles();
                             }
                             else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
                         }
@@ -229,6 +231,7 @@ namespace VehicleRentingApplication
                             {
                                 Motorbike motorbike = motorbikes[rentMotorbikeID];
                                 RentMotorbike(motorbike, rentMotorbikeID);
+                                WriteVehiclesToFiles();
                             }
                             else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
                         }
