@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace VehicleRentingApplication
 {
-    internal abstract class Vehicle
+    internal class Vehicle
     {
-        //[JsonPropertyName("type")]
         public virtual string type { get; set; } // Make it virtual so it can be overridden in derived classes
         public int modelYear { get; set; }
         public string manufacturer { get; set; }

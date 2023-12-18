@@ -53,6 +53,8 @@ namespace VehicleRentingApplication
             Dictionary<string, Truck> trucks = new Dictionary<string, Truck>();
             Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
             Dictionary<string, Vehicle> vehicles = new();
+            // Inside the Main method
+
 
             // Reads vehicle data from file
             UpdateVehicleLists();
@@ -103,6 +105,8 @@ namespace VehicleRentingApplication
                         break;
                     }
                 }
+
+                RentedVehicleHandler rentedVehicleHandler = new RentedVehicleHandler(currentUser.rentLimit, currentUser);
 
                 // Main Program
                 Console.Clear();
@@ -206,8 +210,10 @@ namespace VehicleRentingApplication
                             if (cars.ContainsKey(rentCarID))
                             {
                                 Car car = cars[rentCarID];
-                                RentCar(car, rentCarID);
+
+                                RentCar(rentedVehicleHandler, car, rentCarID);
                                 WriteVehiclesToFiles();
+                                WriteAccountsToFiles();
                             }
                             else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
                         }
@@ -372,13 +378,29 @@ namespace VehicleRentingApplication
                 return (fname, lname);
             }
 
-            void RentCar(Car car, string carID)
+            //void RentCar(Car car, string carID)
+            //{
+            //    // Check if the user has reached the rent limit
+            //    if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
+            //    {
+            //        currentUser.RentVehicle(car);
+            //        cars.Remove(carID); // Remove the vehicle from the dictionary
+            //        Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+            //    }
+            //}
+
+            void RentCar(RentedVehicleHandler rentedVehicleHandler, Car car, string carID)
             {
                 // Check if the user has reached the rent limit
                 if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
                 {
-                    currentUser.AddRentedVehicle(car);
-                    cars.Remove(carID); // Remove the vehicle from the dictionary
+                    currentUser.RentVehicle(car);
+                    //cars.Remove(carID); // Remove the vehicle from the dictionary
+                    //rentedVehicleHandler.UpdateCustomerRentedVehicles(); // Update the customer's rented vehicles list
                     Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
                 }
                 else
@@ -392,7 +414,7 @@ namespace VehicleRentingApplication
                 // Check if the user has reached the rent limit
                 if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
                 {
-                    currentUser.AddRentedVehicle(truck);
+                    currentUser.RentVehicle(truck);
                     trucks.Remove(truckID); // Remove the vehicle from the dictionary
                     Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
                 }
@@ -407,7 +429,7 @@ namespace VehicleRentingApplication
                 // Check if the user has reached the rent limit
                 if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
                 {
-                    currentUser.AddRentedVehicle(motorbike);
+                    currentUser.RentVehicle(motorbike);
                     motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
                     Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
                 }
@@ -529,10 +551,21 @@ namespace VehicleRentingApplication
                 }
             }
 
-            static void ReadAccountsJSON<T>(string fileName, HashSet<T> hash)
+            //static void ReadAccountsJSON<T>(string fileName, HashSet<T> hash)
+            //{
+            //    string jsonContent = File.ReadAllText(fileName);
+            //    var items = JsonSerializer.Deserialize<HashSet<T>>(jsonContent);
+
+            //    foreach (var item in items)
+            //    {
+            //        hash.Add(item);
+            //    }
+            //}
+
+            static void ReadStaffJSON(string fileName, HashSet<Staff> hash)
             {
                 string jsonContent = File.ReadAllText(fileName);
-                var items = JsonSerializer.Deserialize<HashSet<T>>(jsonContent);
+                var items = JsonSerializer.Deserialize<HashSet<Staff>>(jsonContent);
 
                 foreach (var item in items)
                 {
@@ -540,11 +573,52 @@ namespace VehicleRentingApplication
                 }
             }
 
-            void WriteAccountJSON<T>(HashSet<T> hash, string fileName)
+            static void ReadCustomerJSON(string fileName, HashSet<Customer> hash)
+            {
+                string jsonContent = File.ReadAllText(fileName);
+                var items = JsonSerializer.Deserialize<HashSet<Customer>>(jsonContent);
+
+                foreach (var item in items)
+                {
+                    hash.Add(item);
+                }
+            }
+
+            void WriteStaffJSON(HashSet<Staff> hash, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(fileName, jsonContent);
             }
+
+            void WriteCustomerJSON(HashSet<Customer> hash, string fileName)
+            {
+                string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(fileName, jsonContent);
+            }
+
+            //void WriteAccountJSON<T>(HashSet<T> hash, string fileName) where T : Account
+            //{
+            //    IEnumerable<object> accountsWithRentedVehicles = hash.Select(account =>
+            //    {
+            //        if (account is Customer customer)
+            //        {
+            //            return new
+            //            {
+            //                customer.rentLimit,
+            //                customer.vehicleCount,
+            //                customer.accID,
+            //                customer.accessCode,
+            //                customer.firstName,
+            //                customer.lastName,
+            //                rentedVehicles = customer.GetRentedVehicles()
+            //            };
+            //        }
+            //        return null;
+            //    }).Where(obj => obj != null);
+
+            //    string jsonContent = JsonSerializer.Serialize(accountsWithRentedVehicles, new JsonSerializerOptions { WriteIndented = true });
+            //    File.WriteAllText(fileName, jsonContent);
+            //}
 
             void WriteVehicleJSON<T>(Dictionary<string, T> dictionary, string fileName)
             {
@@ -583,8 +657,8 @@ namespace VehicleRentingApplication
             void UpdateAccounts()
             {
                 // Read Accounts from file.
-                ReadAccountsJSON("customers.json", customers);
-                ReadAccountsJSON("staff.json", staff);
+                ReadCustomerJSON("customers.json", customers);
+                ReadStaffJSON("staff.json", staff);
             }
 
             void WriteVehiclesToFiles()
@@ -598,8 +672,8 @@ namespace VehicleRentingApplication
             void WriteAccountsToFiles()
             {
                 // Write Accounts to file.
-                WriteAccountJSON(customers, "customers.json");
-                WriteAccountJSON(staff, "staff.json");
+                WriteCustomerJSON(customers, "customers.json");
+                WriteStaffJSON(staff, "staff.json");
             }
 
             // Combines all separate dictionaries into one. (I had to do it this way as 'Vehicle' is an abstract class)

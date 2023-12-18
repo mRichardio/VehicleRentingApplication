@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace VehicleRentingApplication
@@ -13,6 +14,12 @@ namespace VehicleRentingApplication
         public string accessCode { get; set; }
         public string firstName { get; set; }
         public string lastName { get; set; }
+
+        [JsonConstructor]
+        public Account()
+        {
+
+        }
 
         public virtual string GetType() { return "User"; } // Change value in respective class
 
