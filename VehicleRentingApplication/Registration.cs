@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace VehicleRentingApplication
 {
     internal class Registration
     {
+        [JsonPropertyName("reg")] // Used as I had a weird bug where my json deserialiser was setting this value to null (I think it was setting reg to Reg. Either way this fixes it.)
         public string reg { get; set; }
 
         public Registration() { /*Default*/ }

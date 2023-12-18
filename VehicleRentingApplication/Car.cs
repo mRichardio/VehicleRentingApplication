@@ -16,7 +16,9 @@ namespace VehicleRentingApplication
         // Override the type property from the base class
         public override string type => "Car";
 
-        public Car() { /*Default*/ }
+        public Car() 
+        {
+        }
 
         public Car(int modelYear, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg)
         {

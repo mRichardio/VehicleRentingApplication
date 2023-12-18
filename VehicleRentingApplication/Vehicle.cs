@@ -19,7 +19,15 @@ namespace VehicleRentingApplication
         public Colour paint { get; set; }
         public Registration reg { get; set; }
 
-        // Will need some member functions for vehicle here!
+        public string DisplayColour()
+        {
+            return $" R:{paint.r} G:{paint.g} B:{paint.b}";
+        }
+
+        public string DisplayReg()
+        {
+            return $"{reg.reg}";
+        }
 
     }
 }

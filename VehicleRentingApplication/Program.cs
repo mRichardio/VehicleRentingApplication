@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.ComponentModel.Design;
+using System.Runtime.ConstrainedExecution;
 
 namespace VehicleRentingApplication
 {
@@ -106,7 +107,7 @@ namespace VehicleRentingApplication
                 // Main Program
                 Console.Clear();
                 // Displays the main menu
-                Menu mainMenu = new Menu(new string[] {"View Vehicles", "Your Vehicles", "View Profile", "Staff Menu" });
+                Menu mainMenu = new Menu(new string[] {"View Vehicles", "Rent Vehicle", "Your Vehicles", "View Profile", "Staff Menu" });
                 mainMenu.DisplayMenu();
 
                 try { selected = Convert.ToInt32(Console.ReadLine()); }
@@ -130,7 +131,7 @@ namespace VehicleRentingApplication
 
                             foreach (var (key, vehicle) in vehicles)
                             {
-                                Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                                Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\n");
                             }
                         }
                         else
@@ -196,12 +197,53 @@ namespace VehicleRentingApplication
 
                     case 2:
                         Console.Clear();
+                        Console.WriteLine("---| Rent a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
+                        string rentVehicleType = Console.ReadLine().ToLower().Trim();
+                        if (rentVehicleType == "car" || rentVehicleType == "c")
+                        {
+                            Console.WriteLine("Enter Car ID: ");
+                            string rentCarID = Console.ReadLine().ToUpper().Trim();
+                            if (cars.ContainsKey(rentCarID))
+                            {
+                                Car car = cars[rentCarID];
+                                RentCar(car, rentCarID);
+                            }
+                            else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
+                        }
+                        else if (rentVehicleType == "truck" || rentVehicleType == "t")
+                        {
+                            Console.WriteLine("Enter Truck ID: ");
+                            string rentTruckID = Console.ReadLine().ToUpper().Trim();
+                            if (trucks.ContainsKey(rentTruckID))
+                            {
+                                Truck truck = trucks[rentTruckID];
+                                RentTruck(truck, rentTruckID);
+                            }
+                            else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
+                        }
+                        else if (rentVehicleType == "motorbike" || rentVehicleType == "m")
+                        {
+                            Console.WriteLine("Enter Motorbike ID: ");
+                            string rentMotorbikeID = Console.ReadLine().ToUpper().Trim();
+                            if (motorbikes.ContainsKey(rentMotorbikeID))
+                            {
+                                Motorbike motorbike = motorbikes[rentMotorbikeID];
+                                RentMotorbike(motorbike, rentMotorbikeID);
+                            }
+                            else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
+                        }
+                        Console.WriteLine("Press ENTER to continue...");
+                        Console.ReadLine();
+                        break;
+
+                    case 3:
+                        Console.Clear();
                         Console.WriteLine("---| Currently Rented Vehicles |---");
                         if (currentUser.GetRentedVehicles() != null)
                         {
                             foreach (var vehicle in currentUser.GetRentedVehicles())
                             {
-                                Console.WriteLine($"Type: {vehicle.GetType()}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nYear: {vehicle.modelYear}\nRegistration: {vehicle.reg}\nColour: {vehicle.paint}\n\n");
+                                Console.WriteLine($"Type: {vehicle.type}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nYear: {vehicle.modelYear}\nColour: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\n\n");
                             }
                         }
                         else
@@ -210,9 +252,9 @@ namespace VehicleRentingApplication
                         }
                         Console.WriteLine("Press ENTER to continue...");
                         Console.ReadLine();
-                        break;  
+                        break;
 
-                    case 3:
+                    case 4:
                         Console.Clear();
                         Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
                         Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
@@ -220,10 +262,10 @@ namespace VehicleRentingApplication
                         Console.ReadLine();
                         break;
 
-                    case 4:
+                    case 5:
                         Console.Clear();
                         Console.WriteLine("---| Staff Menu |---");
-                        
+
                         // Displays the staff menu
                         Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
                         staffMenu.DisplayMenu();
@@ -257,13 +299,12 @@ namespace VehicleRentingApplication
 
                             case 3:
                                 Console.Clear();
-                                //Console.WriteLine("You entered 2. View Staff");
                                 Console.WriteLine("---| Staff List |---");
-                                if (staff == null)
+                                if (staff != null)
                                 {
                                     foreach (var s in staff)
                                     {
-                                        Console.WriteLine($"\nName: {s.firstName} {s.lastName}\n\nAccount: {s.GetType()}\nAccess Code: {s.accessCode}\n");
+                                        Console.WriteLine($"\nName: {s.firstName} {s.lastName}\nAccount: {s.GetType()}\nAccess Code: {s.accessCode}");
                                     }
                                 }
                                 else
@@ -276,7 +317,20 @@ namespace VehicleRentingApplication
 
                             case 4:
                                 Console.Clear();
-                                Console.WriteLine("You entered 2. View Customers");
+                                Console.WriteLine("---| Customer List |---");
+                                if (customers != null)
+                                {
+                                    foreach (var c in customers)
+                                    {
+                                        Console.WriteLine($"\nName: {c.firstName} {c.lastName}\nAccount: {c.GetType()}\nAccess Code: {c.accessCode}");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.WriteLine($"\nCustomer list is empty...\n");
+                                }
+                                Console.WriteLine("\nPress ENTER to continue...");
+                                Console.ReadLine();
                                 break;
 
                             default:
@@ -313,6 +367,51 @@ namespace VehicleRentingApplication
                 string lname = Console.ReadLine().Trim();
 
                 return (fname, lname);
+            }
+
+            void RentCar(Car car, string carID)
+            {
+                // Check if the user has reached the rent limit
+                if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
+                {
+                    currentUser.AddRentedVehicle(car);
+                    cars.Remove(carID); // Remove the vehicle from the dictionary
+                    Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
+                }
+                else
+                {
+                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+                }
+            }
+
+            void RentTruck(Truck truck, string truckID)
+            {
+                // Check if the user has reached the rent limit
+                if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
+                {
+                    currentUser.AddRentedVehicle(truck);
+                    trucks.Remove(truckID); // Remove the vehicle from the dictionary
+                    Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
+                }
+                else
+                {
+                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+                }
+            }
+
+            void RentMotorbike(Motorbike motorbike, string motorbikeID)
+            {
+                // Check if the user has reached the rent limit
+                if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
+                {
+                    currentUser.AddRentedVehicle(motorbike);
+                    motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
+                    Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
+                }
+                else
+                {
+                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+                }
             }
 
             bool VerifyIdentity(string code)
