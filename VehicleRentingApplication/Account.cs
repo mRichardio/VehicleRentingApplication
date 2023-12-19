@@ -23,9 +23,9 @@ namespace VehicleRentingApplication
 
         public virtual string GetType() { return "User"; } // Change value in respective class
 
-        private readonly Random random = new Random();
         public string GenerateAccessCode()
         {
+            Random random = new Random();
             // This is a const as it wont change.
             const string characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             StringBuilder codeBuilder = new StringBuilder();

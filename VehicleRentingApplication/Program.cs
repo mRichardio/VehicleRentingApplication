@@ -53,6 +53,7 @@ namespace VehicleRentingApplication
             Dictionary<string, Truck> trucks = new Dictionary<string, Truck>();
             Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
             Dictionary<string, Vehicle> vehicles = new();
+            RentedVehicles rentedVehicles = new();
             // Inside the Main method
 
 
@@ -106,7 +107,7 @@ namespace VehicleRentingApplication
                     }
                 }
 
-                RentedVehicleHandler rentedVehicleHandler = new RentedVehicleHandler(currentUser.rentLimit, currentUser);
+                //RentedVehicleHandler rentedVehicleHandler = new RentedVehicleHandler(currentUser.rentLimit, currentUser);
 
                 // Main Program
                 Console.Clear();
@@ -211,36 +212,38 @@ namespace VehicleRentingApplication
                             {
                                 Car car = cars[rentCarID];
 
-                                RentCar(rentedVehicleHandler, car, rentCarID);
+                                RentCar(car, rentCarID);
                                 WriteVehiclesToFiles();
-                                WriteAccountsToFiles();
                             }
                             else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
                         }
-                        else if (rentVehicleType == "truck" || rentVehicleType == "t")
-                        {
-                            Console.WriteLine("Enter Truck ID: ");
-                            string rentTruckID = Console.ReadLine().ToUpper().Trim();
-                            if (trucks.ContainsKey(rentTruckID))
-                            {
-                                Truck truck = trucks[rentTruckID];
-                                RentTruck(truck, rentTruckID);
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
-                        }
-                        else if (rentVehicleType == "motorbike" || rentVehicleType == "m")
-                        {
-                            Console.WriteLine("Enter Motorbike ID: ");
-                            string rentMotorbikeID = Console.ReadLine().ToUpper().Trim();
-                            if (motorbikes.ContainsKey(rentMotorbikeID))
-                            {
-                                Motorbike motorbike = motorbikes[rentMotorbikeID];
-                                RentMotorbike(motorbike, rentMotorbikeID);
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
-                        }
+
+                        // [TODO] NEED TO MAKE RENTING WORK FOR TRUCK AND MOTORBIKE
+
+                        //else if (rentVehicleType == "truck" || rentVehicleType == "t")
+                        //{
+                        //    Console.WriteLine("Enter Truck ID: ");
+                        //    string rentTruckID = Console.ReadLine().ToUpper().Trim();
+                        //    if (trucks.ContainsKey(rentTruckID))
+                        //    {
+                        //        Truck truck = trucks[rentTruckID];
+                        //        RentTruck(truck, rentTruckID);
+                        //        WriteVehiclesToFiles();
+                        //    }
+                        //    else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
+                        //}
+                        //else if (rentVehicleType == "motorbike" || rentVehicleType == "m")
+                        //{
+                        //    Console.WriteLine("Enter Motorbike ID: ");
+                        //    string rentMotorbikeID = Console.ReadLine().ToUpper().Trim();
+                        //    if (motorbikes.ContainsKey(rentMotorbikeID))
+                        //    {
+                        //        Motorbike motorbike = motorbikes[rentMotorbikeID];
+                        //        RentMotorbike(motorbike, rentMotorbikeID);
+                        //        WriteVehiclesToFiles();
+                        //    }
+                        //    else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
+                        //}
                         Console.WriteLine("Press ENTER to continue...");
                         Console.ReadLine();
                         break;
@@ -248,17 +251,21 @@ namespace VehicleRentingApplication
                     case 3:
                         Console.Clear();
                         Console.WriteLine("---| Currently Rented Vehicles |---");
-                        if (currentUser.GetRentedVehicles() != null)
+                        foreach (var pair in rentedVehicles.rentedCars)
                         {
-                            foreach (var vehicle in currentUser.GetRentedVehicles())
+                            Car userVehicle = pair.Value;
+
+                            if (userVehicle.rentedBy == currentUser.accessCode)
                             {
-                                Console.WriteLine($"Type: {vehicle.type}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nYear: {vehicle.modelYear}\nColour: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\n\n");
+                                Console.WriteLine($"Type: {userVehicle.type}\nManufacturer: {userVehicle.manufacturer}\nModel: {userVehicle.model}\nYear: {userVehicle.modelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
                             }
                         }
-                        else
+                        // Check if there are no vehicles to display to the user
+                        if (!rentedVehicles.rentedCars.Any(pair => pair.Value.rentedBy == currentUser.accessCode))
                         {
                             Console.WriteLine("\nYou have no vehicles to display.\n");
                         }
+
                         Console.WriteLine("Press ENTER to continue...");
                         Console.ReadLine();
                         break;
@@ -378,29 +385,12 @@ namespace VehicleRentingApplication
                 return (fname, lname);
             }
 
-            //void RentCar(Car car, string carID)
-            //{
-            //    // Check if the user has reached the rent limit
-            //    if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
-            //    {
-            //        currentUser.RentVehicle(car);
-            //        cars.Remove(carID); // Remove the vehicle from the dictionary
-            //        Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-            //    }
-            //}
-
-            void RentCar(RentedVehicleHandler rentedVehicleHandler, Car car, string carID)
+            void RentCar(Car car, string carID)
             {
-                // Check if the user has reached the rent limit
-                if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
+                if (currentUser.vehicleCount < currentUser.rentLimit)
                 {
-                    currentUser.RentVehicle(car);
-                    //cars.Remove(carID); // Remove the vehicle from the dictionary
-                    //rentedVehicleHandler.UpdateCustomerRentedVehicles(); // Update the customer's rented vehicles list
+                    car.rentedBy = currentUser.accessCode;
+                    rentedVehicles.rentedCars.Add(rentedVehicles.rentedCars.Count + 1.ToString(), car);
                     Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
                 }
                 else
@@ -409,35 +399,37 @@ namespace VehicleRentingApplication
                 }
             }
 
-            void RentTruck(Truck truck, string truckID)
-            {
-                // Check if the user has reached the rent limit
-                if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
-                {
-                    currentUser.RentVehicle(truck);
-                    trucks.Remove(truckID); // Remove the vehicle from the dictionary
-                    Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
-                }
-                else
-                {
-                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-                }
-            }
+            // [TODO] MAKE THESE FUNCTIONS WORK WITH THE NEW METHOD FOR RENTING VEHICLES
 
-            void RentMotorbike(Motorbike motorbike, string motorbikeID)
-            {
-                // Check if the user has reached the rent limit
-                if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
-                {
-                    currentUser.RentVehicle(motorbike);
-                    motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
-                    Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
-                }
-                else
-                {
-                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-                }
-            }
+            //void RentTruck(Truck truck, string truckID)
+            //{
+            //    // Check if the user has reached the rent limit
+            //    if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
+            //    {
+            //        currentUser.RentVehicle(truck);
+            //        trucks.Remove(truckID); // Remove the vehicle from the dictionary
+            //        Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+            //    }
+            //}
+
+            //void RentMotorbike(Motorbike motorbike, string motorbikeID)
+            //{
+            //    // Check if the user has reached the rent limit
+            //    if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
+            //    {
+            //        currentUser.RentVehicle(motorbike);
+            //        motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
+            //        Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+            //    }
+            //}
 
             bool VerifyIdentity(string code)
             {
@@ -533,7 +525,6 @@ namespace VehicleRentingApplication
                     case "car":
                         Car newCar = new Car();
                         newCar = newCar.CreateCar();
-                        //VehiclesAddCar(newCar); // Adds car to vehicle dictionary
                         AddCar(newCar); // Adds car to car dictionary for writing to json
                         break;
 
@@ -550,17 +541,6 @@ namespace VehicleRentingApplication
                         break;
                 }
             }
-
-            //static void ReadAccountsJSON<T>(string fileName, HashSet<T> hash)
-            //{
-            //    string jsonContent = File.ReadAllText(fileName);
-            //    var items = JsonSerializer.Deserialize<HashSet<T>>(jsonContent);
-
-            //    foreach (var item in items)
-            //    {
-            //        hash.Add(item);
-            //    }
-            //}
 
             static void ReadStaffJSON(string fileName, HashSet<Staff> hash)
             {
@@ -584,6 +564,33 @@ namespace VehicleRentingApplication
                 }
             }
 
+            void WriteRentedVehicleJSON<T>(Dictionary<string, T> dictionary, string fileName)
+            {
+                string jsonContent = JsonSerializer.Serialize(dictionary, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(fileName, jsonContent);
+            }
+
+            void ReadRentedVehicleJSON<T>(string fileName, Dictionary<string, T> rentedDictionary, string vehicleType) where T : Vehicle
+            {
+                if (File.Exists(fileName) && new FileInfo(fileName).Length > 0)
+                {
+                    string jsonContent = File.ReadAllText(fileName);
+                    var rentedObjects = JsonSerializer.Deserialize<Dictionary<string, T>>(jsonContent);
+
+                    foreach (var ro in rentedObjects)
+                    {
+                        if (!rentedDictionary.ContainsKey(ro.Key))
+                        {
+                            rentedDictionary.Add(ro.Key, ro.Value);
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("The file is empty or does not exist.");
+                }
+            }
+
             void WriteStaffJSON(HashSet<Staff> hash, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
@@ -595,30 +602,6 @@ namespace VehicleRentingApplication
                 string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(fileName, jsonContent);
             }
-
-            //void WriteAccountJSON<T>(HashSet<T> hash, string fileName) where T : Account
-            //{
-            //    IEnumerable<object> accountsWithRentedVehicles = hash.Select(account =>
-            //    {
-            //        if (account is Customer customer)
-            //        {
-            //            return new
-            //            {
-            //                customer.rentLimit,
-            //                customer.vehicleCount,
-            //                customer.accID,
-            //                customer.accessCode,
-            //                customer.firstName,
-            //                customer.lastName,
-            //                rentedVehicles = customer.GetRentedVehicles()
-            //            };
-            //        }
-            //        return null;
-            //    }).Where(obj => obj != null);
-
-            //    string jsonContent = JsonSerializer.Serialize(accountsWithRentedVehicles, new JsonSerializerOptions { WriteIndented = true });
-            //    File.WriteAllText(fileName, jsonContent);
-            //}
 
             void WriteVehicleJSON<T>(Dictionary<string, T> dictionary, string fileName)
             {
@@ -649,6 +632,7 @@ namespace VehicleRentingApplication
                 ReadVehicleJSON("cars.json", cars, "cars");
                 ReadVehicleJSON("trucks.json", trucks, "trucks");
                 ReadVehicleJSON("motorbikes.json", motorbikes, "motorbikes");
+                ReadRentedVehicleJSON("rentedVehicles.json", rentedVehicles.rentedCars, "cars");
 
                 // Combines all vehicles into one dictionary.
                 AddVehiclesToDictionary(vehicles, cars, trucks, motorbikes);
@@ -667,6 +651,7 @@ namespace VehicleRentingApplication
                 WriteVehicleJSON(cars, "cars.json");
                 WriteVehicleJSON(trucks, "trucks.json");
                 WriteVehicleJSON(motorbikes, "motorbikes.json");
+                WriteRentedVehicleJSON(rentedVehicles.rentedCars, "rentedVehicles.json");
             }
 
             void WriteAccountsToFiles()
@@ -683,7 +668,6 @@ namespace VehicleRentingApplication
                 trucks.ToList().ForEach(truck => vehicles[truck.Key] = truck.Value);
                 motorbikes.ToList().ForEach(motorbike => vehicles[motorbike.Key] = motorbike.Value);
             }
-            // return users.Exists(customer => customer.username == user && customer.password == pass); // Good for finding people!
         }
     }
 }
