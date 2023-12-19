@@ -401,35 +401,37 @@ namespace VehicleRentingApplication
 
             // [TODO] MAKE THESE FUNCTIONS WORK WITH THE NEW METHOD FOR RENTING VEHICLES
 
-            //void RentTruck(Truck truck, string truckID)
-            //{
-            //    // Check if the user has reached the rent limit
-            //    if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
-            //    {
-            //        currentUser.RentVehicle(truck);
-            //        trucks.Remove(truckID); // Remove the vehicle from the dictionary
-            //        Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-            //    }
-            //}
+            void RentTruck(Truck truck, string truckID)
+            {
+                // Check if the user has reached the rent limit
+                if (currentUser.vehicleCount < currentUser.rentLimit)
+                {
+                    truck.rentedBy = currentUser.accessCode;
+                    rentedVehicles.rentedTrucks.Add(rentedVehicles.rentedTrucks.Count + 1.ToString(), truck);
+                    //trucks.Remove(truckID); // Remove the vehicle from the dictionary
+                    Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
+                }
+                else
+                {
+                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+                }
+            }
 
-            //void RentMotorbike(Motorbike motorbike, string motorbikeID)
-            //{
-            //    // Check if the user has reached the rent limit
-            //    if (currentUser.GetRentedVehicles().Count < currentUser.rentLimit)
-            //    {
-            //        currentUser.RentVehicle(motorbike);
-            //        motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
-            //        Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-            //    }
-            //}
+            void RentMotorbike(Motorbike motorbike, string motorbikeID)
+            {
+                // Check if the user has reached the rent limit
+                if (currentUser.vehicleCount < currentUser.rentLimit)
+                {
+                    motorbike.rentedBy = currentUser.accessCode;
+                    rentedVehicles.rentedMotorbikes.Add(rentedVehicles.rentedMotorbikes.Count + 1.ToString(), motorbike);
+                    //motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
+                    Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
+                }
+                else
+                {
+                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
+                }
+            }
 
             bool VerifyIdentity(string code)
             {
