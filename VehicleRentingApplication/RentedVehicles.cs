@@ -21,6 +21,11 @@ namespace VehicleRentingApplication
 
         // [TODO] Probably should private the dictionaries and add methods for adding to the dictionaries (BECAUSE NEED TO FIGURE OUT ID issue.)
 
+        public void ReturnCar()
+        {
+
+        }
+
         //public void AddVehicle(string accessCode, Vehicle v)
         //{
         //    rentedVehiclesList.Add(accessCode, v);

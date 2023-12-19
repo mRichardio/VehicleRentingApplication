@@ -18,10 +18,7 @@ namespace VehicleRentingApplication
             // ---[ Main Quests ]---
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
-            // Better hierarchy {In Progress}
             // Add remove vehicle functionality
-            // Start working on renting functionality (before a car is rented a unique id for the user should be used, to add up total rented count.)
-            // Add functionality to view profile
 
             // ---[ Side Quests ]---
             // Hide staff menu behind a staff password
@@ -33,8 +30,8 @@ namespace VehicleRentingApplication
             // Command Line Interface [TODO]
             // Robustness [TODO] Refer to Topic Demonstration tasks on robustness
             // Object-Oriented Programming [Think DONE but Check this!!] Look at topic demonstration tasks on OOP to double check I have included everything
-            // Data Persistence [In Progress (Fully used JSON Serialisation, but need to ask about binary!!!!!)] IMPORTANT <<<<<<<
-            // Writing Fast Code [TODO]
+            // Data Persistence [DONE]
+            // Writing Fast Code [IN PROGRESS SORT OF]
 
             // Make sure to combine topics
             // Also talk about why you have done something in a certain way
@@ -211,39 +208,35 @@ namespace VehicleRentingApplication
                             if (cars.ContainsKey(rentCarID))
                             {
                                 Car car = cars[rentCarID];
-
-                                RentCar(car, rentCarID);
+                                currentUser.RentCar(car, rentCarID, rentedVehicles);
                                 WriteVehiclesToFiles();
                             }
                             else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
                         }
-
-                        // [TODO] NEED TO MAKE RENTING WORK FOR TRUCK AND MOTORBIKE
-
-                        //else if (rentVehicleType == "truck" || rentVehicleType == "t")
-                        //{
-                        //    Console.WriteLine("Enter Truck ID: ");
-                        //    string rentTruckID = Console.ReadLine().ToUpper().Trim();
-                        //    if (trucks.ContainsKey(rentTruckID))
-                        //    {
-                        //        Truck truck = trucks[rentTruckID];
-                        //        RentTruck(truck, rentTruckID);
-                        //        WriteVehiclesToFiles();
-                        //    }
-                        //    else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
-                        //}
-                        //else if (rentVehicleType == "motorbike" || rentVehicleType == "m")
-                        //{
-                        //    Console.WriteLine("Enter Motorbike ID: ");
-                        //    string rentMotorbikeID = Console.ReadLine().ToUpper().Trim();
-                        //    if (motorbikes.ContainsKey(rentMotorbikeID))
-                        //    {
-                        //        Motorbike motorbike = motorbikes[rentMotorbikeID];
-                        //        RentMotorbike(motorbike, rentMotorbikeID);
-                        //        WriteVehiclesToFiles();
-                        //    }
-                        //    else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
-                        //}
+                        else if (rentVehicleType == "truck" || rentVehicleType == "t")
+                        {
+                            Console.WriteLine("Enter Truck ID: ");
+                            string rentTruckID = Console.ReadLine().ToUpper().Trim();
+                            if (trucks.ContainsKey(rentTruckID))
+                            {
+                                Truck truck = trucks[rentTruckID];
+                                currentUser.RentTruck(truck, rentTruckID, rentedVehicles);
+                                WriteVehiclesToFiles();
+                            }
+                            else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
+                        }
+                        else if (rentVehicleType == "motorbike" || rentVehicleType == "m")
+                        {
+                            Console.WriteLine("Enter Motorbike ID: ");
+                            string rentMotorbikeID = Console.ReadLine().ToUpper().Trim();
+                            if (motorbikes.ContainsKey(rentMotorbikeID))
+                            {
+                                Motorbike motorbike = motorbikes[rentMotorbikeID];
+                                currentUser.RentMotorbike(motorbike, rentMotorbikeID, rentedVehicles);
+                                WriteVehiclesToFiles();
+                            }
+                            else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
+                        }
                         Console.WriteLine("Press ENTER to continue...");
                         Console.ReadLine();
                         break;
@@ -363,9 +356,7 @@ namespace VehicleRentingApplication
                 }
             }
 
-            // Functions
-
-            //void AddUser(Users user) { users.Add(users.Count + 1, user); }
+            // Program Functions
 
             void VehiclesAddCar(Car car) { vehicles.Add($"C-{cars.Count + 1}", car); }
             void AddCar(Car car) { cars.Add($"C-{cars.Count + 1}", car); }
@@ -383,54 +374,6 @@ namespace VehicleRentingApplication
                 string lname = Console.ReadLine().Trim();
 
                 return (fname, lname);
-            }
-
-            void RentCar(Car car, string carID)
-            {
-                if (currentUser.vehicleCount < currentUser.rentLimit)
-                {
-                    car.rentedBy = currentUser.accessCode;
-                    rentedVehicles.rentedCars.Add(rentedVehicles.rentedCars.Count + 1.ToString(), car);
-                    Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
-                }
-                else
-                {
-                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-                }
-            }
-
-            // [TODO] MAKE THESE FUNCTIONS WORK WITH THE NEW METHOD FOR RENTING VEHICLES
-
-            void RentTruck(Truck truck, string truckID)
-            {
-                // Check if the user has reached the rent limit
-                if (currentUser.vehicleCount < currentUser.rentLimit)
-                {
-                    truck.rentedBy = currentUser.accessCode;
-                    rentedVehicles.rentedTrucks.Add(rentedVehicles.rentedTrucks.Count + 1.ToString(), truck);
-                    //trucks.Remove(truckID); // Remove the vehicle from the dictionary
-                    Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
-                }
-                else
-                {
-                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-                }
-            }
-
-            void RentMotorbike(Motorbike motorbike, string motorbikeID)
-            {
-                // Check if the user has reached the rent limit
-                if (currentUser.vehicleCount < currentUser.rentLimit)
-                {
-                    motorbike.rentedBy = currentUser.accessCode;
-                    rentedVehicles.rentedMotorbikes.Add(rentedVehicles.rentedMotorbikes.Count + 1.ToString(), motorbike);
-                    //motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
-                    Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
-                }
-                else
-                {
-                    Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-                }
             }
 
             bool VerifyIdentity(string code)
