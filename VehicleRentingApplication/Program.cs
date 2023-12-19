@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Reflection.Metadata;
 using System.ComponentModel.Design;
 using System.Runtime.ConstrainedExecution;
+using System.Collections.Generic;
 
 namespace VehicleRentingApplication
 {
@@ -109,7 +110,7 @@ namespace VehicleRentingApplication
                 // Main Program
                 Console.Clear();
                 // Displays the main menu
-                Menu mainMenu = new Menu(new string[] {"View Vehicles", "Rent Vehicle", "Your Vehicles", "View Profile", "Staff Menu" });
+                Menu mainMenu = new Menu(new string[] {"View Vehicles", "Rent Vehicle", "Return Vehicle", "Your Vehicles", "View Profile", "Staff Menu" });
                 mainMenu.DisplayMenu();
 
                 try { selected = Convert.ToInt32(Console.ReadLine()); }
@@ -209,6 +210,7 @@ namespace VehicleRentingApplication
                             {
                                 Car car = cars[rentCarID];
                                 currentUser.RentCar(car, rentCarID, rentedVehicles);
+                                cars.Remove(rentCarID);
                                 WriteVehiclesToFiles();
                             }
                             else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
@@ -221,6 +223,7 @@ namespace VehicleRentingApplication
                             {
                                 Truck truck = trucks[rentTruckID];
                                 currentUser.RentTruck(truck, rentTruckID, rentedVehicles);
+                                trucks.Remove(rentTruckID);
                                 WriteVehiclesToFiles();
                             }
                             else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
@@ -233,6 +236,7 @@ namespace VehicleRentingApplication
                             {
                                 Motorbike motorbike = motorbikes[rentMotorbikeID];
                                 currentUser.RentMotorbike(motorbike, rentMotorbikeID, rentedVehicles);
+                                motorbikes.Remove(rentMotorbikeID); // Remove the vehicle from the dictionary
                                 WriteVehiclesToFiles();
                             }
                             else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
@@ -243,10 +247,60 @@ namespace VehicleRentingApplication
 
                     case 3:
                         Console.Clear();
-                        Console.WriteLine("---| Currently Rented Vehicles |---");
-                        foreach (var pair in rentedVehicles.rentedCars)
+                        Console.WriteLine("---| Return a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
+                        string returnVehicleType = Console.ReadLine().ToLower().Trim();
+                        if (returnVehicleType == "car" || returnVehicleType == "c")
                         {
-                            Car userVehicle = pair.Value;
+                            Console.WriteLine("Enter Car Registration Number: ");
+                            string regPlate = Console.ReadLine().ToUpper().Trim();
+                            if (rentedVehicles.rentedCars.Any(car => car.reg.reg == regPlate))
+                            {
+                                Car car = rentedVehicles.rentedCars.FirstOrDefault(car => car.reg.reg == regPlate);
+                                currentUser.ReturnCar(regPlate, rentedVehicles);
+                                AddCar(car);
+                                WriteVehiclesToFiles();
+                            }
+                            else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
+                        }
+                        else if (returnVehicleType == "truck" || returnVehicleType == "t")
+                        {
+                            Console.WriteLine("Enter Truck Registration Nunber: ");
+                            string regPlate = Console.ReadLine().ToUpper().Trim();
+                            if (trucks.Any(truck => truck.Value.reg.reg == regPlate))
+                            {
+                                Car car = cars.FirstOrDefault(car => car.Value.reg.reg == regPlate).Value;
+                                currentUser.ReturnCar(regPlate, rentedVehicles);
+                                if (!cars.Any(v => v.Value.reg.reg == car.reg.reg))
+                                {
+                                    AddCar(car);
+                                }
+                                WriteVehiclesToFiles();
+                            }
+                            else { Console.WriteLine($"Vehicle {regPlate} not found.\n\n"); }
+                        }
+                        else if (returnVehicleType == "motorbike" || returnVehicleType == "m")
+                        {
+                            Console.WriteLine("Enter Motorbike Registration Number: ");
+                            string regPlate = Console.ReadLine().ToUpper().Trim();
+                            if (motorbikes.ContainsKey(regPlate))
+                            {
+                                Motorbike motorbike = motorbikes[regPlate];
+                                currentUser.ReturnCar(regPlate, rentedVehicles);
+                                AddMotorbike(motorbike);
+                                WriteVehiclesToFiles();
+                            }
+                            else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
+                        }
+                        Console.WriteLine("Press ENTER to continue...");
+                        Console.ReadLine();
+                        break;
+
+                    case 4:
+                        Console.Clear();
+                        Console.WriteLine("---| Currently Rented Vehicles |---");
+                        foreach (var car in rentedVehicles.rentedCars)
+                        {
+                            Car userVehicle = car;
 
                             if (userVehicle.rentedBy == currentUser.accessCode)
                             {
@@ -254,7 +308,7 @@ namespace VehicleRentingApplication
                             }
                         }
                         // Check if there are no vehicles to display to the user
-                        if (!rentedVehicles.rentedCars.Any(pair => pair.Value.rentedBy == currentUser.accessCode))
+                        if (!rentedVehicles.rentedCars.Any(car => car.rentedBy == currentUser.accessCode))
                         {
                             Console.WriteLine("\nYou have no vehicles to display.\n");
                         }
@@ -263,7 +317,7 @@ namespace VehicleRentingApplication
                         Console.ReadLine();
                         break;
 
-                    case 4:
+                    case 5:
                         Console.Clear();
                         Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
                         Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
@@ -271,7 +325,7 @@ namespace VehicleRentingApplication
                         Console.ReadLine();
                         break;
 
-                    case 5:
+                    case 6:
                         Console.Clear();
                         Console.WriteLine("---| Staff Menu |---");
 
@@ -351,7 +405,7 @@ namespace VehicleRentingApplication
 
                     default:
                         Console.Clear();
-                        Console.WriteLine("Invalid input. Please enter a number between 1 and 4.");
+                        Console.WriteLine("Invalid input. Please enter a number between 1 and 6.");
                         break;
                 }
             }
@@ -509,24 +563,24 @@ namespace VehicleRentingApplication
                 }
             }
 
-            void WriteRentedVehicleJSON<T>(Dictionary<string, T> dictionary, string fileName)
+            void WriteRentedVehicleJSON<T>(List<T> dictionary, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(dictionary, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(fileName, jsonContent);
             }
 
-            void ReadRentedVehicleJSON<T>(string fileName, Dictionary<string, T> rentedDictionary, string vehicleType) where T : Vehicle
+            void ReadRentedVehicleJSON<T>(string fileName, List<T> rentedDictionary, string vehicleType) where T : Vehicle
             {
                 if (File.Exists(fileName) && new FileInfo(fileName).Length > 0)
                 {
                     string jsonContent = File.ReadAllText(fileName);
-                    var rentedObjects = JsonSerializer.Deserialize<Dictionary<string, T>>(jsonContent);
+                    var rentedVehicles = JsonSerializer.Deserialize<List<T>>(jsonContent);
 
-                    foreach (var ro in rentedObjects)
+                    foreach (var vehicle in rentedVehicles)
                     {
-                        if (!rentedDictionary.ContainsKey(ro.Key))
+                        if (!rentedDictionary.Any(v => v.reg.reg == vehicle.reg.reg))
                         {
-                            rentedDictionary.Add(ro.Key, ro.Value);
+                            rentedDictionary.Add(vehicle);
                         }
                     }
                 }

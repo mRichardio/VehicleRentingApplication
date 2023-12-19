@@ -31,23 +31,6 @@ namespace VehicleRentingApplication
         }
 
         public override string GetType() { return "Customer"; }
-        public void IncreaseVehicleCount(int amount) { this.vehicleCount += amount; }
-
-        //void RentCar(Car car, string carID)
-        //{
-        //    if (currentUser.vehicleCount < currentUser.rentLimit)
-        //    {
-        //        car.rentedBy = currentUser.accessCode;
-        //        rentedVehicles.rentedCars.Add(rentedVehicles.rentedCars.Count + 1.ToString(), car);
-        //        currentUser.IncreaseVehicleCount(1);
-        //        // Will need to remove the vehicles from their vehicle list. IE cars.
-        //        Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
-        //    }
-        //    else
-        //    {
-        //        Console.WriteLine($"You have reached the rent limit of {currentUser.rentLimit}. Cannot rent more vehicles.\n\n");
-        //    }
-        //}
 
         public void RentCar(Car car, string carID, RentedVehicles rentedVehicles)
         {
@@ -55,8 +38,8 @@ namespace VehicleRentingApplication
             {
 
                 car.rentedBy = accessCode;
-                rentedVehicles.rentedCars.Add(rentedVehicles.rentedCars.Count + 1.ToString(), car);
-                IncreaseVehicleCount(1);
+                rentedVehicles.rentedCars.Add(car);
+                vehicleCount++;
 
                 Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
             }
@@ -69,8 +52,8 @@ namespace VehicleRentingApplication
             if (vehicleCount < rentLimit)
             {
                 truck.rentedBy = accessCode;
-                rentedVehicles.rentedTrucks.Add(rentedVehicles.rentedTrucks.Count + 1.ToString(), truck);
-                IncreaseVehicleCount(1);
+                rentedVehicles.rentedTrucks.Add(truck);
+                vehicleCount++;
                 //trucks.Remove(truckID); // Remove the vehicle from the dictionary
                 Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
             }
@@ -83,12 +66,29 @@ namespace VehicleRentingApplication
             if (vehicleCount < rentLimit)
             {
                 motorbike.rentedBy = accessCode;
-                rentedVehicles.rentedMotorbikes.Add(rentedVehicles.rentedMotorbikes.Count + 1.ToString(), motorbike);
-                IncreaseVehicleCount(1);
-                //motorbikes.Remove(motorbikeID); // Remove the vehicle from the dictionary
+                rentedVehicles.rentedMotorbikes.Add(motorbike);
+                vehicleCount++;
                 Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
             }
             else { Console.WriteLine($"You have reached the rent limit of {rentLimit}. Cannot rent more vehicles.\n\n"); }
+        }
+
+        public void ReturnCar(string regPlate, RentedVehicles rentedVehicles)
+        {
+            //if (vehicleCount > 0)
+            //{
+                Car carToRemove = rentedVehicles.rentedCars.Find(car => car.reg.reg == regPlate);
+
+                // Check if the car is found
+                if (carToRemove != null)
+                {
+                    rentedVehicles.rentedCars.Remove(carToRemove);
+                    vehicleCount--;
+
+                    Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
+                }
+                else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
+            //}
         }
     }
 }
