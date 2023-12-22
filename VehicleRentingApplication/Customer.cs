@@ -36,7 +36,6 @@ namespace VehicleRentingApplication
         {
             if (vehicleCount < rentLimit)
             {
-
                 car.rentedBy = accessCode;
                 rentedVehicles.rentedCars.Add(car);
                 vehicleCount++;
@@ -88,6 +87,42 @@ namespace VehicleRentingApplication
                     Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
                 }
                 else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
+            //}
+        }
+
+        public void ReturnTruck(string regPlate, RentedVehicles rentedVehicles)
+        {
+            //if (vehicleCount > 0)
+            //{
+            Truck truckToRemove = rentedVehicles.rentedTrucks.Find(truck => truck.reg.reg == regPlate);
+
+            // Check if the car is found
+            if (truckToRemove != null)
+            {
+                rentedVehicles.rentedTrucks.Remove(truckToRemove);
+                vehicleCount--;
+
+                Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
+            }
+            else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
+            //}
+        }
+
+        public void ReturnMotorbike(string regPlate, RentedVehicles rentedVehicles)
+        {
+            //if (vehicleCount > 0)
+            //{
+            Motorbike motorbikeToRemove = rentedVehicles.rentedMotorbikes.Find(motorbike => motorbike.reg.reg == regPlate);
+
+            // Check if the car is found
+            if (motorbikeToRemove != null)
+            {
+                rentedVehicles.rentedMotorbikes.Remove(motorbikeToRemove);
+                vehicleCount--;
+
+                Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
+            }
+            else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
             //}
         }
     }

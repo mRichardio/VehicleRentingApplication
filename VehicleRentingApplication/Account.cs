@@ -10,7 +10,6 @@ namespace VehicleRentingApplication
 {
     internal abstract class Account : IUser
     {
-        public string accID { get; protected set; }
         public string accessCode { get; set; }
         public string firstName { get; set; }
         public string lastName { get; set; }

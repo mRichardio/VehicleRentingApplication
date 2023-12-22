@@ -8,21 +8,115 @@ namespace VehicleRentingApplication
 {
     internal class Truck : Vehicle
     {
+        public float storageCapacity { get; set; }
         public int doorCount { get; set; }
-        public int wheelCount { get; set; }
-        public int storageCapacity { get; set; }
         public override string type => "Truck";
 
-        public Truck(string type, int modelYear, int doorCount, bool isAutomatic, int wheelCount, int storageCapacity, Colour paint, Registration reg)
+        public Truck()
         {
-            this.type = type;
+
+        }
+
+        public Truck(string manufacturer, string model, int modelYear, bool isAutomatic, int doorCount, float storageCapacity, Colour paint, Registration reg)
+        {
+            this.manufacturer = manufacturer;
+            this.model = model;
             this.modelYear = modelYear;
-            this.doorCount = doorCount;
             this.isAutomatic = isAutomatic;
-            this.wheelCount = wheelCount;
             this.storageCapacity = storageCapacity;
+            this.doorCount = doorCount;
             this.paint = paint;
             this.reg = reg;
+        }
+
+        public Truck CreateTruck()
+        {
+            Console.WriteLine("---| Truck Creation |---\n");
+
+            Console.WriteLine("Manufacturer:");
+            string manufacturer = Console.ReadLine();
+
+            Console.WriteLine("Model:");
+            string model = Console.ReadLine();
+
+            Console.WriteLine("Is the vehicle automatic: ");
+            bool isAuto;
+            while (true)
+            {
+                string input = Console.ReadLine().Trim().ToLower();
+                if (input == "yes" || input == "y")
+                {
+                    isAuto = true;
+                    break;
+                }
+                else if (input == "no" || input == "n")
+                {
+                    isAuto = false;
+                    break;
+                }
+                else
+                {
+                    Console.WriteLine("Invalid input (try 'yes' or 'no')");
+                }
+            }
+
+            Console.WriteLine("Enter door count: ");
+            int doors = 0;
+            try
+            {
+                doors = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("[ERROR] Invalid input, please input an integer number");
+            }
+
+            Console.WriteLine("Storage Capacity: ");
+            float storageCapacity = 0.0f;
+            while (true)
+            {
+                Console.Write("Enter a float number: ");
+                string userInput = Console.ReadLine();
+
+                if (float.TryParse(userInput, out float floatValue))
+                {
+                    Console.WriteLine($"You entered: {floatValue}");
+
+                    if (floatValue >= 0.0f)
+                    {
+                        storageCapacity = floatValue;
+                        break;
+                    }
+                    else { Console.WriteLine("Input is out of range. (Enter a positive number!)"); }
+                }
+                else { Console.WriteLine("Invalid input. Please enter a valid float number."); }
+            }
+
+
+            int year = 0;
+            while (true)
+            {
+                try
+                {
+                    Console.WriteLine("Enter manufacture year: ");
+                    year = Convert.ToInt32(Console.ReadLine());
+                    break; // Move the break statement here to ensure it breaks only when the input is valid
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)");
+                }
+            }
+
+            Colour colour = new Colour();
+            colour = colour.CreateColour();
+
+            Registration reg = new Registration();
+            reg = reg.CreateReg();
+
+            Truck truck = new Truck(manufacturer, model, year, isAuto, doors, storageCapacity, colour, reg);
+
+            return truck;
         }
     }
 }

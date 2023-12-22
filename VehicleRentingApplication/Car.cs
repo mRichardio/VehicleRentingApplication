@@ -10,8 +10,8 @@ namespace VehicleRentingApplication
 {
     internal class Car : Vehicle
     {
-        public int doorCount { get; set; }
-        public int wheelCount { get; set; }
+
+        int doorCount { get; set; }
 
         // Override the type property from the base class
         public override string type => "Car";
@@ -22,11 +22,12 @@ namespace VehicleRentingApplication
         }
 
 
-        public Car(int modelYear, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg)
+        public Car(int modelYear, bool isAutomatic, int doorCount, string manufacturer, string model, Colour paint, Registration reg)
         {
             this.modelYear = modelYear;
             this.manufacturer = manufacturer;
             this.model = model;
+            this.doorCount = doorCount;
             this.isAutomatic = isAutomatic;
             this.paint = paint;
             this.reg = reg;
@@ -63,6 +64,17 @@ namespace VehicleRentingApplication
                 }
             }
 
+            Console.WriteLine("Enter door count: ");
+            int doors = 0;
+            try
+            {
+                doors = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (FormatException)
+            {
+                Console.WriteLine("[ERROR] Invalid input, please input an integer number");
+            }
+
             int year = 0;
             while (true)
             {
@@ -84,7 +96,7 @@ namespace VehicleRentingApplication
             Registration reg = new Registration();
             reg = reg.CreateReg();
 
-            Car car = new Car(year, isAuto, manufacturer, model, colour, reg);
+            Car car = new Car(year, isAuto, doors, manufacturer, model, colour, reg);
 
             return car;
         }
