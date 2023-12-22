@@ -28,7 +28,7 @@ namespace VehicleRentingApplication
 
             // ---[ Topic Demonstration ]---
             // Dealing with data // Collection [DONE] // Algorithms [In Progress] - Need a multi-line algorithm
-            // Command Line Interface [TODO]
+            // Command Line Interface [In Progress]
             // Robustness [TODO] Refer to Topic Demonstration tasks on robustness
             // Object-Oriented Programming [Think DONE but Check this!!] Look at topic demonstration tasks on OOP to double check I have included everything
             // Data Persistence [DONE]
@@ -72,341 +72,339 @@ namespace VehicleRentingApplication
             WriteVehiclesToFiles();
             WriteAccountsToFiles();
 
-            // Program Code
+            // Command Line Interface
 
-            while (true)
+            if (args.Length > 0)
             {
-                //Identity Verification
-                while (currentUser == null)
+                if (args[0] == "available")
                 {
                     Console.Clear();
-                    Console.WriteLine("Do you have an account?: ");
-                    string userInput = Console.ReadLine().ToLower().Trim();
-                    if (userInput == "y" || userInput == "yes")
-                    {
-                        while (true)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Enter your access code: ");
-                            string userCode = Console.ReadLine().Trim();
-                            bool IsVerified = VerifyIdentity(userCode);
-                            if (IsVerified) { break; }
-                        }
-                        break;
-                    }
-                    else if (userInput == "n" || userInput == "no")
-                    {
-                        var (firstName, lastName) = RegisterName();
-                        Customer newCustomer = new Customer(firstName, lastName);
-                        currentUser = newCustomer;
-                        customers.Add(currentUser);
-                        WriteAccountsToFiles();
-                        break;
-                    }
+                    DisplayAvailableVehicles();
                 }
-
-                //RentedVehicleHandler rentedVehicleHandler = new RentedVehicleHandler(currentUser.rentLimit, currentUser);
-
-                // Main Program
-                Console.Clear();
-                // Displays the main menu
-                Menu mainMenu = new Menu(new string[] {"View Vehicles", "Rent Vehicle", "Return Vehicle", "Your Vehicles", "View Profile", "Staff Menu" });
-                mainMenu.DisplayMenu();
-
-                try { selected = Convert.ToInt32(Console.ReadLine()); }
-                catch (Exception e)
+                else if (args[0] == "rented")
                 {
-                    Console.Clear();
-                    Console.WriteLine($"[Error]: {e.Message}\n"); // NEEDS CHANGING TO A FRIENDLIER MESSAGE
-                    continue;
-                }
-
-                switch (selected)
-                {
-                    case 1:
+                    if (args.Length == 2)
+                    {
                         Console.Clear();
-                        Console.WriteLine("---| Available Vehicles |---\n");
-
-                        if (vehicles != null)
+                        string userCode = args[1];
+                        bool IsVerified = VerifyIdentity(userCode);
+                        if (IsVerified) { DisplayedRentedVehicles(); }
+                        else { Console.Clear();  Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                    }
+                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); }
+                }
+            }
+            else // Rest of program
+            {
+                while (true)
+                {
+                    //Identity Verification
+                    while (currentUser == null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Do you have an account?: ");
+                        string userInput = Console.ReadLine().ToLower().Trim();
+                        if (userInput == "y" || userInput == "yes")
                         {
-                            Console.WriteLine($"\n{vehicles.Count} Results found\n");
-                            UpdateVehicleLists();
-
-                            foreach (var (key, vehicle) in vehicles)
+                            while (true)
                             {
-                                Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\n");
+                                Console.Clear();
+                                Console.WriteLine("Enter your access code: ");
+                                string userCode = Console.ReadLine().Trim();
+                                bool IsVerified = VerifyIdentity(userCode);
+                                if (IsVerified) { break; }
                             }
+                            break;
                         }
-                        else
+                        else if (userInput == "n" || userInput == "no")
                         {
-                            Console.WriteLine("No vehicles available to rent.");
+                            var (firstName, lastName) = RegisterName();
+                            Customer newCustomer = new Customer(firstName, lastName);
+                            currentUser = newCustomer;
+                            customers.Add(currentUser);
+                            WriteAccountsToFiles();
+                            break;
                         }
-                        Console.WriteLine("\n[Search] [Filter] [Back]");
-                        string choice = Console.ReadLine().Trim().ToLower();
-                        if (choice == "search" || choice == "1" || choice == "s")
-                        {
+                    }
+
+                    // Main Program
+                    Console.Clear();
+                    // Displays the main menu
+                    Menu mainMenu = new Menu(new string[] { "View Vehicles", "Rent Vehicle", "Return Vehicle", "Your Vehicles", "View Profile", "Staff Menu" });
+                    mainMenu.DisplayMenu();
+
+                    try { selected = Convert.ToInt32(Console.ReadLine()); }
+                    catch (Exception e)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"[Error]: {e.Message}\n"); // NEEDS CHANGING TO A FRIENDLIER MESSAGE
+                        continue;
+                    }
+
+                    switch (selected)
+                    {
+                        case 1:
                             Console.Clear();
-                            Console.WriteLine("Enter Vehicle ID");
-                            string vehID = Console.ReadLine().Trim().ToUpper();
 
-                            var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
+                            DisplayAvailableVehicles();
 
-                            Console.WriteLine(FindVehicleByID(vehID));
-
-                            Console.WriteLine("\nPress ENTER to continue...");
-                            Console.ReadLine();
-                        }
-                        else if (choice == "filter" || choice == "2" || choice == "f")
-                        {
-                            IEnumerable<Vehicle> filteredVehicles;
-                            Console.Clear();
-                            Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
-
-                            string filterChoice = Console.ReadLine().Trim().ToLower();
-                            if (filterChoice == "manufacturer" || filterChoice == "1" || filterChoice == "m")
+                            // Filter Vehicles List
+                            Console.WriteLine("\n[Search] [Filter] [Back]");
+                            string choice = Console.ReadLine().Trim().ToLower();
+                            if (choice == "search" || choice == "1" || choice == "s")
                             {
-                                Console.WriteLine("Enter manufacturer: ");
-                                string inputManufacturer = Console.ReadLine().Trim().ToLower();
+                                Console.Clear();
+                                Console.WriteLine("Enter Vehicle ID");
+                                string vehID = Console.ReadLine().Trim().ToUpper();
 
-                                filteredVehicles = vehicles
-                                        .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
-                                        .Select(vehicle => vehicle.Value);
+                                var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
 
-                                foreach (var vehicle in filteredVehicles)
-                                {
-                                    Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
-                                }
+                                Console.WriteLine(FindVehicleByID(vehID));
 
                                 Console.WriteLine("\nPress ENTER to continue...");
                                 Console.ReadLine();
                             }
-                            else if (filterChoice == "year" || filterChoice == "2" || filterChoice == "y")
+                            else if (choice == "filter" || choice == "2" || choice == "f")
                             {
-                                Console.WriteLine("Enter specific year (or try 'before 2005' / 'after 2005'): ");
-                                string inputYear = Console.ReadLine().Trim().ToLower();
-
-                                foreach (var vehicle in FindVehiclesByYear(inputYear))
-                                {
-                                    Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
-                                }
-
-                                Console.WriteLine("\nPress ENTER to continue...");
-                                Console.ReadLine();
-                            }
-                        }
-                        else { Console.WriteLine($"{choice} not found."); }
-                        Console.Clear();
-                        break;
-
-                    case 2:
-                        Console.Clear();
-                        Console.WriteLine("---| Rent a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
-                        string rentVehicleType = Console.ReadLine().ToLower().Trim();
-                        if (rentVehicleType == "car" || rentVehicleType == "c")
-                        {
-                            Console.WriteLine("Enter Car ID: ");
-                            string rentCarID = Console.ReadLine().ToUpper().Trim();
-                            if (cars.ContainsKey(rentCarID))
-                            {
-                                Car car = cars[rentCarID];
-                                currentUser.RentCar(car, rentCarID, rentedVehicles);
-                                cars.Remove(rentCarID);
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
-                        }
-                        else if (rentVehicleType == "truck" || rentVehicleType == "t")
-                        {
-                            Console.WriteLine("Enter Truck ID: ");
-                            string rentTruckID = Console.ReadLine().ToUpper().Trim();
-                            if (trucks.ContainsKey(rentTruckID))
-                            {
-                                Truck truck = trucks[rentTruckID];
-                                currentUser.RentTruck(truck, rentTruckID, rentedVehicles);
-                                trucks.Remove(rentTruckID);
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
-                        }
-                        else if (rentVehicleType == "motorbike" || rentVehicleType == "m")
-                        {
-                            Console.WriteLine("Enter Motorbike ID: ");
-                            string rentMotorbikeID = Console.ReadLine().ToUpper().Trim();
-                            if (motorbikes.ContainsKey(rentMotorbikeID))
-                            {
-                                Motorbike motorbike = motorbikes[rentMotorbikeID];
-                                currentUser.RentMotorbike(motorbike, rentMotorbikeID, rentedVehicles);
-                                motorbikes.Remove(rentMotorbikeID); // Remove the vehicle from the dictionary
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
-                        }
-                        Console.WriteLine("Press ENTER to continue...");
-                        Console.ReadLine();
-                        break;
-
-                    case 3:
-                        Console.Clear();
-                        Console.WriteLine("---| Return a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
-                        string returnVehicleType = Console.ReadLine().ToLower().Trim();
-                        if (returnVehicleType == "car" || returnVehicleType == "c")
-                        {
-                            Console.WriteLine("Enter Car Registration Number: ");
-                            string regPlate = Console.ReadLine().ToUpper().Trim();
-                            if (rentedVehicles.rentedCars.Any(car => car.reg.reg == regPlate))
-                            {
-                                Car car = rentedVehicles.rentedCars.FirstOrDefault(car => car.reg.reg == regPlate);
-                                currentUser.ReturnCar(regPlate, rentedVehicles);
-                                AddCar(car);
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
-                        }
-                        else if (returnVehicleType == "truck" || returnVehicleType == "t")
-                        {
-                            Console.WriteLine("Enter Truck Registration Nunber: ");
-                            string regPlate = Console.ReadLine().ToUpper().Trim();
-                            if (trucks.Any(truck => truck.Value.reg.reg == regPlate))
-                            {
-                                Car car = cars.FirstOrDefault(car => car.Value.reg.reg == regPlate).Value;
-                                currentUser.ReturnCar(regPlate, rentedVehicles);
-                                if (!cars.Any(v => v.Value.reg.reg == car.reg.reg))
-                                {
-                                    AddCar(car);
-                                }
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"Vehicle {regPlate} not found.\n\n"); }
-                        }
-                        else if (returnVehicleType == "motorbike" || returnVehicleType == "m")
-                        {
-                            Console.WriteLine("Enter Motorbike Registration Number: ");
-                            string regPlate = Console.ReadLine().ToUpper().Trim();
-                            if (motorbikes.ContainsKey(regPlate))
-                            {
-                                Motorbike motorbike = motorbikes[regPlate];
-                                currentUser.ReturnCar(regPlate, rentedVehicles);
-                                AddMotorbike(motorbike);
-                                WriteVehiclesToFiles();
-                            }
-                            else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
-                        }
-                        Console.WriteLine("Press ENTER to continue...");
-                        Console.ReadLine();
-                        break;
-
-                    case 4:
-                        Console.Clear();
-                        Console.WriteLine("---| Currently Rented Vehicles |---");
-                        foreach (var car in rentedVehicles.rentedCars)
-                        {
-                            Car userVehicle = car;
-
-                            if (userVehicle.rentedBy == currentUser.accessCode)
-                            {
-                                Console.WriteLine($"Type: {userVehicle.type}\nManufacturer: {userVehicle.manufacturer}\nModel: {userVehicle.model}\nYear: {userVehicle.modelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
-                            }
-                        }
-                        // Check if there are no vehicles to display to the user
-                        if (!rentedVehicles.rentedCars.Any(car => car.rentedBy == currentUser.accessCode))
-                        {
-                            Console.WriteLine("\nYou have no vehicles to display.\n");
-                        }
-
-                        Console.WriteLine("Press ENTER to continue...");
-                        Console.ReadLine();
-                        break;
-
-                    case 5:
-                        Console.Clear();
-                        Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
-                        Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
-                        Console.WriteLine($"\nRented Vehicles: [{currentUser.vehicleCount}/{currentUser.rentLimit}]\n\nPress ENTER to continue...");
-                        Console.ReadLine();
-                        break;
-
-                    case 6:
-                        Console.Clear();
-                        Console.WriteLine("---| Staff Menu |---");
-
-                        // Displays the staff menu
-                        Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
-                        staffMenu.DisplayMenu();
-
-                        int staffOption = int.Parse(Console.ReadLine());
-
-                        switch (staffOption)
-                        {
-                            case 1:
+                                IEnumerable<Vehicle> filteredVehicles;
                                 Console.Clear();
-                                Console.WriteLine("Enter vehicle type: ");
-                                string vehicleType = Console.ReadLine().ToLower().Trim();
-                                HandleVehicleInput(vehicleType);
-                                WriteVehiclesToFiles();
-                                break;
+                                Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
 
-                            case 2:
-                                Console.Clear();
-                                Console.WriteLine("You entered 2. Remove Vehicle");
-                                Console.WriteLine("Enter vehicle ID: ");
-                                string inputID = Console.ReadLine().ToUpper().Trim();
-                                if (vehicles.ContainsKey(inputID))
+                                string filterChoice = Console.ReadLine().Trim().ToLower();
+                                if (filterChoice == "manufacturer" || filterChoice == "1" || filterChoice == "m")
                                 {
-                                    removeVehicleByID(inputID);
-                                    WriteVehiclesToFiles();
-                                    Console.WriteLine($"Vehicle: {inputID}, has been removed from the system.\nPress ENTER to continue...");
+                                    Console.WriteLine("Enter manufacturer: ");
+                                    string inputManufacturer = Console.ReadLine().Trim().ToLower();
+
+                                    filteredVehicles = vehicles
+                                            .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
+                                            .Select(vehicle => vehicle.Value);
+
+                                    foreach (var vehicle in filteredVehicles)
+                                    {
+                                        Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                                    }
+
+                                    Console.WriteLine("\nPress ENTER to continue...");
                                     Console.ReadLine();
                                 }
-                                else { Console.WriteLine($"Vehicle with ID: {inputID} not found.\nPress ENTER to continue..."); Console.ReadLine(); }
-                                break;
-
-                            case 3:
-                                Console.Clear();
-                                Console.WriteLine("---| Staff List |---");
-                                if (staff != null)
+                                else if (filterChoice == "year" || filterChoice == "2" || filterChoice == "y")
                                 {
-                                    foreach (var s in staff)
+                                    Console.WriteLine("Enter specific year (or try 'before 2005' / 'after 2005'): ");
+                                    string inputYear = Console.ReadLine().Trim().ToLower();
+
+                                    foreach (var vehicle in FindVehiclesByYear(inputYear))
                                     {
-                                        Console.WriteLine($"\nName: {s.firstName} {s.lastName}\nAccount: {s.GetType()}\nAccess Code: {s.accessCode}");
+                                        Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
                                     }
-                                }
-                                else
-                                {
-                                    Console.WriteLine($"\nStaff list is empty...\n");    
-                                }
-                                Console.WriteLine("Press ENTER to continue...");
-                                Console.ReadLine();
-                                break;
 
-                            case 4:
-                                Console.Clear();
-                                Console.WriteLine("---| Customer List |---");
-                                if (customers != null)
+                                    Console.WriteLine("\nPress ENTER to continue...");
+                                    Console.ReadLine();
+                                }
+                            }
+                            else { Console.WriteLine($"{choice} not found."); }
+                            Console.Clear();
+                            break;
+
+                        case 2:
+                            Console.Clear();
+                            Console.WriteLine("---| Rent a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
+                            string rentVehicleType = Console.ReadLine().ToLower().Trim();
+                            if (rentVehicleType == "car" || rentVehicleType == "c")
+                            {
+                                Console.WriteLine("Enter Car ID: ");
+                                string rentCarID = Console.ReadLine().ToUpper().Trim();
+                                if (cars.ContainsKey(rentCarID))
                                 {
-                                    foreach (var c in customers)
+                                    Car car = cars[rentCarID];
+                                    currentUser.RentCar(car, rentCarID, rentedVehicles);
+                                    cars.Remove(rentCarID);
+                                    WriteVehiclesToFiles();
+                                }
+                                else { Console.WriteLine($"\nVehicle {rentCarID} not found.\n\n"); }
+                            }
+                            else if (rentVehicleType == "truck" || rentVehicleType == "t")
+                            {
+                                Console.WriteLine("Enter Truck ID: ");
+                                string rentTruckID = Console.ReadLine().ToUpper().Trim();
+                                if (trucks.ContainsKey(rentTruckID))
+                                {
+                                    Truck truck = trucks[rentTruckID];
+                                    currentUser.RentTruck(truck, rentTruckID, rentedVehicles);
+                                    trucks.Remove(rentTruckID);
+                                    WriteVehiclesToFiles();
+                                }
+                                else { Console.WriteLine($"Vehicle {rentTruckID} not found.\n\n"); }
+                            }
+                            else if (rentVehicleType == "motorbike" || rentVehicleType == "m")
+                            {
+                                Console.WriteLine("Enter Motorbike ID: ");
+                                string rentMotorbikeID = Console.ReadLine().ToUpper().Trim();
+                                if (motorbikes.ContainsKey(rentMotorbikeID))
+                                {
+                                    Motorbike motorbike = motorbikes[rentMotorbikeID];
+                                    currentUser.RentMotorbike(motorbike, rentMotorbikeID, rentedVehicles);
+                                    motorbikes.Remove(rentMotorbikeID); // Remove the vehicle from the dictionary
+                                    WriteVehiclesToFiles();
+                                }
+                                else { Console.WriteLine($"\nVehicle {rentMotorbikeID} not found.\n\n"); }
+                            }
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadLine();
+                            break;
+
+                        case 3:
+                            Console.Clear();
+                            Console.WriteLine("---| Return a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
+                            string returnVehicleType = Console.ReadLine().ToLower().Trim();
+                            if (returnVehicleType == "car" || returnVehicleType == "c")
+                            {
+                                Console.WriteLine("Enter Car Registration Number: ");
+                                string regPlate = Console.ReadLine().ToUpper().Trim();
+                                if (rentedVehicles.rentedCars.Any(car => car.reg.reg == regPlate))
+                                {
+                                    Car car = rentedVehicles.rentedCars.FirstOrDefault(car => car.reg.reg == regPlate);
+                                    currentUser.ReturnCar(regPlate, rentedVehicles);
+                                    AddCar(car);
+                                    WriteVehiclesToFiles();
+                                }
+                                else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
+                            }
+                            else if (returnVehicleType == "truck" || returnVehicleType == "t")
+                            {
+                                Console.WriteLine("Enter Truck Registration Nunber: ");
+                                string regPlate = Console.ReadLine().ToUpper().Trim();
+                                if (trucks.Any(truck => truck.Value.reg.reg == regPlate))
+                                {
+                                    Car car = cars.FirstOrDefault(car => car.Value.reg.reg == regPlate).Value;
+                                    currentUser.ReturnCar(regPlate, rentedVehicles);
+                                    if (!cars.Any(v => v.Value.reg.reg == car.reg.reg))
                                     {
-                                        Console.WriteLine($"\nName: {c.firstName} {c.lastName}\nAccount: {c.GetType()}\nAccess Code: {c.accessCode}");
+                                        AddCar(car);
                                     }
+                                    WriteVehiclesToFiles();
                                 }
-                                else
+                                else { Console.WriteLine($"Vehicle {regPlate} not found.\n\n"); }
+                            }
+                            else if (returnVehicleType == "motorbike" || returnVehicleType == "m")
+                            {
+                                Console.WriteLine("Enter Motorbike Registration Number: ");
+                                string regPlate = Console.ReadLine().ToUpper().Trim();
+                                if (motorbikes.ContainsKey(regPlate))
                                 {
-                                    Console.WriteLine($"\nCustomer list is empty...\n");
+                                    Motorbike motorbike = motorbikes[regPlate];
+                                    currentUser.ReturnCar(regPlate, rentedVehicles);
+                                    AddMotorbike(motorbike);
+                                    WriteVehiclesToFiles();
                                 }
-                                Console.WriteLine("\nPress ENTER to continue...");
-                                Console.ReadLine();
-                                break;
+                                else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
+                            }
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadLine();
+                            break;
 
-                            default:
-                                Console.Clear();
-                                Console.WriteLine("Invalid input. Please enter a number between 1 and 3.");
-                                break;
-                        }
-                        break;
+                        case 4:
+                            Console.Clear();
 
-                    default:
-                        Console.Clear();
-                        Console.WriteLine("Invalid input. Please enter a number between 1 and 6.");
-                        break;
+                            // View current users rented vehicles
+                            DisplayedRentedVehicles();
+
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadLine();
+                            break;
+
+                        case 5:
+                            Console.Clear();
+
+                            // Displays the current users profile
+                            DisplayProfile();
+
+                            Console.ReadLine();
+                            break;
+
+                        case 6:
+                            Console.Clear();
+                            Console.WriteLine("---| Staff Menu |---");
+
+                            // Displays the staff menu
+                            Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
+                            staffMenu.DisplayMenu();
+
+                            int staffOption = int.Parse(Console.ReadLine());
+
+                            switch (staffOption)
+                            {
+                                case 1:
+                                    Console.Clear();
+                                    Console.WriteLine("Enter vehicle type: ");
+                                    string vehicleType = Console.ReadLine().ToLower().Trim();
+                                    HandleVehicleInput(vehicleType);
+                                    WriteVehiclesToFiles();
+                                    break;
+
+                                case 2:
+                                    Console.Clear();
+                                    Console.WriteLine("You entered 2. Remove Vehicle");
+                                    Console.WriteLine("Enter vehicle ID: ");
+                                    string inputID = Console.ReadLine().ToUpper().Trim();
+                                    if (vehicles.ContainsKey(inputID))
+                                    {
+                                        removeVehicleByID(inputID);
+                                        WriteVehiclesToFiles();
+                                        Console.WriteLine($"Vehicle: {inputID}, has been removed from the system.\nPress ENTER to continue...");
+                                        Console.ReadLine();
+                                    }
+                                    else { Console.WriteLine($"Vehicle with ID: {inputID} not found.\nPress ENTER to continue..."); Console.ReadLine(); }
+                                    break;
+
+                                case 3:
+                                    Console.Clear();
+                                    Console.WriteLine("---| Staff List |---");
+                                    if (staff != null)
+                                    {
+                                        foreach (var s in staff)
+                                        {
+                                            Console.WriteLine($"\nName: {s.firstName} {s.lastName}\nAccount: {s.GetType()}\nAccess Code: {s.accessCode}");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"\nStaff list is empty...\n");
+                                    }
+                                    Console.WriteLine("Press ENTER to continue...");
+                                    Console.ReadLine();
+                                    break;
+
+                                case 4:
+                                    Console.Clear();
+                                    Console.WriteLine("---| Customer List |---");
+                                    if (customers != null)
+                                    {
+                                        foreach (var c in customers)
+                                        {
+                                            Console.WriteLine($"\nName: {c.firstName} {c.lastName}\nAccount: {c.GetType()}\nAccess Code: {c.accessCode}");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"\nCustomer list is empty...\n");
+                                    }
+                                    Console.WriteLine("\nPress ENTER to continue...");
+                                    Console.ReadLine();
+                                    break;
+
+                                default:
+                                    Console.Clear();
+                                    Console.WriteLine("Invalid input. Please enter a number between 1 and 3.");
+                                    break;
+                            }
+                            break;
+
+                        default:
+                            Console.Clear();
+                            Console.WriteLine("Invalid input. Please enter a number between 1 and 6.");
+                            break;
+                    }
                 }
             }
 
@@ -418,6 +416,52 @@ namespace VehicleRentingApplication
             void AddTruck(Truck truck) { trucks.Add($"T-{trucks.Count + 1}", truck); }
             void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"M-{motorbikes.Count + 1}", motorbike); }
             void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"M-{motorbikes.Count + 1}", motorbike); }
+
+            void DisplayProfile()
+            {
+                Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
+                Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
+                Console.WriteLine($"\nRented Vehicles: [{currentUser.vehicleCount}/{currentUser.rentLimit}]\n\nPress ENTER to continue...");
+            }
+
+            void DisplayAvailableVehicles()
+            {
+                Console.WriteLine("---| Available Vehicles |---\n");
+
+                if (vehicles != null)
+                {
+                    Console.WriteLine($"\n{vehicles.Count} Results found\n");
+                    UpdateVehicleLists();
+
+                    foreach (var (key, vehicle) in vehicles)
+                    {
+                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\n");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("No vehicles available to rent.");
+                }
+            }
+
+            void DisplayedRentedVehicles()
+            {
+                Console.WriteLine("---| Currently Rented Vehicles |---");
+                foreach (var car in rentedVehicles.rentedCars)
+                {
+                    Car userVehicle = car;
+
+                    if (userVehicle.rentedBy == currentUser.accessCode)
+                    {
+                        Console.WriteLine($"Type: {userVehicle.type}\nManufacturer: {userVehicle.manufacturer}\nModel: {userVehicle.model}\nYear: {userVehicle.modelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
+                    }
+                }
+                // Check if there are no vehicles to display to the user
+                if (!rentedVehicles.rentedCars.Any(car => car.rentedBy == currentUser.accessCode))
+                {
+                    Console.WriteLine("\nYou have no vehicles to display.\n");
+                }
+            }
 
             (string FirstName, string LastName) RegisterName() // Uses a tuple to return to strings. Easier than creating two functions.
             {
