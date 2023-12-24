@@ -20,12 +20,9 @@ namespace VehicleRentingApplication
             // ---[ Main Quests ]---
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
-            // Add remove vehicle functionality
 
             // ---[ Side Quests ]---
-            // Hide staff menu behind a staff password
             // Add a Min and Max year for vehicle in filters
-            // Test what happens if the json files become null
 
             // ---[ Topic Demonstration ]---
             // Dealing with data // Collection [DONE] // Algorithms [In Progress] - Need a multi-line algorithm
@@ -99,7 +96,6 @@ namespace VehicleRentingApplication
                     if (args.Length == 4)
                     {
                         Console.Clear();
-
                         string userCode = args[1];
                         string rentVehicleType = args[2].ToLower().Trim();
                         string rentID = args[3].ToUpper().Trim();
@@ -165,9 +161,7 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
-
                             DisplayAvailableVehicles();
-
                             // Filter Vehicles List
                             Console.WriteLine("\n[Search] [Filter] [Back]");
                             string choice = Console.ReadLine().Trim().ToLower();
@@ -226,37 +220,29 @@ namespace VehicleRentingApplication
                             Console.Clear();
                             break;
 
-                        case 2:
+                        case 2: // Rent Vehicle Functionality
                             Console.Clear();
                             Console.WriteLine("---| Rent a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
                             string rentVehicleType = Console.ReadLine().ToLower().Trim();
                             Console.WriteLine("Enter Vehicle ID: ");
                             string rentID = Console.ReadLine().ToUpper().Trim();
-
-                            // Rent Vehicles Functionality
                             RentVehicles(rentVehicleType, rentID);
-
                             Console.WriteLine("Press ENTER to continue...");
                             Console.ReadLine();
                             break;
 
-                        case 3:
+                        case 3: // Return Vehicle Functionality
                             Console.Clear();
                             Console.WriteLine("---| Return a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
                             string returnVehicleType = Console.ReadLine().ToLower().Trim();
-
                             ReturnVehicles(returnVehicleType);
-
                             Console.WriteLine("Press ENTER to continue...");
                             Console.ReadLine();
                             break;
 
-                        case 4:
+                        case 4: // Display Rented Vehicles Functionality
                             Console.Clear();
-
-                            // View current users rented vehicles
                             DisplayedRentedVehicles();
-
                             Console.WriteLine("Press ENTER to continue...");
                             Console.ReadLine();
                             break;
@@ -278,7 +264,7 @@ namespace VehicleRentingApplication
                             Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
                             staffMenu.DisplayMenu();
 
-                            int staffOption = int.Parse(Console.ReadLine());
+                            int staffOption = int.Parse(Console.ReadLine()); // Need a try catch here
 
                             switch (staffOption)
                             {
@@ -358,9 +344,6 @@ namespace VehicleRentingApplication
 
             // Program Functions
 
-            //void VehiclesAddCar(Car car) { vehicles.Add($"{car.reg.reg}", car); }
-            //void VehiclesAddTruck(Truck truck) { vehicles.Add($"{truck.reg.reg}", truck); }
-            //void VehiclesAddMotorbike(Motorbike motorbike) { vehicles.Add($"{motorbike.reg.reg}", motorbike); }
             void AddCar(Car car) { cars.Add($"{car.reg.reg}", car); }
             void AddTruck(Truck truck) { trucks.Add($"{truck.reg.reg}", truck); }
             void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"{motorbike.reg.reg}", motorbike); }
@@ -378,8 +361,8 @@ namespace VehicleRentingApplication
 
                 if (vehicles != null)
                 {
-                    Console.WriteLine($"\n{vehicles.Count} Results found\n");
                     UpdateVehicleLists();
+                    Console.WriteLine($"{vehicles.Count} Results found\n");
 
                     foreach (var (key, vehicle) in vehicles)
                     {
@@ -395,17 +378,16 @@ namespace VehicleRentingApplication
             void DisplayedRentedVehicles()
             {
                 Console.WriteLine("---| Currently Rented Vehicles |---");
-                foreach (var car in rentedVehicles.rentedCars)
+                foreach (var vehicle in rentedVehicles.combinedVehicles)
                 {
-                    Car userVehicle = car;
-
+                    Vehicle userVehicle = vehicle;
                     if (userVehicle.rentedBy == currentUser.accessCode)
                     {
                         Console.WriteLine($"Type: {userVehicle.type}\nManufacturer: {userVehicle.manufacturer}\nModel: {userVehicle.model}\nYear: {userVehicle.modelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
                     }
                 }
                 // Check if there are no vehicles to display to the user
-                if (!rentedVehicles.rentedCars.Any(car => car.rentedBy == currentUser.accessCode))
+                if (!rentedVehicles.combinedVehicles.Any(vehicle => vehicle.rentedBy == currentUser.accessCode))
                 {
                     Console.WriteLine("\nYou have no vehicles to display.\n");
                 }
@@ -486,6 +468,7 @@ namespace VehicleRentingApplication
                             currentUser.RentCar(car, rentID, rentedVehicles);
                             cars.Remove(rentID);
                             WriteVehiclesToFiles();
+                            UpdateVehicleLists();
                         }
                         else { Console.WriteLine($"\nVehicle {rentID} not found.\n\n"); }
                         break;
@@ -498,6 +481,7 @@ namespace VehicleRentingApplication
                             currentUser.RentTruck(truck, rentID, rentedVehicles);
                             trucks.Remove(rentID);
                             WriteVehiclesToFiles();
+                            UpdateVehicleLists();
                         }
                         else { Console.WriteLine($"Vehicle {rentID} not found.\n\n"); }
                         break;
@@ -510,6 +494,7 @@ namespace VehicleRentingApplication
                             currentUser.RentMotorbike(motorbike, rentID, rentedVehicles);
                             motorbikes.Remove(rentID);
                             WriteVehiclesToFiles();
+                            UpdateVehicleLists();
                         }
                         else { Console.WriteLine($"\nVehicle {rentID} not found.\n\n"); }
                         break;
@@ -534,48 +519,39 @@ namespace VehicleRentingApplication
                             currentUser.ReturnCar(regPlateCar, rentedVehicles);
                             AddCar(car);
                             WriteVehiclesToFiles();
+                            UpdateVehicleLists();
                         }
-                        else
-                        {
-                            Console.WriteLine($"\nVehicle {regPlateCar} not found.\n\n");
-                        }
+                        else { Console.WriteLine($"\nVehicle {regPlateCar} not found.\n\n"); }
                         break;
 
                     case "truck":
                     case "t":
                         Console.WriteLine("Enter Truck Registration Number: ");
                         string regPlateTruck = Console.ReadLine().ToUpper().Trim();
-                        if (trucks.Any(truck => truck.Value.reg.reg == regPlateTruck))
+                        if (rentedVehicles.rentedTrucks.Any(truck => truck.reg.reg == regPlateTruck))
                         {
-                            Car car = cars.FirstOrDefault(car => car.Value.reg.reg == regPlateTruck).Value;
+                            Truck truck = rentedVehicles.rentedTrucks.FirstOrDefault(truck => truck.reg.reg == regPlateTruck);
                             currentUser.ReturnTruck(regPlateTruck, rentedVehicles);
-                            if (!cars.Any(v => v.Value.reg.reg == car.reg.reg))
-                            {
-                                AddCar(car);
-                            }
+                            AddTruck(truck);
                             WriteVehiclesToFiles();
+                            UpdateVehicleLists();
                         }
-                        else
-                        {
-                            Console.WriteLine($"Vehicle {regPlateTruck} not found.\n\n");
-                        }
+                        else { Console.WriteLine($"Vehicle {regPlateTruck} not found.\n\n"); }
                         break;
 
                     case "motorbike":
                     case "m":
                         Console.WriteLine("Enter Motorbike Registration Number: ");
                         string regPlateMotorbike = Console.ReadLine().ToUpper().Trim();
-                        if (motorbikes.ContainsKey(regPlateMotorbike))
+                        if (rentedVehicles.rentedMotorbikes.Any(motorbike => motorbike.reg.reg == regPlateMotorbike))
                         {
-                            Motorbike motorbike = motorbikes[regPlateMotorbike];
+                            Motorbike motorbike = rentedVehicles.rentedMotorbikes.FirstOrDefault(motorbike => motorbike.reg.reg == regPlateMotorbike);
                             currentUser.ReturnMotorbike(regPlateMotorbike, rentedVehicles);
                             AddMotorbike(motorbike);
                             WriteVehiclesToFiles();
+                            UpdateVehicleLists();
                         }
-                        else
-                        {
-                            Console.WriteLine($"\nVehicle {regPlateMotorbike} not found.\n\n");
-                        }
+                        else { Console.WriteLine($"\nVehicle {regPlateMotorbike} not found.\n\n"); }
                         break;
 
                     default:
@@ -677,18 +653,19 @@ namespace VehicleRentingApplication
                 File.WriteAllText(fileName, jsonContent);
             }
 
-            void ReadRentedVehicleJSON<T>(string fileName, List<T> rentedDictionary, string vehicleType) where T : Vehicle
+            void ReadRentedVehicleJSON<T>(string fileName, List<T> rentedList, string vehicleType) where T : Vehicle
             {
                 if (File.Exists(fileName) && new FileInfo(fileName).Length > 0)
                 {
+                    rentedList.Clear();
                     string jsonContent = File.ReadAllText(fileName);
                     var rentedVehicles = JsonSerializer.Deserialize<List<T>>(jsonContent);
 
                     foreach (var vehicle in rentedVehicles)
                     {
-                        if (!rentedDictionary.Any(v => v.reg.reg == vehicle.reg.reg))
+                        if (!rentedList.Any(v => v.reg.reg == vehicle.reg.reg))
                         {
-                            rentedDictionary.Add(vehicle);
+                            rentedList.Add(vehicle);
                         }
                     }
                 }
@@ -719,6 +696,7 @@ namespace VehicleRentingApplication
             // Reads objects from json file, then places them in their dictionary
             void ReadVehicleJSON<T>(string fileName, Dictionary<string, T> vehicleDictionary, string vehicleType) where T : Vehicle
             {
+                vehicleDictionary.Clear();
                 string jsonContent = File.ReadAllText(fileName);
                 var vehicles = JsonSerializer.Deserialize<Dictionary<string, T>>(jsonContent);
 
@@ -734,17 +712,19 @@ namespace VehicleRentingApplication
             void UpdateVehicleLists()
             {
                 vehicles.Clear();
+                rentedVehicles.combinedVehicles.Clear();
 
                 // Read Vehicles from file.
                 ReadVehicleJSON("cars.json", cars, "cars");
                 ReadVehicleJSON("trucks.json", trucks, "trucks");
                 ReadVehicleJSON("motorbikes.json", motorbikes, "motorbikes");
-                ReadRentedVehicleJSON("rentedVehicles.json", rentedVehicles.rentedCars, "cars");
-                ReadRentedVehicleJSON("rentedVehicles.json", rentedVehicles.rentedTrucks, "trucks");
-                ReadRentedVehicleJSON("rentedVehicles.json", rentedVehicles.rentedMotorbikes, "motorbikes");
+                ReadRentedVehicleJSON("rentedCars.json", rentedVehicles.rentedCars, "cars");
+                ReadRentedVehicleJSON("rentedTrucks.json", rentedVehicles.rentedTrucks, "trucks");
+                ReadRentedVehicleJSON("rentedMotorbikes.json", rentedVehicles.rentedMotorbikes, "motorbikes");
 
                 // Combines all vehicles into one dictionary.
                 AddVehiclesToDictionary(vehicles, cars, trucks, motorbikes);
+                AddRentedVehiclesToList(rentedVehicles.combinedVehicles, rentedVehicles.rentedCars, rentedVehicles.rentedTrucks, rentedVehicles.rentedMotorbikes);
             }
 
             void UpdateAccounts()
@@ -760,8 +740,8 @@ namespace VehicleRentingApplication
                 WriteVehicleJSON(cars, "cars.json");
                 WriteVehicleJSON(trucks, "trucks.json");
                 WriteVehicleJSON(motorbikes, "motorbikes.json");
-                WriteRentedVehicleJSON(rentedVehicles.rentedCars, "rentedVehicles.json");
-                WriteRentedVehicleJSON(rentedVehicles.rentedTrucks, "rentedVehicles.json");
+                WriteRentedVehicleJSON(rentedVehicles.rentedCars, "rentedCars.json");
+                WriteRentedVehicleJSON(rentedVehicles.rentedTrucks, "rentedTrucks.json");
                 WriteRentedVehicleJSON(rentedVehicles.rentedMotorbikes, "rentedMotorbikes.json");
             }
 
@@ -775,15 +755,19 @@ namespace VehicleRentingApplication
             // Combines all separate dictionaries into one. (I had to do it this way as 'Vehicle' is an abstract class)
             void AddVehiclesToDictionary(Dictionary<string, Vehicle> vehicles, Dictionary<string, Car> cars, Dictionary<string, Truck> trucks, Dictionary<string, Motorbike> motorbikes)
             {
+                vehicles.Clear();
                 cars.ToList().ForEach(car => vehicles[car.Key] = car.Value);
                 trucks.ToList().ForEach(truck => vehicles[truck.Key] = truck.Value);
                 motorbikes.ToList().ForEach(motorbike => vehicles[motorbike.Key] = motorbike.Value);
             }
 
-            //void CombineRentedVehicles(List<Car> cars, List<Truck> trucks, List<Motorbike> motorbikes)
-            //{
-            //    rentedVehicles.
-            //}
+            void AddRentedVehiclesToList(List<Vehicle> rentedVehicles, List<Car> cars, List<Truck> trucks, List<Motorbike> motorbikes)
+            {
+                rentedVehicles.AddRange(cars);
+                rentedVehicles.AddRange(trucks);
+                rentedVehicles.AddRange(motorbikes);
+            }
+
         }
     }
 }

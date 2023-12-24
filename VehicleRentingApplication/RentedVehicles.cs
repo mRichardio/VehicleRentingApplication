@@ -11,12 +11,15 @@ namespace VehicleRentingApplication
         public List<Car> rentedCars { get; set; }
         public List<Truck> rentedTrucks { get; set; }
         public List<Motorbike> rentedMotorbikes { get; set; }
+        public List<Vehicle> combinedVehicles { get; set; }
+
 
         public RentedVehicles()
         {
             rentedCars = new List<Car>();
             rentedTrucks = new List<Truck>();
             rentedMotorbikes = new List<Motorbike>();
+            combinedVehicles = new List<Vehicle>();
         }
 
         // [TODO] Probably should private the dictionaries and add methods for adding to the dictionaries (BECAUSE NEED TO FIGURE OUT ID issue.)
