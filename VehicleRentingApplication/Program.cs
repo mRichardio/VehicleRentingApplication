@@ -20,24 +20,20 @@ namespace VehicleRentingApplication
             // ---[ Main Quests ]---
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
-
-            // ---[ Side Quests ]---
-            // Add a Min and Max year for vehicle in filters
+            // Look at the current vehicle filter in the main program. (Maybe add the value function that I created for command line)
+            // Make another interface to demonstrate that a class can inherit from two different interfaces <--- THIS
+            // Polish up code and make useability better
 
             // ---[ Topic Demonstration ]---
-            // Dealing with data // Collection [DONE] // Algorithms [In Progress] - Need a multi-line algorithm
-            // Command Line Interface [In Progress]
-            // Robustness [TODO] Refer to Topic Demonstration tasks on robustness
-            // Object-Oriented Programming [Think DONE but Check this!!] Look at topic demonstration tasks on OOP to double check I have included everything
+            // Dealing with data // Collection [DONE] // Algorithms [DONE]
+            // Command Line Interface [DONE]
             // Data Persistence [DONE]
+            // Object-Oriented Programming [Think DONE but Check this!!] Look at topic demonstration tasks on OOP to double check I have included everything
+            // Robustness [In Progress] Refer to Topic Demonstration tasks on robustness
             // Writing Fast Code [IN PROGRESS SORT OF]
 
             // Make sure to combine topics
             // Also talk about why you have done something in a certain way
-
-            // ---[ Important Things that need to happen :D ]---
-            // Make another interface to demonstrate that a class can inherit from two different interfaces
-
 
             int selected; // For menu selection
             Customer currentUser = null;
@@ -478,10 +474,6 @@ namespace VehicleRentingApplication
                     Console.Clear();
                     DisplayAvailableVehicles();
 
-                    //if (args[1] == )
-                    //{
-
-                    //}
                 }
                 else if (args[0] == "rented")
                 {
@@ -521,6 +513,13 @@ namespace VehicleRentingApplication
                         else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
                     }
                     else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'return {access code} {vehicle type} {reg number}')\n\n"); }
+                }
+                if (args.Length >= 2)
+                {
+                    if (args[0] == "filter")
+                    {
+                        RunFilter();
+                    }
                 }
             }
 
@@ -699,6 +698,90 @@ namespace VehicleRentingApplication
                 {
                     Console.WriteLine("The file is empty or does not exist.");
                 }
+            }
+
+            // Sums up the vehicles value based off of it's condition and year it was made
+            float CalculateWeightedValue(float condition, int modelYear)
+            {
+                return condition * 0.7f + modelYear * 0.3f;
+            }
+
+
+            List<Vehicle> FilterVehicles(Dictionary<string, Vehicle> vehicles, string filterType)
+            {
+                UpdateVehicleLists();
+                switch (filterType.ToLower())
+                {
+                    case "oldest":
+                        return vehicles.Values.OrderBy(v => v.modelYear).ToList();
+                    case "newest":
+                        return vehicles.Values.OrderByDescending(v => v.modelYear).ToList();
+                    case "bestcondition":
+                        return vehicles.Values.OrderByDescending(v => v.condition).ToList();
+                    default:
+                        Console.WriteLine("Invalid filter type.");
+                        return vehicles.Values.ToList();
+                }
+            }
+
+            void RunFilter()
+            {
+                if (args.Length >= 2)
+                {
+                    if (args[0] == "filter")
+                    {
+                        if (args.Length >= 2)
+                        {
+                            string filterType = args[1].ToLower();
+
+                            // Filters the vehicle list to find the vehicle with best value.
+                            if (filterType == "value")
+                            {
+                                Vehicle bestValue = FindBestValue(vehicles);
+
+                                if (bestValue != null)
+                                {
+                                    Console.WriteLine($"Best value vehicle based on custom criteria:");
+                                    Console.WriteLine($"- {bestValue.manufacturer} {bestValue.model} ({bestValue.modelYear})");
+                                }
+                                else { Console.WriteLine($"No vehicles to filter."); }
+                            }
+                            else
+                            {
+                                List<Vehicle> filteredVehicles = FilterVehicles(vehicles, filterType);
+
+                                if (filteredVehicles.Count > 0)
+                                {
+                                    Console.WriteLine($"Filtered vehicles based on '{filterType}':");
+
+                                    foreach (var filteredVehicle in filteredVehicles)
+                                    {
+                                        Console.WriteLine($"- {filteredVehicle.manufacturer} {filteredVehicle.model} ({filteredVehicle.modelYear})");
+                                    }
+                                }
+                                else { Console.WriteLine($"No vehicles to filter."); }
+                            }
+                        }
+                        else { Console.WriteLine("Not enough arguments for the 'filter' action."); }
+                    }
+                    else { Console.WriteLine("Invalid command. Use 'filter' to filter vehicles."); }
+                }
+                else { Console.WriteLine("No command specified."); }
+            }
+
+            // Multi Line Algorithm
+            Vehicle FindBestValue(Dictionary<string, Vehicle> vehicles)
+            {
+                // My example of a multi-line lambda expression for finding the best valued vehicle
+                var bestVehicle = vehicles.Values
+                    .OrderByDescending(v =>
+                    {
+                        var weight = CalculateWeightedValue(v.condition, v.modelYear);
+                        return weight;
+                    })
+                    .FirstOrDefault();
+
+                return bestVehicle;
             }
 
             void WriteStaffJSON(HashSet<Staff> hash, string fileName)
