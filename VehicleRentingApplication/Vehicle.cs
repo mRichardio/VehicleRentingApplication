@@ -47,5 +47,14 @@ namespace VehicleRentingApplication
             this.reg = reg;
             this.rentedBy = rentedBy;
         }
+
+        public virtual Vehicle CreateVehicle()
+        {
+            Console.WriteLine("---| Vehicle Creation |---\n");
+
+            // Virtual member function for vehicle creation.
+
+            return null;
+        }
     }
 }

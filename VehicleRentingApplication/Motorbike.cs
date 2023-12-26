@@ -15,7 +15,7 @@ namespace VehicleRentingApplication
 
         }
 
-        public Motorbike(int modelYear, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg)
+        public Motorbike(int modelYear, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg, float condition)
         {
             this.manufacturer = manufacturer;
             this.model = model;
@@ -23,11 +23,12 @@ namespace VehicleRentingApplication
             this.isAutomatic = isAutomatic;
             this.paint = paint;
             this.reg = reg;
+            this.condition = condition;
         }
 
-        public Motorbike CreateMotorbike()
+        public override Motorbike CreateVehicle()
         {
-            Console.WriteLine("---| Car Creation |---\n");
+            Console.WriteLine("---| Motorbike Creation |---\n");
 
             Console.WriteLine("Manufacturer:");
             string manufacturer = Console.ReadLine();
@@ -71,13 +72,25 @@ namespace VehicleRentingApplication
                 }
             }
 
+            float condition = 0f;
+            while (true)
+            {
+                Console.WriteLine("What condition is the vehicle in (%)");
+                try
+                { condition = Convert.ToSingle(Console.ReadLine()); }
+                catch (Exception)
+                { Console.WriteLine("Invalid conition make sure that the value you enter is a floating value... 1-100%"); }
+                if (condition! > 100 && condition! < 1) { break; }
+                else { Console.WriteLine("Condition value is out of range.. (range: 1 - 100)"); }
+            }
+
             Colour colour = new Colour();
             colour = colour.CreateColour();
 
             Registration reg = new Registration();
             reg = reg.CreateReg();
 
-            Motorbike motorbike = new Motorbike(year, isAuto, manufacturer, model, colour, reg);
+            Motorbike motorbike = new Motorbike(year, isAuto, manufacturer, model, colour, reg, condition);
 
             return motorbike;
         }

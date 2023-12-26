@@ -187,7 +187,7 @@ namespace VehicleRentingApplication
                             {
                                 case 1:
                                     Console.Clear();
-                                    Console.WriteLine("Enter vehicle type: ");
+                                    Console.WriteLine("Enter vehicle type: \n[ Car | Truck | Motorbike ]");
                                     string vehicleType = Console.ReadLine().ToLower().Trim();
                                     HandleVehicleInput(vehicleType);
                                     WriteVehiclesToFiles();
@@ -477,6 +477,11 @@ namespace VehicleRentingApplication
                 {
                     Console.Clear();
                     DisplayAvailableVehicles();
+
+                    //if (args[1] == )
+                    //{
+
+                    //}
                 }
                 else if (args[0] == "rented")
                 {
@@ -619,25 +624,29 @@ namespace VehicleRentingApplication
                 switch (vehicleType)
                 {
                     case "car":
+                    case "c":
                         Car newCar = new Car();
-                        newCar = newCar.CreateCar();
+                        newCar = newCar.CreateVehicle();
                         AddCar(newCar); // Adds car to car dictionary for writing to json
                         break;
 
                     case "truck":
+                    case "t":
                         Truck newTruck = new Truck();
-                        newTruck = newTruck.CreateTruck();
+                        newTruck = newTruck.CreateVehicle();
                         AddTruck(newTruck); // Adds car to car dictionary for writing to json
                         break;
 
                     case "motorbike":
+                    case "m":
                         Motorbike newMotorbike = new Motorbike();
-                        newMotorbike = newMotorbike.CreateMotorbike();
+                        newMotorbike = newMotorbike.CreateVehicle();
                         AddMotorbike(newMotorbike); // Adds car to car dictionary for writing to json
                         break;
 
                     default:
-                        Console.WriteLine("Unknown vehicle type. (try: car, truck, motorbike)");
+                        Console.WriteLine("Unknown vehicle type. (try: car, truck, motorbike\nPress ENTER to continue...)");
+                        Console.ReadLine();
                         break;
                 }
             }

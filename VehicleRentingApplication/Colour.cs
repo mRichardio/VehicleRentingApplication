@@ -31,38 +31,36 @@ namespace VehicleRentingApplication
             while (true)
             {
                 Console.WriteLine("Enter RGB colour values:\nR:");
-                red = int.Parse(Console.ReadLine());
-                if (red > 255 || red < 0) { Console.WriteLine("[ERROR] Colour value must be within the range of (0-255)"); }
-                else
+                try 
                 {
-                    try { red = Convert.ToInt32(Console.ReadLine()); }
-                    catch (FormatException) { Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)"); }
-                    break;
+                    red = Convert.ToInt32(Console.ReadLine());
+                    if (red > 255 || red < 0) { Console.WriteLine("[ERROR] Colour value must be within the range of (0-255)"); }
+                    else { break; }
                 }
+                catch (FormatException) { Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)"); }
             }
             while (true)
             {
                 Console.WriteLine("Enter RGB colour values:\nG:");
-                green = int.Parse(Console.ReadLine());
-                if (red > 255 || red < 0) { Console.WriteLine("[ERROR] Colour value must be within the range of (0-255)"); }
-                else
+                try 
                 {
-                    try { green = Convert.ToInt32(Console.ReadLine()); }
-                    catch (FormatException) { Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)"); }
-                    break;
+                    green = Convert.ToInt32(Console.ReadLine());
+                    if (green > 255 || green < 0) { Console.WriteLine("[ERROR] Colour value must be within the range of (0-255)"); }
+                    else
+                    { break;}
                 }
+                catch (FormatException) { Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)"); }
             }
             while (true)
             {
                 Console.WriteLine("Enter RGB colour values:\nB:");
-                blue = int.Parse(Console.ReadLine());
-                if (red > 255 || red < 0) { Console.WriteLine("[ERROR] Colour value must be within the range of (0-255)"); }
-                else
+                try 
                 {
-                    try { blue = Convert.ToInt32(Console.ReadLine()); }
-                    catch (FormatException) { Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)"); }
-                    break;
+                    blue = Convert.ToInt32(Console.ReadLine());
+                    if (blue > 255 || blue < 0) { Console.WriteLine("[ERROR] Colour value must be within the range of (0-255)"); }
+                    else { break; }
                 }
+                catch (FormatException) { Console.WriteLine("[Error]: Invalid input (make sure to only enter integers)"); }
             }
             return new Colour(red, green, blue);
         }

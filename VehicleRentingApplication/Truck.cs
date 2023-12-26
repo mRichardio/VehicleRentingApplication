@@ -17,7 +17,7 @@ namespace VehicleRentingApplication
 
         }
 
-        public Truck(string manufacturer, string model, int modelYear, bool isAutomatic, int doorCount, float storageCapacity, Colour paint, Registration reg)
+        public Truck(string manufacturer, string model, int modelYear, bool isAutomatic, int doorCount, float storageCapacity, Colour paint, Registration reg, float condition)
         {
             this.manufacturer = manufacturer;
             this.model = model;
@@ -27,9 +27,10 @@ namespace VehicleRentingApplication
             this.doorCount = doorCount;
             this.paint = paint;
             this.reg = reg;
+            this.condition = condition;
         }
 
-        public Truck CreateTruck()
+        public override Truck CreateVehicle()
         {
             Console.WriteLine("---| Truck Creation |---\n");
 
@@ -108,13 +109,25 @@ namespace VehicleRentingApplication
                 }
             }
 
+            float condition = 0f;
+            while (true)
+            {
+                Console.WriteLine("What condition is the vehicle in (%)");
+                try
+                { condition = Convert.ToSingle(Console.ReadLine()); }
+                catch (Exception)
+                { Console.WriteLine("Invalid conition make sure that the value you enter is a floating value... 1-100%"); }
+                if (condition! > 100 && condition! < 1) { break; }
+                else { Console.WriteLine("Condition value is out of range.. (range: 1 - 100)"); }
+            }
+
             Colour colour = new Colour();
             colour = colour.CreateColour();
 
             Registration reg = new Registration();
             reg = reg.CreateReg();
 
-            Truck truck = new Truck(manufacturer, model, year, isAuto, doors, storageCapacity, colour, reg);
+            Truck truck = new Truck(manufacturer, model, year, isAuto, doors, storageCapacity, colour, reg, condition);
 
             return truck;
         }
