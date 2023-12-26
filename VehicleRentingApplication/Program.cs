@@ -74,41 +74,7 @@ namespace VehicleRentingApplication
 
             if (args.Length > 0)
             {
-                if (args[0] == "available")
-                {
-                    Console.Clear();
-                    DisplayAvailableVehicles();
-                }
-                else if (args[0] == "rented")
-                {
-                    if (args.Length == 2)
-                    {
-                        Console.Clear();
-                        string userCode = args[1];
-                        bool IsVerified = VerifyIdentity(userCode);
-                        if (IsVerified) { DisplayedRentedVehicles(); }
-                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
-                    }
-                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); }
-                }
-                else if (args[0] == "rent")
-                {
-                    if (args.Length == 4)
-                    {
-                        Console.Clear();
-                        string userCode = args[1];
-                        string rentVehicleType = args[2].ToLower().Trim();
-                        string rentID = args[3].ToUpper().Trim();
-                        bool IsVerified = VerifyIdentity(userCode);
-                        if (IsVerified) { RentVehicles(rentVehicleType, rentID); }
-                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
-                    }
-                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); }
-                }
-                else if (args[0] == "return")
-                {
-
-                }
+                RunCommandLine();
             }
             else // Rest of program
             {
@@ -163,60 +129,9 @@ namespace VehicleRentingApplication
                             Console.Clear();
                             DisplayAvailableVehicles();
                             // Filter Vehicles List
-                            Console.WriteLine("\n[Search] [Filter] [Back]");
-                            string choice = Console.ReadLine().Trim().ToLower();
-                            if (choice == "search" || choice == "1" || choice == "s")
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Enter Vehicle ID");
-                                string vehID = Console.ReadLine().Trim().ToUpper();
 
-                                var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
+                            FilterAvailableVehicles();
 
-                                Console.WriteLine(FindVehicleByID(vehID));
-
-                                Console.WriteLine("\nPress ENTER to continue...");
-                                Console.ReadLine();
-                            }
-                            else if (choice == "filter" || choice == "2" || choice == "f")
-                            {
-                                IEnumerable<Vehicle> filteredVehicles;
-                                Console.Clear();
-                                Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
-
-                                string filterChoice = Console.ReadLine().Trim().ToLower();
-                                if (filterChoice == "manufacturer" || filterChoice == "1" || filterChoice == "m")
-                                {
-                                    Console.WriteLine("Enter manufacturer: ");
-                                    string inputManufacturer = Console.ReadLine().Trim().ToLower();
-
-                                    filteredVehicles = vehicles
-                                            .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
-                                            .Select(vehicle => vehicle.Value);
-
-                                    foreach (var vehicle in filteredVehicles)
-                                    {
-                                        Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
-                                    }
-
-                                    Console.WriteLine("\nPress ENTER to continue...");
-                                    Console.ReadLine();
-                                }
-                                else if (filterChoice == "year" || filterChoice == "2" || filterChoice == "y")
-                                {
-                                    Console.WriteLine("Enter specific year (or try 'before 2005' / 'after 2005'): ");
-                                    string inputYear = Console.ReadLine().Trim().ToLower();
-
-                                    foreach (var vehicle in FindVehiclesByYear(inputYear))
-                                    {
-                                        Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
-                                    }
-
-                                    Console.WriteLine("\nPress ENTER to continue...");
-                                    Console.ReadLine();
-                                }
-                            }
-                            else { Console.WriteLine($"{choice} not found."); }
                             Console.Clear();
                             break;
 
@@ -235,7 +150,9 @@ namespace VehicleRentingApplication
                             Console.Clear();
                             Console.WriteLine("---| Return a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
                             string returnVehicleType = Console.ReadLine().ToLower().Trim();
-                            ReturnVehicles(returnVehicleType);
+                            Console.WriteLine("Enter vehicle registration number: ");
+                            string regPlate = Console.ReadLine().ToLower().Trim();
+                            ReturnVehicles(returnVehicleType, regPlate);
                             Console.WriteLine("Press ENTER to continue...");
                             Console.ReadLine();
                             break;
@@ -505,59 +422,159 @@ namespace VehicleRentingApplication
                 }
             }
 
-            void ReturnVehicles(string returnVehicleType)
+            void ReturnVehicles(string returnVehicleType, string regPlate)
             {
                 switch (returnVehicleType.ToLower())
                 {
                     case "car":
                     case "c":
-                        Console.WriteLine("Enter Car Registration Number: ");
-                        string regPlateCar = Console.ReadLine().ToUpper().Trim();
-                        if (rentedVehicles.rentedCars.Any(car => car.reg.reg == regPlateCar))
+                        if (rentedVehicles.rentedCars.Any(car => car.reg.reg == regPlate))
                         {
-                            Car car = rentedVehicles.rentedCars.FirstOrDefault(car => car.reg.reg == regPlateCar);
-                            currentUser.ReturnCar(regPlateCar, rentedVehicles);
+                            Car car = rentedVehicles.rentedCars.FirstOrDefault(car => car.reg.reg == regPlate);
+                            currentUser.ReturnCar(regPlate, rentedVehicles);
                             AddCar(car);
                             WriteVehiclesToFiles();
                             UpdateVehicleLists();
                         }
-                        else { Console.WriteLine($"\nVehicle {regPlateCar} not found.\n\n"); }
+                        else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
                         break;
 
                     case "truck":
                     case "t":
-                        Console.WriteLine("Enter Truck Registration Number: ");
-                        string regPlateTruck = Console.ReadLine().ToUpper().Trim();
-                        if (rentedVehicles.rentedTrucks.Any(truck => truck.reg.reg == regPlateTruck))
+                        if (rentedVehicles.rentedTrucks.Any(truck => truck.reg.reg == regPlate))
                         {
-                            Truck truck = rentedVehicles.rentedTrucks.FirstOrDefault(truck => truck.reg.reg == regPlateTruck);
-                            currentUser.ReturnTruck(regPlateTruck, rentedVehicles);
+                            Truck truck = rentedVehicles.rentedTrucks.FirstOrDefault(truck => truck.reg.reg == regPlate);
+                            currentUser.ReturnTruck(regPlate, rentedVehicles);
                             AddTruck(truck);
                             WriteVehiclesToFiles();
                             UpdateVehicleLists();
                         }
-                        else { Console.WriteLine($"Vehicle {regPlateTruck} not found.\n\n"); }
+                        else { Console.WriteLine($"Vehicle {regPlate} not found.\n\n"); }
                         break;
 
                     case "motorbike":
                     case "m":
-                        Console.WriteLine("Enter Motorbike Registration Number: ");
-                        string regPlateMotorbike = Console.ReadLine().ToUpper().Trim();
-                        if (rentedVehicles.rentedMotorbikes.Any(motorbike => motorbike.reg.reg == regPlateMotorbike))
+                        if (rentedVehicles.rentedMotorbikes.Any(motorbike => motorbike.reg.reg == regPlate))
                         {
-                            Motorbike motorbike = rentedVehicles.rentedMotorbikes.FirstOrDefault(motorbike => motorbike.reg.reg == regPlateMotorbike);
-                            currentUser.ReturnMotorbike(regPlateMotorbike, rentedVehicles);
+                            Motorbike motorbike = rentedVehicles.rentedMotorbikes.FirstOrDefault(motorbike => motorbike.reg.reg == regPlate);
+                            currentUser.ReturnMotorbike(regPlate, rentedVehicles);
                             AddMotorbike(motorbike);
                             WriteVehiclesToFiles();
                             UpdateVehicleLists();
                         }
-                        else { Console.WriteLine($"\nVehicle {regPlateMotorbike} not found.\n\n"); }
+                        else { Console.WriteLine($"\nVehicle {regPlate} not found.\n\n"); }
                         break;
 
                     default:
                         Console.WriteLine("Invalid vehicle type.");
                         break;
                 }
+            }
+
+            void RunCommandLine()
+            {
+                if (args[0] == "available")
+                {
+                    Console.Clear();
+                    DisplayAvailableVehicles();
+                }
+                else if (args[0] == "rented")
+                {
+                    if (args.Length == 2)
+                    {
+                        Console.Clear();
+                        string userCode = args[1];
+                        bool IsVerified = VerifyIdentity(userCode);
+                        if (IsVerified) { DisplayedRentedVehicles(); }
+                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                    }
+                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); }
+                }
+                else if (args[0] == "rent")
+                {
+                    if (args.Length == 4)
+                    {
+                        Console.Clear();
+                        string userCode = args[1];
+                        string rentVehicleType = args[2].ToLower().Trim();
+                        string rentID = args[3].ToUpper().Trim();
+                        bool IsVerified = VerifyIdentity(userCode);
+                        if (IsVerified) { RentVehicles(rentVehicleType, rentID); }
+                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                    }
+                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rent {access code} {vehicle type} {reg number}')\n\n"); }
+                }
+                else if (args[0] == "return")
+                {
+                    if (args.Length == 4)
+                    {    
+                        string userCode = args[1];
+                        string returnVehicleType = args[2].ToLower().Trim();
+                        string regPlate = args[3].ToUpper().Trim();
+                        bool IsVerified = VerifyIdentity(userCode);
+                        if (IsVerified) { ReturnVehicles(returnVehicleType, regPlate); }
+                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                    }
+                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'return {access code} {vehicle type} {reg number}')\n\n"); }
+                }
+            }
+
+            void FilterAvailableVehicles()
+            {
+                Console.WriteLine("\n[Search] [Filter] [Back]");
+                string choice = Console.ReadLine().Trim().ToLower();
+                if (choice == "search" || choice == "1" || choice == "s")
+                {
+                    Console.Clear();
+                    Console.WriteLine("Enter Vehicle ID");
+                    string vehID = Console.ReadLine().Trim().ToUpper();
+
+                    var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
+
+                    Console.WriteLine(FindVehicleByID(vehID));
+
+                    Console.WriteLine("\nPress ENTER to continue...");
+                    Console.ReadLine();
+                }
+                else if (choice == "filter" || choice == "2" || choice == "f")
+                {
+                    IEnumerable<Vehicle> filteredVehicles;
+                    Console.Clear();
+                    Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
+
+                    string filterChoice = Console.ReadLine().Trim().ToLower();
+                    if (filterChoice == "manufacturer" || filterChoice == "1" || filterChoice == "m")
+                    {
+                        Console.WriteLine("Enter manufacturer: ");
+                        string inputManufacturer = Console.ReadLine().Trim().ToLower();
+
+                        filteredVehicles = vehicles
+                                .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
+                                .Select(vehicle => vehicle.Value);
+
+                        foreach (var vehicle in filteredVehicles)
+                        {
+                            Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                        }
+
+                        Console.WriteLine("\nPress ENTER to continue...");
+                        Console.ReadLine();
+                    }
+                    else if (filterChoice == "year" || filterChoice == "2" || filterChoice == "y")
+                    {
+                        Console.WriteLine("Enter specific year (or try 'before 2005' / 'after 2005'): ");
+                        string inputYear = Console.ReadLine().Trim().ToLower();
+
+                        foreach (var vehicle in FindVehiclesByYear(inputYear))
+                        {
+                            Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                        }
+
+                        Console.WriteLine("\nPress ENTER to continue...");
+                        Console.ReadLine();
+                    }
+                }
+                else { Console.WriteLine($"{choice} not found."); }
             }
 
             List<Vehicle> FindVehiclesByYear(string year)
