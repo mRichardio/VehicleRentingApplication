@@ -20,7 +20,7 @@ namespace VehicleRentingApplication
             // ---[ Main Quests ]---
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
-            // Fix vehicle count not working
+            // Add ways of cancelling out of menus
             // Polish up code and make useability better
             // Design/Make look nice
 
@@ -124,6 +124,7 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
+                            // Display Vehicle List
                             DisplayAvailableVehicles();
 
                             // Filter Vehicles List

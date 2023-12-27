@@ -99,7 +99,7 @@ namespace VehicleRentingApplication
                 { condition = Convert.ToSingle(Console.ReadLine()); }
                 catch (Exception)
                 { Console.WriteLine("Invalid conition make sure that the value you enter is a floating value... 1-100%"); }
-                if (condition < 101 && condition > 0) { break; }
+                if (condition <= 100 && condition >= 0) { break; }
                 else { Console.WriteLine("Condition value is out of range.. (range: 1 - 100)"); }
             }
 
