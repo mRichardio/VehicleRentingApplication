@@ -20,9 +20,9 @@ namespace VehicleRentingApplication
             // ---[ Main Quests ]---
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
-            // Look at the current vehicle filter in the main program. (Maybe add the value function that I created for command line)
             // Fix vehicle count not working
             // Polish up code and make useability better
+            // Design/Make look nice
 
             // ---[ Topic Demonstration ]---
             // Dealing with data // Collection [DONE] // Algorithms [DONE]
@@ -111,6 +111,9 @@ namespace VehicleRentingApplication
                     Console.Clear();
                     // Displays the main menu
                     Menu mainMenu = new Menu(new string[] { "View Vehicles", "Rent Vehicle", "Return Vehicle", "Your Vehicles", "View Profile", "Staff Menu", "[LOGOUT]" });
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine("---| Main Menu |---");
+                    Console.ResetColor();
                     mainMenu.DisplayMenu();
 
                     try { selected = Convert.ToInt32(Console.ReadLine()); }
@@ -172,13 +175,15 @@ namespace VehicleRentingApplication
 
                         case 6:
                             Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine("---| Staff Menu |---");
+                            Console.ResetColor();
 
                             // Displays the staff menu
                             Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
                             staffMenu.DisplayMenu();
 
-                            int staffOption = int.Parse(Console.ReadLine()); // Need a try catch here
+                            int staffOption = int.Parse(Console.ReadLine()); // Need a try catch here // Also need to go back
 
                             switch (staffOption)
                             {
