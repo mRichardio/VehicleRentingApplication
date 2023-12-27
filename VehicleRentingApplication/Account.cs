@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace VehicleRentingApplication
 {
-    internal abstract class Account : IUser
+    internal abstract class Account : IUser, IAccessCode
     {
-        public string accessCode { get; set; }
+        public string accessCode { get; private set; }
         public string firstName { get; set; }
         public string lastName { get; set; }
 

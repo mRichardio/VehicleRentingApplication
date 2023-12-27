@@ -21,7 +21,7 @@ namespace VehicleRentingApplication
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
             // Look at the current vehicle filter in the main program. (Maybe add the value function that I created for command line)
-            // Make another interface to demonstrate that a class can inherit from two different interfaces <--- THIS
+            // Fix vehicle count not working
             // Polish up code and make useability better
 
             // ---[ Topic Demonstration ]---
@@ -91,6 +91,8 @@ namespace VehicleRentingApplication
                                 string userCode = Console.ReadLine().Trim();
                                 bool IsVerified = VerifyIdentity(userCode);
                                 if (IsVerified) { break; }
+                                else { Console.WriteLine("[ERROR] Access code not found!\nPress ENTER to continue..."); }
+                                Console.ReadLine();
                             }
                             break;
                         }
@@ -108,15 +110,14 @@ namespace VehicleRentingApplication
                     // Main Program
                     Console.Clear();
                     // Displays the main menu
-                    Menu mainMenu = new Menu(new string[] { "View Vehicles", "Rent Vehicle", "Return Vehicle", "Your Vehicles", "View Profile", "Staff Menu" });
+                    Menu mainMenu = new Menu(new string[] { "View Vehicles", "Rent Vehicle", "Return Vehicle", "Your Vehicles", "View Profile", "Staff Menu", "[LOGOUT]" });
                     mainMenu.DisplayMenu();
 
                     try { selected = Convert.ToInt32(Console.ReadLine()); }
                     catch (Exception e)
                     {
-                        Console.Clear();
-                        Console.WriteLine($"[Error]: {e.Message}\n"); // NEEDS CHANGING TO A FRIENDLIER MESSAGE
-                        continue;
+                        Console.WriteLine($"[Error]: {e.Message}\n"); // This message won't be seen due to the Clear console.
+                        continue;                                       // (It's there to stop program crashes incase of any bugs.)
                     }
 
                     switch (selected)
@@ -245,6 +246,10 @@ namespace VehicleRentingApplication
                                     Console.WriteLine("Invalid input. Please enter a number between 1 and 3.");
                                     break;
                             }
+                            break;
+
+                        case 7:
+                            currentUser = null;
                             break;
 
                         default:

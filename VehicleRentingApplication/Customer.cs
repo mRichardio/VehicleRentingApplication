@@ -11,6 +11,7 @@ namespace VehicleRentingApplication
 {
     internal class Customer : Account
     {
+        public string accessCode { get; set; }
         public int rentLimit {get; private set;}
         public int vehicleCount { get; private set; }
 
@@ -36,7 +37,7 @@ namespace VehicleRentingApplication
         {
             if (vehicleCount < rentLimit)
             {
-                car.rentedBy = accessCode;
+                car.rentedBy = this.accessCode;
                 rentedVehicles.rentedCars.Add(car);
                 vehicleCount++;
 
@@ -50,10 +51,9 @@ namespace VehicleRentingApplication
             // Check if the user has reached the rent limit
             if (vehicleCount < rentLimit)
             {
-                truck.rentedBy = accessCode;
+                truck.rentedBy = this.accessCode;
                 rentedVehicles.rentedTrucks.Add(truck);
                 vehicleCount++;
-                //trucks.Remove(truckID); // Remove the vehicle from the dictionary
                 Console.WriteLine($"Vehicle {truckID} rented successfully.\n\n");
             }
             else { Console.WriteLine($"You have reached the rent limit of {rentLimit}. Cannot rent more vehicles.\n\n"); }
@@ -64,7 +64,7 @@ namespace VehicleRentingApplication
             // Check if the user has reached the rent limit
             if (vehicleCount < rentLimit)
             {
-                motorbike.rentedBy = accessCode;
+                motorbike.rentedBy = this.accessCode;
                 rentedVehicles.rentedMotorbikes.Add(motorbike);
                 vehicleCount++;
                 Console.WriteLine($"\nVehicle {motorbikeID} rented successfully.\n\n");
@@ -74,26 +74,21 @@ namespace VehicleRentingApplication
 
         public void ReturnCar(string regPlate, RentedVehicles rentedVehicles)
         {
-            //if (vehicleCount > 0)
-            //{
-                Car carToRemove = rentedVehicles.rentedCars.Find(car => car.reg.reg == regPlate);
+            Car carToRemove = rentedVehicles.rentedCars.Find(car => car.reg.reg == regPlate);
 
-                // Check if the car is found
-                if (carToRemove != null)
-                {
-                    rentedVehicles.rentedCars.Remove(carToRemove);
-                    vehicleCount--;
+            // Check if the car is found
+            if (carToRemove != null)
+            {
+                rentedVehicles.rentedCars.Remove(carToRemove);
+                vehicleCount--;
 
-                    Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
-                }
-                else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
-            //}
+                Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
+            }
+            else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
         }
 
         public void ReturnTruck(string regPlate, RentedVehicles rentedVehicles)
         {
-            //if (vehicleCount > 0)
-            //{
             Truck truckToRemove = rentedVehicles.rentedTrucks.Find(truck => truck.reg.reg == regPlate);
 
             // Check if the car is found
@@ -105,13 +100,10 @@ namespace VehicleRentingApplication
                 Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
             }
             else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
-            //}
         }
 
         public void ReturnMotorbike(string regPlate, RentedVehicles rentedVehicles)
         {
-            //if (vehicleCount > 0)
-            //{
             Motorbike motorbikeToRemove = rentedVehicles.rentedMotorbikes.Find(motorbike => motorbike.reg.reg == regPlate);
 
             // Check if the car is found
@@ -123,7 +115,6 @@ namespace VehicleRentingApplication
                 Console.WriteLine($"Car with registration plate {regPlate} has been returned.");
             }
             else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
-            //}
         }
     }
 }
