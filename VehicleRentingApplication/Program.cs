@@ -125,8 +125,8 @@ namespace VehicleRentingApplication
                         case 1:
                             Console.Clear();
                             DisplayAvailableVehicles();
-                            // Filter Vehicles List
 
+                            // Filter Vehicles List
                             FilterAvailableVehicles();
 
                             Console.Clear();
@@ -530,7 +530,9 @@ namespace VehicleRentingApplication
 
             void FilterAvailableVehicles()
             {
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("\n[Search] [Filter] [Back]");
+                Console.ResetColor();
                 string choice = Console.ReadLine().Trim().ToLower();
                 if (choice == "search" || choice == "1" || choice == "s")
                 {
@@ -549,7 +551,10 @@ namespace VehicleRentingApplication
                 {
                     IEnumerable<Vehicle> filteredVehicles;
                     Console.Clear();
-                    Console.WriteLine("Select filter type: \n[Manufacturer] [Year] [Cancel]");
+                    Console.WriteLine("Select filter type: ");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine("[Manufacturer] [Year] [Value] [Cancel]");
+                    Console.ResetColor();
 
                     string filterChoice = Console.ReadLine().Trim().ToLower();
                     if (filterChoice == "manufacturer" || filterChoice == "1" || filterChoice == "m")
@@ -580,6 +585,19 @@ namespace VehicleRentingApplication
                         }
 
                         Console.WriteLine("\nPress ENTER to continue...");
+                        Console.ReadLine();
+                    }
+                    else if (filterChoice == "value" || filterChoice == "3" || filterChoice == "v")
+                    {
+                        Vehicle bestValue = FindBestValue(vehicles);
+
+                        if (bestValue != null)
+                        {
+                            Console.WriteLine($"Best value vehicle based on condition and model year criteria:");
+                            Console.WriteLine($"- {bestValue.manufacturer} {bestValue.model} ({bestValue.modelYear})\nRegistration: {bestValue.reg.reg}");
+                        }
+                        else { Console.WriteLine($"No vehicles to filter."); }
+                        Console.WriteLine("Press ENTER to continue...");
                         Console.ReadLine();
                     }
                 }
@@ -746,7 +764,7 @@ namespace VehicleRentingApplication
 
                                 if (bestValue != null)
                                 {
-                                    Console.WriteLine($"Best value vehicle based on custom criteria:");
+                                    Console.WriteLine($"Best value vehicle based on condition and model year criteria:");
                                     Console.WriteLine($"- {bestValue.manufacturer} {bestValue.model} ({bestValue.modelYear})");
                                 }
                                 else { Console.WriteLine($"No vehicles to filter."); }
