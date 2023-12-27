@@ -25,10 +25,6 @@ namespace VehicleRentingApplication
             // Design/Make look nice
 
             // ---[ Topic Demonstration ]---
-            // Dealing with data // Collection [DONE] // Algorithms [DONE]
-            // Command Line Interface [DONE]
-            // Data Persistence [DONE]
-            // Object-Oriented Programming [Think DONE but Check this!!] Look at topic demonstration tasks on OOP to double check I have included everything
             // Robustness [In Progress] Refer to Topic Demonstration tasks on robustness
             // Writing Fast Code [IN PROGRESS SORT OF]
 
@@ -56,10 +52,7 @@ namespace VehicleRentingApplication
             {
                 Console.WriteLine("Successfully loaded data!");
             }
-            else
-            {
-                Console.WriteLine("Failed to deserialize JSON data.");
-            }
+            else { Console.WriteLine("Failed to deserialize JSON data."); }
 
             WriteVehiclesToFiles();
             WriteAccountsToFiles();
@@ -126,34 +119,54 @@ namespace VehicleRentingApplication
                             Console.Clear();
                             // Display Vehicle List
                             DisplayAvailableVehicles();
-
                             // Filter Vehicles List
                             FilterAvailableVehicles();
-
                             Console.Clear();
                             break;
 
                         case 2: // Rent Vehicle Functionality
                             Console.Clear();
                             Console.WriteLine("---| Rent a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
-                            string rentVehicleType = Console.ReadLine().ToLower().Trim();
-                            Console.WriteLine("Enter Vehicle ID: ");
-                            string rentID = Console.ReadLine().ToUpper().Trim();
-                            RentVehicles(rentVehicleType, rentID);
-                            Console.WriteLine("Press ENTER to continue...");
-                            Console.ReadLine();
-                            break;
+                            string rentVehicleType = "";
+                            try { rentVehicleType = Console.ReadLine().ToLower().Trim(); }
+                            catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
+                            if (rentVehicleType != "Car" || rentVehicleType != "Truck" || rentVehicleType != "Motorbike")
+                            {
+                                Console.WriteLine("Invalid vehicle type, must be: 'Car', 'Truck' or 'Motorbike'\nPress ENTER to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
+                            else 
+                            {
+                                Console.WriteLine("Enter Vehicle Registration Number: ");
+                                string regPlateRent = Console.ReadLine().ToUpper().Trim();
+                                RentVehicles(rentVehicleType, regPlateRent);
+                                Console.WriteLine("Press ENTER to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
 
                         case 3: // Return Vehicle Functionality
                             Console.Clear();
                             Console.WriteLine("---| Return a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
-                            string returnVehicleType = Console.ReadLine().ToLower().Trim();
-                            Console.WriteLine("Enter vehicle registration number: ");
-                            string regPlate = Console.ReadLine().ToLower().Trim();
-                            ReturnVehicles(returnVehicleType, regPlate);
-                            Console.WriteLine("Press ENTER to continue...");
-                            Console.ReadLine();
-                            break;
+                            string returnVehicleType = "";
+                            try { returnVehicleType = Console.ReadLine().ToLower().Trim(); }
+                            catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
+                            if (returnVehicleType != "Car" || returnVehicleType != "Truck" || returnVehicleType != "Motorbike")
+                            {
+                                Console.WriteLine("Invalid vehicle type, must be: 'Car', 'Truck' or 'Motorbike'\nPress ENTER to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Enter Vehicle Registration Number: ");
+                                string regPlateReturn = Console.ReadLine().ToUpper().Trim();
+                                ReturnVehicles(returnVehicleType, regPlateReturn);
+                                Console.WriteLine("Press ENTER to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
 
                         case 4: // Display Rented Vehicles Functionality
                             Console.Clear();
@@ -169,7 +182,7 @@ namespace VehicleRentingApplication
                             break;
 
                         case 6:
-                            Console.Clear();
+                            Console.Clear(); // Staff Menu Section
                             Console.ForegroundColor = ConsoleColor.Blue;
                             Console.WriteLine("---| Staff Menu |---");
                             Console.ResetColor();
@@ -177,8 +190,13 @@ namespace VehicleRentingApplication
                             // Displays the staff menu
                             Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
                             staffMenu.DisplayMenu();
-
-                            int staffOption = int.Parse(Console.ReadLine()); // Need a try catch here // Also need to go back
+                            int staffOption = 0;
+                            try { staffOption = int.Parse(Console.ReadLine()); }// Need a try catch here // Also need to go back                            }
+                            catch (Exception)
+                            {
+                                Console.WriteLine("[ERROR] Invalid input. Make sure to choose one of the the options from the menu. (e.g 1,2)\nPress ENTER to continue...");
+                                Console.ReadLine();
+                            }
 
                             switch (staffOption)
                             {
@@ -261,7 +279,6 @@ namespace VehicleRentingApplication
             }
 
             // Program Functions
-
             void AddCar(Car car) { cars.Add($"{car.reg.reg}", car); }
             void AddTruck(Truck truck) { trucks.Add($"{truck.reg.reg}", truck); }
             void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"{motorbike.reg.reg}", motorbike); }
