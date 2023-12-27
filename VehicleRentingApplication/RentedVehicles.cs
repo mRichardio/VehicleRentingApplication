@@ -22,11 +22,15 @@ namespace VehicleRentingApplication
             combinedVehicles = new List<Vehicle>();
         }
 
-        // [TODO] Probably should private the dictionaries and add methods for adding to the dictionaries (BECAUSE NEED TO FIGURE OUT ID issue.)
+        public int GetVehicleCount(Customer customer)
+        {
+            int count = 0;
 
-        //public void AddVehicle(string accessCode, Vehicle v)
-        //{
-        //    rentedVehiclesList.Add(accessCode, v);
-        //}
+            count += rentedCars.Count(c => c.rentedBy == customer.accessCode);
+            count += rentedTrucks.Count(c => c.rentedBy == customer.accessCode);
+            count += rentedMotorbikes.Count(c => c.rentedBy == customer.accessCode);
+
+            return count;
+        }
     }
 }

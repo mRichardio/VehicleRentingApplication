@@ -46,8 +46,6 @@ namespace VehicleRentingApplication
             Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
             Dictionary<string, Vehicle> vehicles = new();
             RentedVehicles rentedVehicles = new();
-            // Inside the Main method
-
 
             // Reads vehicle data from file
             UpdateVehicleLists();
@@ -67,7 +65,6 @@ namespace VehicleRentingApplication
             WriteAccountsToFiles();
 
             // Command Line Interface
-
             if (args.Length > 0)
             {
                 RunCommandLine();
@@ -76,7 +73,7 @@ namespace VehicleRentingApplication
             {
                 while (true)
                 {
-                    //Identity Verification
+                    // Identity Verification
                     while (currentUser == null)
                     {
                         Console.Clear();
@@ -164,12 +161,9 @@ namespace VehicleRentingApplication
                             Console.ReadLine();
                             break;
 
-                        case 5:
+                        case 5: // Display Current Users Profile
                             Console.Clear();
-
-                            // Displays the current users profile
                             DisplayProfile();
-
                             Console.ReadLine();
                             break;
 
@@ -275,7 +269,7 @@ namespace VehicleRentingApplication
             {
                 Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
                 Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
-                Console.WriteLine($"\nRented Vehicles: [{currentUser.vehicleCount}/{currentUser.rentLimit}]\n\nPress ENTER to continue...");
+                Console.WriteLine($"\nRented Vehicles: [{rentedVehicles.GetVehicleCount(currentUser)}/{currentUser.rentLimit}]\n\nPress ENTER to continue...");
             }
 
             void DisplayAvailableVehicles()
@@ -357,8 +351,6 @@ namespace VehicleRentingApplication
                     return $"No vehicle found with ID: {vehID}";
                 }
             }
-
-
 
             void removeVehicleByID(string vehID)
             {
@@ -514,7 +506,7 @@ namespace VehicleRentingApplication
                 else if (args[0] == "return")
                 {
                     if (args.Length == 4)
-                    {    
+                    {
                         string userCode = args[1];
                         string returnVehicleType = args[2].ToLower().Trim();
                         string regPlate = args[3].ToUpper().Trim();
@@ -641,7 +633,7 @@ namespace VehicleRentingApplication
                             .ToList();
                     }
                 }
-                catch (Exception) { Console.WriteLine("TEMP ERROR"); }
+                catch (Exception) { Console.WriteLine("[ERROR] Couldn't find any vehicles"); }
                 return foundVehicles;
 
             }
