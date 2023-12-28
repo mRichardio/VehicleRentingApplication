@@ -20,7 +20,6 @@ namespace VehicleRentingApplication
             // ---[ Main Quests ]---
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
-            // Add ways of cancelling out of menus
             // Work on validation
             // Polish up code and make useability better
             // Design/Make look nice
@@ -43,6 +42,8 @@ namespace VehicleRentingApplication
             Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
             Dictionary<string, Vehicle> vehicles = new();
             RentedVehicles rentedVehicles = new();
+
+            Stopwatch stopwatch = new Stopwatch();
 
             // Reads vehicle data from file
             UpdateVehicleLists();
@@ -118,10 +119,8 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
-                            // Display Vehicle List
-                            DisplayAvailableVehicles();
-                            // Filter Vehicles List
-                            FilterAvailableVehicles();
+                            DisplayAvailableVehicles(); // Display Vehicle List
+                            FilterAvailableVehicles(); // Filter Vehicles List
                             Console.Clear();
                             break;
 
@@ -291,7 +290,7 @@ namespace VehicleRentingApplication
             {
                 Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
                 Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
-                Console.WriteLine($"\nRented Vehicles: [{rentedVehicles.GetVehicleCount(currentUser)}/{currentUser.rentLimit}]\n\nPress ENTER to continue...");
+                Console.WriteLine($"\nRented Vehicles: [{rentedVehicles.GetVehicleCount(currentUser)}/{currentUser.GetRentLimit()}]\n\nPress ENTER to continue...");
             }
 
             void DisplayAvailableVehicles()
@@ -696,7 +695,7 @@ namespace VehicleRentingApplication
                 }
             }
 
-            static void ReadStaffJSON(string fileName, HashSet<Staff> hash)
+            void ReadStaffJSON(string fileName, HashSet<Staff> hash)
             {
                 string jsonContent = File.ReadAllText(fileName);
                 var items = JsonSerializer.Deserialize<HashSet<Staff>>(jsonContent);
@@ -707,7 +706,7 @@ namespace VehicleRentingApplication
                 }
             }
 
-            static void ReadCustomerJSON(string fileName, HashSet<Customer> hash)
+            void ReadCustomerJSON(string fileName, HashSet<Customer> hash)
             {
                 string jsonContent = File.ReadAllText(fileName);
                 var items = JsonSerializer.Deserialize<HashSet<Customer>>(jsonContent);
@@ -818,14 +817,28 @@ namespace VehicleRentingApplication
             // Multi Line Algorithm
             Vehicle FindBestValue(Dictionary<string, Vehicle> vehicles)
             {
-                // My example of a multi-line lambda expression for finding the best valued vehicle
+                stopwatch.Start();
+                //My example of a multi - line lambda expression for finding the best valued vehicle
+
+               //var bestVehicle = vehicles.Values
+               //    .OrderByDescending(v =>
+               //    {
+               //        var weight = CalculateWeightedValue(v.condition, v.modelYear);
+               //        return weight;
+               //    })
+               //    .FirstOrDefault();
+
                 var bestVehicle = vehicles.Values
+                    .AsParallel()
                     .OrderByDescending(v =>
                     {
                         var weight = CalculateWeightedValue(v.condition, v.modelYear);
                         return weight;
                     })
                     .FirstOrDefault();
+                stopwatch.Stop();
+                Console.WriteLine($"Time taken: {stopwatch.ElapsedMilliseconds}");
+                Console.ReadLine();
 
                 return bestVehicle;
             }

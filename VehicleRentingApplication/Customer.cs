@@ -12,7 +12,7 @@ namespace VehicleRentingApplication
     internal class Customer : Account
     {
         public string accessCode { get; set; }
-        public int rentLimit {get; private set;}
+        private int rentLimit;
         public int vehicleCount { get; private set; }
 
         [JsonConstructor]
@@ -116,5 +116,7 @@ namespace VehicleRentingApplication
             }
             else { Console.WriteLine($"Car with registration plate {regPlate} not found in the rented vehicles list."); }
         }
+
+        public int GetRentLimit() { return rentLimit; }
     }
 }
