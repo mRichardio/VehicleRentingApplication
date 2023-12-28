@@ -21,6 +21,7 @@ namespace VehicleRentingApplication
             // - Use Parallel Execution (If I use this then I need to explain why I have used it.
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
             // Add ways of cancelling out of menus
+            // Work on validation
             // Polish up code and make useability better
             // Design/Make look nice
 
@@ -188,7 +189,7 @@ namespace VehicleRentingApplication
                             Console.ResetColor();
 
                             // Displays the staff menu
-                            Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers" });
+                            Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers", "[Back]" });
                             staffMenu.DisplayMenu();
                             int staffOption = 0;
                             try { staffOption = int.Parse(Console.ReadLine()); }// Need a try catch here // Also need to go back                            }
@@ -258,6 +259,9 @@ namespace VehicleRentingApplication
                                     Console.WriteLine("\nPress ENTER to continue...");
                                     Console.ReadLine();
                                     break;
+
+                                case 5: // Back button in staff menu
+                                    break; 
 
                                 default:
                                     Console.Clear();
@@ -546,7 +550,7 @@ namespace VehicleRentingApplication
             void FilterAvailableVehicles()
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("\n[Search] [Filter] [Back]");
+                Console.WriteLine("\n1.[Search] 2.[Filter] 3.[Back]");
                 Console.ResetColor();
                 string choice = Console.ReadLine().Trim().ToLower();
                 if (choice == "search" || choice == "1" || choice == "s")
@@ -568,7 +572,7 @@ namespace VehicleRentingApplication
                     Console.Clear();
                     Console.WriteLine("Select filter type: ");
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine("[Manufacturer] [Year] [Value] [Cancel]");
+                    Console.WriteLine("1.[Manufacturer] 2.[Year] 3.[Value] 4.[Cancel]");
                     Console.ResetColor();
 
                     string filterChoice = Console.ReadLine().Trim().ToLower();
@@ -581,10 +585,14 @@ namespace VehicleRentingApplication
                                 .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
                                 .Select(vehicle => vehicle.Value);
 
-                        foreach (var vehicle in filteredVehicles)
+                        if (filteredVehicles.Any())
                         {
-                            Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                            foreach (var vehicle in filteredVehicles)
+                            {
+                                Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                            }
                         }
+                        else { Console.WriteLine("No vehicles found"); }
 
                         Console.WriteLine("\nPress ENTER to continue...");
                         Console.ReadLine();
