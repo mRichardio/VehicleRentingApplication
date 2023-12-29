@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,6 +29,16 @@ namespace VehicleRentingApplication
             this.paint = paint;
             this.reg = reg;
             this.condition = condition;
+        }
+
+        public override void CalculatePrice() // Truck prices are calculated differently
+        {
+            double price = 0;
+            price += modelYear;
+            price /= condition / 10;
+            price += storageCapacity / 8;
+            price *= 1.2;
+            this.price = Math.Round(price, 2);
         }
 
         public override Truck CreateVehicle()

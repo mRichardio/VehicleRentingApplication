@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -20,9 +21,12 @@ namespace VehicleRentingApplication
         public Registration reg { get; set; }
         public string rentedBy { get; set; }
 
+        // Price of the vehicle is calculated during runtime, to account for changing values, etc. (Accounts for vehicle conditions changing e.g. better scope)
+        protected double price; // This is protected so that it can be used with sub-classes and so that JSON can't serialise it.
+
         public string DisplayColour()
         {
-            return $" R:{paint.GetRed()} G:{paint.GetGreen()} B:{paint.GetBlue()}";
+            return $" R:{paint.Red} G:{paint.Green} B:{paint.Blue}";
         }
 
         public string DisplayReg()
@@ -46,6 +50,20 @@ namespace VehicleRentingApplication
             this.paint = paint;
             this.reg = reg;
             this.rentedBy = rentedBy;
+        }
+
+        public virtual void CalculatePrice()
+        {
+            double price = 0;
+            price += modelYear;
+            price /= condition / 10;
+            price *= 1.2;
+            this.price = Math.Round(price, 2);
+        }
+
+        public double GetPrice()
+        {
+            return this.price;
         }
 
         public virtual Vehicle CreateVehicle()

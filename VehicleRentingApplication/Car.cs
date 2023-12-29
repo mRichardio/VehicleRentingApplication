@@ -11,14 +11,14 @@ namespace VehicleRentingApplication
     internal class Car : Vehicle
     {
 
-        int doorCount { get; set; }
+        public int doorCount { get; set; }
 
         // Override the type property from the base class
         public override string type => "Car";
 
         public Car()
         {
-
+            //CalculatePrice();
         }
 
 

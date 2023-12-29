@@ -10,6 +10,8 @@ using System.ComponentModel.Design;
 using System.Runtime.ConstrainedExecution;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Http.Json;
+using System.Xml;
 
 namespace VehicleRentingApplication
 {
@@ -18,8 +20,11 @@ namespace VehicleRentingApplication
         static void Main(string[] args)
         {
             // ---[ Main Quests ]---
-            // - Use Parallel Execution (If I use this then I need to explain why I have used it.
+            // - Use Parallel Execution (If I use this then I need to explain why I have used it. <------------
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
+            // Come up with a way to display the vehicles better when there are more than 10
+            // Check response time on parallel displaying vehicles
+            // Need to demonstrate private variables more (Maybe 1 more!).
             // Work on validation
             // Polish up code and make useability better
             // Design/Make look nice
@@ -43,6 +48,8 @@ namespace VehicleRentingApplication
             Dictionary<string, Vehicle> vehicles = new();
             RentedVehicles rentedVehicles = new();
 
+            //Dictionary<string, Car> cars = GenerateCars(); // Comment out when done
+            //GenerateJsonData();
             Stopwatch stopwatch = new Stopwatch();
 
             // Reads vehicle data from file
@@ -301,11 +308,29 @@ namespace VehicleRentingApplication
                 {
                     UpdateVehicleLists();
                     Console.WriteLine($"{vehicles.Count} Results found\n");
-
-                    foreach (var (key, vehicle) in vehicles)
+                    stopwatch.Start();
+                    if (vehicles.Count < 1000)
                     {
-                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\n");
+                        foreach (var (key, vehicle) in vehicles)
+                        {
+                            // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
+                            vehicle.CalculatePrice();
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                        }
                     }
+                    else 
+                    {
+                        Parallel.ForEach(vehicles, kvp =>
+                        {
+                            var (key, vehicle) = kvp;
+
+                            // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
+                            vehicle.CalculatePrice();
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                        });
+                    }
+                    stopwatch.Stop();
+                    Console.WriteLine($"Time Taken: {stopwatch.ElapsedMilliseconds}");
                 }
                 else
                 {
@@ -369,7 +394,7 @@ namespace VehicleRentingApplication
                 }
                 else
                 {
-                    return $"No vehicle found with ID: {vehID}";
+                    return $"No vehicle found with Reg Number: {vehID}";
                 }
             }
 
@@ -555,7 +580,7 @@ namespace VehicleRentingApplication
                 if (choice == "search" || choice == "1" || choice == "s")
                 {
                     Console.Clear();
-                    Console.WriteLine("Enter Vehicle ID");
+                    Console.WriteLine("Enter Vehicle Registration Number:");
                     string vehID = Console.ReadLine().Trim().ToUpper();
 
                     var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
@@ -936,6 +961,79 @@ namespace VehicleRentingApplication
                 rentedVehicles.AddRange(motorbikes);
             }
 
+            // All of the below functions are for demonstration purposes
+
+            Dictionary<string, Car> GenerateCars()
+            {
+                Dictionary<string, Car> cars = new Dictionary<string, Car>();
+
+                for (int i = 0; i < 10000; i++)
+                {
+                    string regNumber = GenerateRegistrationNumber();
+                    Car car = new Car
+                    {
+                        doorCount = GetRandomNumber(2, 5),
+                        type = "Car",
+                        modelYear = GetRandomNumber(2010, 2023),
+                        manufacturer = GetRandomManufacturer(),
+                        model = GetRandomModel(),
+                        condition = GetRandomNumber(80, 100),
+                        isAutomatic = GetRandomBoolean(),
+                        paint = new Colour
+                        {
+                            Red = GetRandomNumber(0, 255),
+                            Green = GetRandomNumber(0, 255),
+                            Blue = GetRandomNumber(0, 255)
+                        },
+                        reg = new Registration
+                        {
+                            reg = regNumber
+                        },
+                        rentedBy = null
+                    };
+
+                    cars.Add(regNumber, car);
+                }
+
+                return cars;
+            }
+
+            int GetRandomNumber(int min, int max)
+            {
+                Random random = new Random();
+                return random.Next(min, max + 1);
+            }
+
+            bool GetRandomBoolean()
+            {
+                Random random = new Random();
+                return random.Next(0, 2) == 0;
+            }
+
+            string GenerateRegistrationNumber()
+            {
+                return Guid.NewGuid().ToString().Substring(0, 8).ToUpper(); // Uses a globally unique identifier to generate a random reg number
+            }
+
+            string GetRandomManufacturer()
+            {
+                string[] manufacturers = { "Honda", "Chevrolet", "Ford", "Toyota", "Nissan", "Mercedes-Benz", "BMW", "Audi", "Lexus", "Hyundai", "Porsche", "Volkswagen", "Mazda", "Jaguar", "Kia", "Subaru", "Tesla", "Chrysler" };
+                return manufacturers[GetRandomNumber(0, manufacturers.Length - 1)];
+            }
+
+            string GetRandomModel()
+            {
+                string[] models = { "Accord", "Cruze", "Mustang", "Camry", "Altima", "C-Class", "3 Series", "A4", "IS", "Sonata", "911", "Passat", "Mazda6", "F-Type", "Optima", "Legacy", "Model 3", "300" };
+                return models[GetRandomNumber(0, models.Length - 1)];
+            }
+
+            void GenerateJsonData()
+            {
+                WriteVehiclesToFiles();
+                Console.WriteLine("Cars have been stored in cars.json\nPress ENTER to continue...");
+                Console.ReadLine();
+            }
         }
+
     }
 }
