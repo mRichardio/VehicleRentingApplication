@@ -191,7 +191,7 @@ namespace VehicleRentingApplication
                             Console.ResetColor();
 
                             // Displays the staff menu
-                            Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers", "[Back]" });
+                            Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers", "Add Staff","[Back]" });
                             staffMenu.DisplayMenu();
                             int staffOption = 0;
                             try { staffOption = int.Parse(Console.ReadLine()); }// Need a try catch here // Also need to go back                            }
@@ -262,12 +262,35 @@ namespace VehicleRentingApplication
                                     Console.ReadLine();
                                     break;
 
-                                case 5: // Back button in staff menu
-                                    break; 
+                                case 5:
+                                    Console.WriteLine("Is this person an existing customer?");
+                                    string choice = Console.ReadLine().Trim().ToLower();
+                                    if (choice == "y" || choice == "yes")
+                                    {
+                                        Console.WriteLine("Enter the customers access code: ");
+                                        string customerCode = Console.ReadLine().Trim();
+                                        Customer customer = customers.FirstOrDefault(customer => customer.accessCode == customerCode);
+                                        Staff newStaff = new Staff(customer);
+                                        staff.Add(newStaff);
+                                        customers.Remove(customer);
+                                        Console.WriteLine("Successfully created new staff member!\nPress ENTER to continue...");
+                                        Console.ReadLine();
+                                        WriteAccountsToFiles();
+                                    }
+                                    else if (choice == "n" || choice == "no")
+                                    {
+                                        Staff newStaff = new();
+                                        newStaff.RegisterStaff(staff);
+                                        WriteAccountsToFiles();
+                                    }
+                                    else { Console.WriteLine($"Invalid choice: {choice} not found\nPress ENTER to continue..."); Console.ReadLine(); }
+                                    break;
+                                case 6: // Back button in staff menu
+                                    break;
 
                                 default:
                                     Console.Clear();
-                                    Console.WriteLine("Invalid input. Please enter a number between 1 and 3.");
+                                    Console.WriteLine("Invalid input. Please enter a number between 1 and 6.");
                                     break;
                             }
                             break;
