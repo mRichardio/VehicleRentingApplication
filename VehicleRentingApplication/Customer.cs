@@ -15,7 +15,7 @@ namespace VehicleRentingApplication
         private int rentLimit;
         public int vehicleCount { get; private set; }
 
-        [JsonConstructor]
+        //[JsonConstructor]
         public Customer() : base()
         {
             this.rentLimit = 3;

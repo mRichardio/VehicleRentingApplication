@@ -9,6 +9,7 @@ namespace VehicleRentingApplication
     internal class Staff : Account
     {
         private bool PastCustomer; // Here to check if a staff member used to be a customer or not.
+        public string accessCode { get; set; }
 
         public Staff() { }
 

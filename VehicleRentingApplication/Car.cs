@@ -13,12 +13,13 @@ namespace VehicleRentingApplication
 
         public int doorCount { get; set; }
 
-        // Override the type property from the base class
-        public override string type => "Car";
+        //public override string type => "Car"; // Originally I had this method setting each type of vehicle, however,
+                                                // I didn't want the type of vehicle to be changable so instead I set
+                                                // the type to be protected within the vehicle abstract class and have
+                                                // provided a function for each vehicle to recieve, the type
 
         public Car()
         {
-            //CalculatePrice();
         }
 
 
@@ -32,6 +33,11 @@ namespace VehicleRentingApplication
             this.paint = paint;
             this.reg = reg;
             this.condition = condition;
+        }
+
+        public override string GetVehicleType()
+        {
+            return "Car";
         }
 
         public override Car CreateVehicle()

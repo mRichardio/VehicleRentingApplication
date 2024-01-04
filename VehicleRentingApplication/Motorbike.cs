@@ -8,11 +8,9 @@ namespace VehicleRentingApplication
 {
     internal class Motorbike : Vehicle
     {
-        public override string type => "Motorbike";
 
         public Motorbike()
         {
-
         }
 
         public Motorbike(int modelYear, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg, float condition)
@@ -24,6 +22,11 @@ namespace VehicleRentingApplication
             this.paint = paint;
             this.reg = reg;
             this.condition = condition;
+        }
+
+        public override string GetVehicleType()
+        {
+            return "Motorbike";
         }
 
         public override Motorbike CreateVehicle()

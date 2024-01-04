@@ -24,6 +24,8 @@ namespace VehicleRentingApplication
             // Work on validation [TODO - Test entire application] 
             // Polish up code and make useability better [TODO - Test entire application] 
             // Design/Make look nice [Optional]
+            // Check if I have included some protected variables [TODO]
+            // Properly document why I chose to do things in a certain way with comments and within video demonstration[TODO]
 
             // ---[ Topic Demonstration ]---
 
@@ -234,7 +236,7 @@ namespace VehicleRentingApplication
                                         {
                                             foreach (var s in staff)
                                             {
-                                                Console.WriteLine($"\nName: {s.firstName} {s.lastName}\nAccount: {s.GetType()}\nAccess Code: {s.accessCode}\nPast Customer?: {s.PastCustomerCheck()}");
+                                                Console.WriteLine($"\nName: {s.firstName} {s.lastName}\nAccount: {s.GetType()}\nAccess Code: {s.GetAccessCode()}\nPast Customer?: {s.PastCustomerCheck()}");
                                             }
                                         }
                                         else
@@ -333,7 +335,7 @@ namespace VehicleRentingApplication
                     {
                         // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
                         vehicle.CalculatePrice();
-                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
                     }
                 }
                 else { Console.WriteLine("No vehicles available to rent."); }
@@ -347,7 +349,7 @@ namespace VehicleRentingApplication
                     Vehicle userVehicle = vehicle;
                     if (userVehicle.rentedBy == currentUser.accessCode)
                     {
-                        Console.WriteLine($"Type: {userVehicle.type}\nManufacturer: {userVehicle.manufacturer}\nModel: {userVehicle.model}\nYear: {userVehicle.modelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
+                        Console.WriteLine($"Type: {userVehicle.GetVehicleType()}\nManufacturer: {userVehicle.manufacturer}\nModel: {userVehicle.model}\nYear: {userVehicle.modelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
                     }
                 }
                 // Check if there are no vehicles to display to the user
@@ -381,7 +383,7 @@ namespace VehicleRentingApplication
 
             bool VerifyStaffCode(string code)
             {
-                Staff selectedStaff = staff.FirstOrDefault(s => s.accessCode == code);
+                Staff selectedStaff = staff.FirstOrDefault(s => s.GetAccessCode() == code);
                 if (selectedStaff != null) { return true; }
                 else { return false; }
             }
@@ -395,7 +397,7 @@ namespace VehicleRentingApplication
                     string key = selectedVehicle.Key;
                     Vehicle vehicle = selectedVehicle.Value;
 
-                    return $"ID: {key}, Vehicle Type: {vehicle.type}\n" +
+                    return $"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\n" +
                                       $"Year: {vehicle.modelYear}\n" +
                                       $"Manufacturer: {vehicle.manufacturer}\n" +
                                       $"Model: {vehicle.model}\n";
@@ -643,7 +645,7 @@ namespace VehicleRentingApplication
                         {
                             foreach (var vehicle in filteredVehicles)
                             {
-                                Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                                Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
                             }
                         }
                         else { Console.WriteLine("No vehicles found"); }
@@ -658,7 +660,7 @@ namespace VehicleRentingApplication
 
                         foreach (var vehicle in FindVehiclesByYear(inputYear))
                         {
-                            Console.WriteLine($"Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                            Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
                         }
 
                         Console.WriteLine("\nPress ENTER to continue...");

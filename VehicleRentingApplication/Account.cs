@@ -10,11 +10,10 @@ namespace VehicleRentingApplication
 {
     internal abstract class Account : IUser, IAccessCode
     {
-        public string accessCode { get; set; }
+        protected string accessCode { get; set; } // This is protected so no other classes can access it other than customer and staff, the deriving classes
         public string firstName { get; set; }
         public string lastName { get; set; }
 
-        [JsonConstructor]
         public Account()
         {
 
@@ -37,6 +36,8 @@ namespace VehicleRentingApplication
 
             return codeBuilder.ToString();
         }
+
+        public string GetAccessCode() {  return accessCode; }
 
         public void DisplayDetails()
         {

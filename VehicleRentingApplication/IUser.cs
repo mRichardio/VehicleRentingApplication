@@ -9,8 +9,8 @@ namespace VehicleRentingApplication
 {
     internal interface IUser
     {
-        public string firstName { get; protected set; }
-        public string lastName { get; protected set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
 
         public virtual string GetType() { return "User"; } // Change value in respective class
 

@@ -11,7 +11,7 @@ namespace VehicleRentingApplication
 {
     internal abstract class Vehicle
     {
-        public virtual string type { get; set; } // Make it virtual so it can be overridden in derived classes
+        protected virtual string type { get; set; } // virtual so it can be overridden in derived classes
         public int modelYear { get; set; }
         public string manufacturer { get; set; }
         public string model { get; set; }
@@ -73,6 +73,11 @@ namespace VehicleRentingApplication
             // Virtual member function for vehicle creation.
 
             return null;
+        }
+
+        public virtual string GetVehicleType() // Virtual so that deriving classes can alter this functionality.
+        {
+            return "Vehicle";
         }
     }
 }

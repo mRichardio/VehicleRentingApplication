@@ -11,7 +11,7 @@ namespace VehicleRentingApplication
     {
         public float storageCapacity { get; set; }
         public int doorCount { get; set; }
-        public override string type => "Truck";
+        //public override string type => "Truck";
 
         public Truck()
         {
@@ -29,6 +29,11 @@ namespace VehicleRentingApplication
             this.paint = paint;
             this.reg = reg;
             this.condition = condition;
+        }
+
+        public override string GetVehicleType()
+        {
+            return "Truck";
         }
 
         public override void CalculatePrice() // Truck prices are calculated differently
