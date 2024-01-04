@@ -121,14 +121,10 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
-
-                            while (true)
-                            {
-                                Console.Clear();
-                                DisplayAvailableVehicles();
-                                FilterAvailableVehicles(); // Filter Vehicles List
-                            }
-                            Console.Clear();
+                            DisplayAvailableVehicles();
+                            FilterAvailableVehicles(); // Filter Vehicles List
+                            Console.WriteLine("Press ENTER to continue...");
+                            Console.ReadLine();
                             break;
 
                         case 2: // Rent Vehicle Functionality
@@ -497,58 +493,78 @@ namespace VehicleRentingApplication
 
             void RunCommandLine()
             {
-                if (args[0] == "available")
+                if (args.Contains("-v"))
                 {
-                    Console.Clear();
-                    DisplayAvailableVehicles();
+                    Console.WriteLine("Version Number: 1.12\n\n[If you are trying to run another command remove '-v' from your arguments]");
+                }
+                else if (args.Contains("-h"))
+                {
+                    Console.WriteLine("---| Vehicle Renting Application |---\n\nUseful commands: ");
+                    Console.WriteLine("-v : Shows the current version number of the application");
+                    Console.WriteLine("-h : Displays a list of the current available commands");
+                    Console.WriteLine("available : Gets all of the vehicles that are available to rent");
+                    Console.WriteLine("rented {access code}: This will get a list of a customers currentl rented cars using code as their access code");
+                    Console.WriteLine("rent {access code} {vehicle type} {reg number}: Allows users to rent one of the available vehicles");
+                    Console.WriteLine("return {access code} {vehicle type} {reg number}: Returns any currently rented vehicles");
+                    Console.WriteLine("filter value: Displays the current vehicle with the best value");
+                }
+                else
+                {
+                    if (args[0] == "available")
+                    {
+                        Console.Clear();
+                        DisplayAvailableVehicles();
 
-                }
-                else if (args[0] == "rented")
-                {
-                    if (args.Length == 2)
-                    {
-                        Console.Clear();
-                        string userCode = args[1];
-                        bool IsVerified = VerifyIdentity(userCode);
-                        if (IsVerified) { DisplayedRentedVehicles(); }
-                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
                     }
-                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); }
-                }
-                else if (args[0] == "rent")
-                {
-                    if (args.Length == 4)
+                    else if (args[0] == "rented")
                     {
-                        Console.Clear();
-                        string userCode = args[1];
-                        string rentVehicleType = args[2].ToLower().Trim();
-                        string rentID = args[3].ToUpper().Trim();
-                        bool IsVerified = VerifyIdentity(userCode);
-                        if (IsVerified) { RentVehicles(rentVehicleType, rentID); }
-                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                        if (args.Length == 2)
+                        {
+                            Console.Clear();
+                            string userCode = args[1];
+                            bool IsVerified = VerifyIdentity(userCode);
+                            if (IsVerified) { DisplayedRentedVehicles(); }
+                            else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                        }
+                        else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); }
                     }
-                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rent {access code} {vehicle type} {reg number}')\n\n"); }
-                }
-                else if (args[0] == "return")
-                {
-                    if (args.Length == 4)
+                    else if (args[0] == "rent")
                     {
-                        string userCode = args[1];
-                        string returnVehicleType = args[2].ToLower().Trim();
-                        string regPlate = args[3].ToUpper().Trim();
-                        bool IsVerified = VerifyIdentity(userCode);
-                        if (IsVerified) { ReturnVehicles(returnVehicleType, regPlate); }
-                        else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                        if (args.Length == 4)
+                        {
+                            Console.Clear();
+                            string userCode = args[1];
+                            string rentVehicleType = args[2].ToLower().Trim();
+                            string rentID = args[3].ToUpper().Trim();
+                            bool IsVerified = VerifyIdentity(userCode);
+                            if (IsVerified) { RentVehicles(rentVehicleType, rentID); }
+                            else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                        }
+                        else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rent {access code} {vehicle type} {reg number}')\n\n"); }
                     }
-                    else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'return {access code} {vehicle type} {reg number}')\n\n"); }
-                }
-                if (args.Length >= 2)
-                {
-                    if (args[0] == "filter")
+                    else if (args[0] == "return")
                     {
-                        RunFilter();
+                        if (args.Length == 4)
+                        {
+                            string userCode = args[1];
+                            string returnVehicleType = args[2].ToLower().Trim();
+                            string regPlate = args[3].ToUpper().Trim();
+                            bool IsVerified = VerifyIdentity(userCode);
+                            if (IsVerified) { ReturnVehicles(returnVehicleType, regPlate); }
+                            else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
+                        }
+                        else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'return {access code} {vehicle type} {reg number}')\n\n"); }
+                    }
+                    if (args.Length >= 2)
+                    {
+                        if (args[0] == "filter")
+                        {
+                            RunFilter();
+                        }
                     }
                 }
+
+               
             }
 
             void FilterAvailableVehicles()
@@ -628,7 +644,7 @@ namespace VehicleRentingApplication
                         Console.ReadLine();
                     }
                 }
-                else { Console.WriteLine($"{choice} not found."); }
+                else { Console.WriteLine($"Choice: {choice} not found."); }
             }
 
             List<Vehicle> FindVehiclesByYear(string year)
