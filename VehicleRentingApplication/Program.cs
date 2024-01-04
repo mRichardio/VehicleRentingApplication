@@ -20,8 +20,9 @@ namespace VehicleRentingApplication
         static void Main(string[] args)
         {
             // ---[ Main Quests ]---
-            // - Use Parallel Execution (If I use this then I need to explain why I have used it. <------------
+            // - Use Parallel Execution (If I use this then I need to explain why I have used it. <------------ [Potentially done?]
             // E.g. I use single thread and got a response time slower than when using parallel execution.))
+
             // Come up with a way to display the vehicles better when there are more than 10
             // Check response time on parallel displaying vehicles
             // Need to demonstrate private variables more (Maybe 1 more!).
@@ -30,8 +31,6 @@ namespace VehicleRentingApplication
             // Design/Make look nice
 
             // ---[ Topic Demonstration ]---
-            // Robustness [In Progress] Refer to Topic Demonstration tasks on robustness
-            // Writing Fast Code [IN PROGRESS SORT OF]
 
             // Make sure to combine topics
             // Also talk about why you have done something in a certain way
@@ -47,10 +46,6 @@ namespace VehicleRentingApplication
             Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
             Dictionary<string, Vehicle> vehicles = new();
             RentedVehicles rentedVehicles = new();
-
-            //Dictionary<string, Car> cars = GenerateCars(); // Comment out when done
-            //GenerateJsonData();
-            Stopwatch stopwatch = new Stopwatch();
 
             // Reads vehicle data from file
             UpdateVehicleLists();
@@ -126,8 +121,13 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
-                            DisplayAvailableVehicles(); // Display Vehicle List
-                            FilterAvailableVehicles(); // Filter Vehicles List
+
+                            while (true)
+                            {
+                                Console.Clear();
+                                DisplayAvailableVehicles();
+                                FilterAvailableVehicles(); // Filter Vehicles List
+                            }
                             Console.Clear();
                             break;
 
@@ -304,38 +304,18 @@ namespace VehicleRentingApplication
             {
                 Console.WriteLine("---| Available Vehicles |---\n");
 
-                if (vehicles != null)
+                if (vehicles != null && vehicles.Count > 0)
                 {
                     UpdateVehicleLists();
                     Console.WriteLine($"{vehicles.Count} Results found\n");
-                    stopwatch.Start();
-                    if (vehicles.Count < 1000)
+                    foreach (var (key, vehicle) in vehicles)
                     {
-                        foreach (var (key, vehicle) in vehicles)
-                        {
-                            // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
-                            vehicle.CalculatePrice();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
-                        }
+                        // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
+                        vehicle.CalculatePrice();
+                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
                     }
-                    else 
-                    {
-                        Parallel.ForEach(vehicles, kvp =>
-                        {
-                            var (key, vehicle) = kvp;
-
-                            // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
-                            vehicle.CalculatePrice();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.type}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
-                        });
-                    }
-                    stopwatch.Stop();
-                    Console.WriteLine($"Time Taken: {stopwatch.ElapsedMilliseconds}");
                 }
-                else
-                {
-                    Console.WriteLine("No vehicles available to rent.");
-                }
+                else { Console.WriteLine("No vehicles available to rent."); }
             }
 
             void DisplayedRentedVehicles()
@@ -842,28 +822,14 @@ namespace VehicleRentingApplication
             // Multi Line Algorithm
             Vehicle FindBestValue(Dictionary<string, Vehicle> vehicles)
             {
-                stopwatch.Start();
-                //My example of a multi - line lambda expression for finding the best valued vehicle
-
-               //var bestVehicle = vehicles.Values
-               //    .OrderByDescending(v =>
-               //    {
-               //        var weight = CalculateWeightedValue(v.condition, v.modelYear);
-               //        return weight;
-               //    })
-               //    .FirstOrDefault();
-
+                // This isn't the most performant way of handling this, however I did it this way as it was the simplest way I could think of to run this function on each vehicle
                 var bestVehicle = vehicles.Values
-                    .AsParallel()
                     .OrderByDescending(v =>
                     {
                         var weight = CalculateWeightedValue(v.condition, v.modelYear);
                         return weight;
                     })
                     .FirstOrDefault();
-                stopwatch.Stop();
-                Console.WriteLine($"Time taken: {stopwatch.ElapsedMilliseconds}");
-                Console.ReadLine();
 
                 return bestVehicle;
             }
@@ -959,79 +925,6 @@ namespace VehicleRentingApplication
                 rentedVehicles.AddRange(cars);
                 rentedVehicles.AddRange(trucks);
                 rentedVehicles.AddRange(motorbikes);
-            }
-
-            // All of the below functions are for demonstration purposes
-
-            Dictionary<string, Car> GenerateCars()
-            {
-                Dictionary<string, Car> cars = new Dictionary<string, Car>();
-
-                for (int i = 0; i < 10000; i++)
-                {
-                    string regNumber = GenerateRegistrationNumber();
-                    Car car = new Car
-                    {
-                        doorCount = GetRandomNumber(2, 5),
-                        type = "Car",
-                        modelYear = GetRandomNumber(2010, 2023),
-                        manufacturer = GetRandomManufacturer(),
-                        model = GetRandomModel(),
-                        condition = GetRandomNumber(80, 100),
-                        isAutomatic = GetRandomBoolean(),
-                        paint = new Colour
-                        {
-                            Red = GetRandomNumber(0, 255),
-                            Green = GetRandomNumber(0, 255),
-                            Blue = GetRandomNumber(0, 255)
-                        },
-                        reg = new Registration
-                        {
-                            reg = regNumber
-                        },
-                        rentedBy = null
-                    };
-
-                    cars.Add(regNumber, car);
-                }
-
-                return cars;
-            }
-
-            int GetRandomNumber(int min, int max)
-            {
-                Random random = new Random();
-                return random.Next(min, max + 1);
-            }
-
-            bool GetRandomBoolean()
-            {
-                Random random = new Random();
-                return random.Next(0, 2) == 0;
-            }
-
-            string GenerateRegistrationNumber()
-            {
-                return Guid.NewGuid().ToString().Substring(0, 8).ToUpper(); // Uses a globally unique identifier to generate a random reg number
-            }
-
-            string GetRandomManufacturer()
-            {
-                string[] manufacturers = { "Honda", "Chevrolet", "Ford", "Toyota", "Nissan", "Mercedes-Benz", "BMW", "Audi", "Lexus", "Hyundai", "Porsche", "Volkswagen", "Mazda", "Jaguar", "Kia", "Subaru", "Tesla", "Chrysler" };
-                return manufacturers[GetRandomNumber(0, manufacturers.Length - 1)];
-            }
-
-            string GetRandomModel()
-            {
-                string[] models = { "Accord", "Cruze", "Mustang", "Camry", "Altima", "C-Class", "3 Series", "A4", "IS", "Sonata", "911", "Passat", "Mazda6", "F-Type", "Optima", "Legacy", "Model 3", "300" };
-                return models[GetRandomNumber(0, models.Length - 1)];
-            }
-
-            void GenerateJsonData()
-            {
-                WriteVehiclesToFiles();
-                Console.WriteLine("Cars have been stored in cars.json\nPress ENTER to continue...");
-                Console.ReadLine();
             }
         }
 
