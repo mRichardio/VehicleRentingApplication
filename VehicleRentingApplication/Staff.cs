@@ -8,7 +8,7 @@ namespace VehicleRentingApplication
 {
     internal class Staff : Account
     {
-        private double totalSales;
+        private bool PastCustomer; // Here to check if a staff member used to be a customer or not.
 
         public Staff() { }
 
@@ -16,7 +16,7 @@ namespace VehicleRentingApplication
         {
             this.firstName = fname;
             this.lastName = lname;
-            this.totalSales = 0;
+            PastCustomer = false;
         }
 
         // This copy constructor is being used to turn customers into staff members.
@@ -26,7 +26,7 @@ namespace VehicleRentingApplication
             this.firstName = customer.firstName; 
             this.lastName = customer.lastName;
             this.accessCode = GenerateAccessCode();
-            this.totalSales = 0;
+            PastCustomer = true; // Set this in here because this is the copy constructor used to turn a customer into staff.
         }
 
         public override string GetType() { return "Staff"; }
@@ -42,6 +42,11 @@ namespace VehicleRentingApplication
             staffList.Add(staff);
             Console.WriteLine("Successfully created new staff member.");
             Console.WriteLine("Press ENTER to continue..."); Console.ReadLine();
+        }
+
+        public bool PastCustomerCheck()
+        {
+            return PastCustomer;
         }
     }
 }
