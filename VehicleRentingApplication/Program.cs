@@ -499,7 +499,7 @@ namespace VehicleRentingApplication
                 }
                 else if (args.Contains("-h"))
                 {
-                    Console.WriteLine("---| Vehicle Renting Application |---\n\nUseful commands: ");
+                    Console.WriteLine("\n---| Vehicle Renting Application |---\n\nUseful commands: ");
                     Console.WriteLine("-v : Shows the current version number of the application");
                     Console.WriteLine("-h : Displays a list of the current available commands");
                     Console.WriteLine("available : Gets all of the vehicles that are available to rent");
@@ -507,6 +507,8 @@ namespace VehicleRentingApplication
                     Console.WriteLine("rent {access code} {vehicle type} {reg number}: Allows users to rent one of the available vehicles");
                     Console.WriteLine("return {access code} {vehicle type} {reg number}: Returns any currently rented vehicles");
                     Console.WriteLine("filter value: Displays the current vehicle with the best value");
+                    Console.WriteLine("filter oldest: Displays available vehicles in order of oldest -> newest");
+                    Console.WriteLine("filter newest: Displays available vehicles in order of newest -> oldest\n--------------------------------\n");
                 }
                 else
                 {
