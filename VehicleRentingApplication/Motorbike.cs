@@ -15,13 +15,13 @@ namespace VehicleRentingApplication
 
         public Motorbike(int modelYear, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg, float condition)
         {
-            this.manufacturer = manufacturer;
-            this.model = model;
-            this.modelYear = modelYear;
-            this.isAutomatic = isAutomatic;
-            this.paint = paint;
-            this.reg = reg;
-            this.condition = condition;
+            this.Manufacturer = manufacturer;
+            this.Model = model;
+            this.ModelYear = modelYear;
+            this.IsAutomatic = isAutomatic;
+            this.Paint = paint;
+            this.Reg = reg;
+            this.Condition = condition;
         }
 
         public override string GetVehicleType()

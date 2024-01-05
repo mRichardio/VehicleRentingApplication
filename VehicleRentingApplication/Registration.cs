@@ -9,14 +9,14 @@ namespace VehicleRentingApplication
 {
     internal class Registration
     {
-        [JsonPropertyName("reg")] // Used as I had a weird bug where my json deserialiser was setting this value to null (I think it was setting reg to Reg. Either way this fixes it.)
-        public string reg { get; set; }
+/*        [JsonPropertyName("reg")]*/ // Used as I had a weird bug where my json deserialiser was setting this value to null (I think it was setting reg to Reg. Either way this fixes it.)
+        public string Reg { get; set; }
 
         public Registration() { /*Default*/ }
 
         public Registration(string reg)
         {
-            this.reg = reg;
+            this.Reg = reg;
         }
 
         public Registration CreateReg()
@@ -25,7 +25,7 @@ namespace VehicleRentingApplication
             {
                 Console.WriteLine("Enter vehicles registration: ");
                 string input = Console.ReadLine().Trim();
-                if (input.Length != 7) { Console.WriteLine("[Error]: Invalid reg length (reg have a length of 7!)"); }
+                if (input.Length != 7) { Console.WriteLine("[Error]: Invalid reg length (reg must have a length of 7!)"); }
                 else { return new Registration(input); }
             }
         }

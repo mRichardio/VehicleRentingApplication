@@ -9,9 +9,11 @@ namespace VehicleRentingApplication
 {
     internal class Truck : Vehicle
     {
-        public float storageCapacity { get; set; }
-        public int doorCount { get; set; }
-        //public override string type => "Truck";
+        public float StorageCapacity { get; set; }
+        public int DoorCount { get; set; }
+
+        //public override string type => "Truck"; // This was my old implementation of setting the type. However, I changes this to
+                                                  // a public get method in the parent class to prevent changes.
 
         public Truck()
         {
@@ -20,15 +22,15 @@ namespace VehicleRentingApplication
 
         public Truck(string manufacturer, string model, int modelYear, bool isAutomatic, int doorCount, float storageCapacity, Colour paint, Registration reg, float condition)
         {
-            this.manufacturer = manufacturer;
-            this.model = model;
-            this.modelYear = modelYear;
-            this.isAutomatic = isAutomatic;
-            this.storageCapacity = storageCapacity;
-            this.doorCount = doorCount;
-            this.paint = paint;
-            this.reg = reg;
-            this.condition = condition;
+            this.Manufacturer = manufacturer;
+            this.Model = model;
+            this.ModelYear = modelYear;
+            this.IsAutomatic = isAutomatic;
+            this.StorageCapacity = storageCapacity;
+            this.DoorCount = doorCount;
+            this.Paint = paint;
+            this.Reg = reg;
+            this.Condition = condition;
         }
 
         public override string GetVehicleType()
@@ -39,9 +41,9 @@ namespace VehicleRentingApplication
         public override void CalculatePrice() // Truck prices are calculated differently
         {
             double price = 0;
-            price += modelYear;
-            price /= condition / 10;
-            price += storageCapacity / 8;
+            price += ModelYear;
+            price /= Condition / 10;
+            price += StorageCapacity / 8;
             price *= 1.2;
             this.price = Math.Round(price, 2);
         }

@@ -8,27 +8,27 @@ namespace VehicleRentingApplication
 {
     internal class RentedVehicles
     {
-        public List<Car> rentedCars { get; set; }
-        public List<Truck> rentedTrucks { get; set; }
-        public List<Motorbike> rentedMotorbikes { get; set; }
-        public List<Vehicle> combinedVehicles { get; set; }
+        public List<Car> RentedCars { get; set; }
+        public List<Truck> RentedTrucks { get; set; }
+        public List<Motorbike> RentedMotorbikes { get; set; }
+        public List<Vehicle> CombinedVehicles { get; set; }
 
 
         public RentedVehicles()
         {
-            rentedCars = new List<Car>();
-            rentedTrucks = new List<Truck>();
-            rentedMotorbikes = new List<Motorbike>();
-            combinedVehicles = new List<Vehicle>();
+            RentedCars = new List<Car>();
+            RentedTrucks = new List<Truck>();
+            RentedMotorbikes = new List<Motorbike>();
+            CombinedVehicles = new List<Vehicle>();
         }
 
         public int GetVehicleCount(Customer customer)
         {
             int count = 0;
 
-            count += rentedCars.Count(c => c.rentedBy == customer.accessCode);
-            count += rentedTrucks.Count(c => c.rentedBy == customer.accessCode);
-            count += rentedMotorbikes.Count(c => c.rentedBy == customer.accessCode);
+            count += RentedCars.Count(c => c.RentedBy == customer.AccessCode);
+            count += RentedTrucks.Count(c => c.RentedBy == customer.AccessCode);
+            count += RentedMotorbikes.Count(c => c.RentedBy == customer.AccessCode);
 
             return count;
         }

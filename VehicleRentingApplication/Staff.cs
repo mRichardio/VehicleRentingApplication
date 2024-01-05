@@ -9,24 +9,25 @@ namespace VehicleRentingApplication
     internal class Staff : Account
     {
         private bool PastCustomer; // Here to check if a staff member used to be a customer or not.
-        public string accessCode { get; set; }
+        public string AccessCode { get; set; }
 
         public Staff() { }
 
-        public Staff(string fname, string lname, string accessCode)
+        public Staff(string fname, string lname)
         {
-            this.firstName = fname;
-            this.lastName = lname;
+            this.FirstName = fname;
+            this.LastName = lname;
             PastCustomer = false;
+            this.AccessCode = GenerateAccessCode();
         }
 
         // This copy constructor is being used to turn customers into staff members.
         // I decided to do this because if an existing customer was hired, then they could be easily converted.
         public Staff(Customer customer)
         {
-            this.firstName = customer.firstName; 
-            this.lastName = customer.lastName;
-            this.accessCode = GenerateAccessCode();
+            this.FirstName = customer.FirstName; 
+            this.LastName = customer.LastName;
+            this.AccessCode = GenerateAccessCode();
             PastCustomer = true; // Set this in here because this is the copy constructor used to turn a customer into staff.
         }
 
@@ -39,7 +40,7 @@ namespace VehicleRentingApplication
             Console.WriteLine("Last Name: ");
             string lName = Console.ReadLine();
             string accessCode = GenerateAccessCode();
-            Staff staff = new Staff(fName, lName, accessCode);
+            Staff staff = new Staff(fName, lName);
             staffList.Add(staff);
             Console.WriteLine("Successfully created new staff member.");
             Console.WriteLine("Press ENTER to continue..."); Console.ReadLine();

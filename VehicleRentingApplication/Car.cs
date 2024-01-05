@@ -11,7 +11,7 @@ namespace VehicleRentingApplication
     internal class Car : Vehicle
     {
 
-        public int doorCount { get; set; }
+        public int DoorCount { get; set; }
 
         //public override string type => "Car"; // Originally I had this method setting each type of vehicle, however,
                                                 // I didn't want the type of vehicle to be changable so instead I set
@@ -25,14 +25,14 @@ namespace VehicleRentingApplication
 
         public Car(int modelYear, bool isAutomatic, int doorCount, string manufacturer, string model, Colour paint, Registration reg, float condition)
         {
-            this.modelYear = modelYear;
-            this.manufacturer = manufacturer;
-            this.model = model;
-            this.doorCount = doorCount;
-            this.isAutomatic = isAutomatic;
-            this.paint = paint;
-            this.reg = reg;
-            this.condition = condition;
+            this.ModelYear = modelYear;
+            this.Manufacturer = manufacturer;
+            this.Model = model;
+            this.DoorCount = doorCount;
+            this.IsAutomatic = isAutomatic;
+            this.Paint = paint;
+            this.Reg = reg;
+            this.Condition = condition;
         }
 
         public override string GetVehicleType()

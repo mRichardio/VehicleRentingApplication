@@ -19,11 +19,11 @@ namespace VehicleRentingApplication
     {
         static void Main(string[] args)
         {
-            // ---[ Main Quests ]---
-            // Come up with a way to display the vehicles better when there are more than 10 [Optional]  
+            // ---[ Main Quests ]--- 
             // Work on validation [TODO - Test entire application] 
             // Polish up code and make useability better [TODO - Test entire application] 
             // Design/Make look nice [Optional]
+            // Come up with a way to display the vehicles better when there are more than 10 [Optional] 
             // Check if I have included some protected variables [TODO]
             // Properly document why I chose to do things in a certain way with comments and within video demonstration[TODO]
 
@@ -186,6 +186,7 @@ namespace VehicleRentingApplication
                             Console.WriteLine("Enter a staff code to view this menu: ");
                             string staffCode = Console.ReadLine().Trim();
                             bool isStaff = VerifyStaffCode(staffCode);
+                            //bool isStaff = true;
                             if (!isStaff) { Console.WriteLine("[ERROR] Invalid staff code\nPress ENTER to continue..."); Console.ReadLine(); break; }
                             else
                             {
@@ -236,7 +237,7 @@ namespace VehicleRentingApplication
                                         {
                                             foreach (var s in staff)
                                             {
-                                                Console.WriteLine($"\nName: {s.firstName} {s.lastName}\nAccount: {s.GetType()}\nAccess Code: {s.GetAccessCode()}\nPast Customer?: {s.PastCustomerCheck()}");
+                                                Console.WriteLine($"\nName: {s.FirstName} {s.LastName}\nAccount: {s.GetType()}\nAccess Code: {s.GetAccessCode()}\nPast Customer?: {s.PastCustomerCheck()}");
                                             }
                                         }
                                         else
@@ -254,7 +255,7 @@ namespace VehicleRentingApplication
                                         {
                                             foreach (var c in customers)
                                             {
-                                                Console.WriteLine($"\nName: {c.firstName} {c.lastName}\nAccount: {c.GetType()}\nAccess Code: {c.accessCode}");
+                                                Console.WriteLine($"\nName: {c.FirstName} {c.LastName}\nAccount: {c.GetType()}\nAccess Code: {c.AccessCode}");
                                             }
                                         }
                                         else
@@ -272,7 +273,7 @@ namespace VehicleRentingApplication
                                         {
                                             Console.WriteLine("Enter the customers access code: ");
                                             string customerCode = Console.ReadLine().Trim();
-                                            Customer customer = customers.FirstOrDefault(customer => customer.accessCode == customerCode);
+                                            Customer customer = customers.FirstOrDefault(customer => customer.AccessCode == customerCode);
                                             Staff newStaff = new Staff(customer);
                                             staff.Add(newStaff);
                                             customers.Remove(customer);
@@ -312,14 +313,14 @@ namespace VehicleRentingApplication
             }
 
             // Program Functions
-            void AddCar(Car car) { cars.Add($"{car.reg.reg}", car); }
-            void AddTruck(Truck truck) { trucks.Add($"{truck.reg.reg}", truck); }
-            void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"{motorbike.reg.reg}", motorbike); }
+            void AddCar(Car car) { cars.Add($"{car.Reg.Reg}", car); }
+            void AddTruck(Truck truck) { trucks.Add($"{truck.Reg.Reg}", truck); }
+            void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"{motorbike.Reg.Reg}", motorbike); }
 
             void DisplayProfile()
             {
-                Console.WriteLine($"---| Your Profile |---\nName: {currentUser.firstName} {currentUser.lastName}");
-                Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.accessCode}");
+                Console.WriteLine($"---| Your Profile |---\nName: {currentUser.FirstName} {currentUser.LastName}");
+                Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.AccessCode}");
                 Console.WriteLine($"\nRented Vehicles: [{rentedVehicles.GetVehicleCount(currentUser)}/{currentUser.GetRentLimit()}]\n\nPress ENTER to continue...");
             }
 
@@ -335,7 +336,7 @@ namespace VehicleRentingApplication
                     {
                         // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
                         vehicle.CalculatePrice();
-                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
                     }
                 }
                 else { Console.WriteLine("No vehicles available to rent."); }
@@ -344,16 +345,16 @@ namespace VehicleRentingApplication
             void DisplayedRentedVehicles()
             {
                 Console.WriteLine("---| Currently Rented Vehicles |---");
-                foreach (var vehicle in rentedVehicles.combinedVehicles)
+                foreach (var vehicle in rentedVehicles.CombinedVehicles)
                 {
                     Vehicle userVehicle = vehicle;
-                    if (userVehicle.rentedBy == currentUser.accessCode)
+                    if (userVehicle.RentedBy == currentUser.AccessCode)
                     {
-                        Console.WriteLine($"Type: {userVehicle.GetVehicleType()}\nManufacturer: {userVehicle.manufacturer}\nModel: {userVehicle.model}\nYear: {userVehicle.modelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
+                        Console.WriteLine($"Type: {userVehicle.GetVehicleType()}\nManufacturer: {userVehicle.Manufacturer}\nModel: {userVehicle.Model}\nYear: {userVehicle.ModelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
                     }
                 }
                 // Check if there are no vehicles to display to the user
-                if (!rentedVehicles.combinedVehicles.Any(vehicle => vehicle.rentedBy == currentUser.accessCode))
+                if (!rentedVehicles.CombinedVehicles.Any(vehicle => vehicle.RentedBy == currentUser.AccessCode))
                 {
                     Console.WriteLine("\nYou have no vehicles to display.\n");
                 }
@@ -372,7 +373,7 @@ namespace VehicleRentingApplication
 
             bool VerifyIdentity(string code)
             {
-                Customer selectedCustomer = customers.FirstOrDefault(c => c.accessCode == code);
+                Customer selectedCustomer = customers.FirstOrDefault(c => c.AccessCode == code);
                 if (selectedCustomer != null)
                 {
                     currentUser = selectedCustomer;
@@ -383,7 +384,7 @@ namespace VehicleRentingApplication
 
             bool VerifyStaffCode(string code)
             {
-                Staff selectedStaff = staff.FirstOrDefault(s => s.GetAccessCode() == code);
+                Staff selectedStaff = staff.FirstOrDefault(s => s.AccessCode == code);
                 if (selectedStaff != null) { return true; }
                 else { return false; }
             }
@@ -398,9 +399,9 @@ namespace VehicleRentingApplication
                     Vehicle vehicle = selectedVehicle.Value;
 
                     return $"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\n" +
-                                      $"Year: {vehicle.modelYear}\n" +
-                                      $"Manufacturer: {vehicle.manufacturer}\n" +
-                                      $"Model: {vehicle.model}\n";
+                                      $"Year: {vehicle.ModelYear}\n" +
+                                      $"Manufacturer: {vehicle.Manufacturer}\n" +
+                                      $"Model: {vehicle.Model}\n";
                 }
                 else
                 {
@@ -482,9 +483,9 @@ namespace VehicleRentingApplication
                 {
                     case "car":
                     case "c":
-                        if (rentedVehicles.rentedCars.Any(car => car.reg.reg == regPlate))
+                        if (rentedVehicles.RentedCars.Any(car => car.Reg.Reg == regPlate))
                         {
-                            Car car = rentedVehicles.rentedCars.FirstOrDefault(car => car.reg.reg == regPlate);
+                            Car car = rentedVehicles.RentedCars.FirstOrDefault(car => car.Reg.Reg == regPlate);
                             currentUser.ReturnCar(regPlate, rentedVehicles);
                             AddCar(car);
                             WriteVehiclesToFiles();
@@ -495,9 +496,9 @@ namespace VehicleRentingApplication
 
                     case "truck":
                     case "t":
-                        if (rentedVehicles.rentedTrucks.Any(truck => truck.reg.reg == regPlate))
+                        if (rentedVehicles.RentedTrucks.Any(truck => truck.Reg.Reg == regPlate))
                         {
-                            Truck truck = rentedVehicles.rentedTrucks.FirstOrDefault(truck => truck.reg.reg == regPlate);
+                            Truck truck = rentedVehicles.RentedTrucks.FirstOrDefault(truck => truck.Reg.Reg == regPlate);
                             currentUser.ReturnTruck(regPlate, rentedVehicles);
                             AddTruck(truck);
                             WriteVehiclesToFiles();
@@ -508,9 +509,9 @@ namespace VehicleRentingApplication
 
                     case "motorbike":
                     case "m":
-                        if (rentedVehicles.rentedMotorbikes.Any(motorbike => motorbike.reg.reg == regPlate))
+                        if (rentedVehicles.RentedMotorbikes.Any(motorbike => motorbike.Reg.Reg == regPlate))
                         {
-                            Motorbike motorbike = rentedVehicles.rentedMotorbikes.FirstOrDefault(motorbike => motorbike.reg.reg == regPlate);
+                            Motorbike motorbike = rentedVehicles.RentedMotorbikes.FirstOrDefault(motorbike => motorbike.Reg.Reg == regPlate);
                             currentUser.ReturnMotorbike(regPlate, rentedVehicles);
                             AddMotorbike(motorbike);
                             WriteVehiclesToFiles();
@@ -638,14 +639,14 @@ namespace VehicleRentingApplication
                         string inputManufacturer = Console.ReadLine().Trim().ToLower();
 
                         filteredVehicles = vehicles
-                                .Where(vehicle => vehicle.Value.manufacturer.ToLower() == inputManufacturer)
+                                .Where(vehicle => vehicle.Value.Manufacturer.ToLower() == inputManufacturer)
                                 .Select(vehicle => vehicle.Value);
 
                         if (filteredVehicles.Any())
                         {
                             foreach (var vehicle in filteredVehicles)
                             {
-                                Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                                Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\n");
                             }
                         }
                         else { Console.WriteLine("No vehicles found"); }
@@ -660,7 +661,7 @@ namespace VehicleRentingApplication
 
                         foreach (var vehicle in FindVehiclesByYear(inputYear))
                         {
-                            Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.modelYear}\nManufacturer: {vehicle.manufacturer}\nModel: {vehicle.model}\n");
+                            Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\n");
                         }
 
                         Console.WriteLine("\nPress ENTER to continue...");
@@ -673,7 +674,7 @@ namespace VehicleRentingApplication
                         if (bestValue != null)
                         {
                             Console.WriteLine($"Best value vehicle based on condition and model year criteria:");
-                            Console.WriteLine($"- {bestValue.manufacturer} {bestValue.model} ({bestValue.modelYear})\nRegistration: {bestValue.reg.reg}");
+                            Console.WriteLine($"- {bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})\nRegistration: {bestValue.Reg.Reg}");
                         }
                         else { Console.WriteLine($"No vehicles to filter."); }
                         Console.WriteLine("Press ENTER to continue...");
@@ -693,7 +694,7 @@ namespace VehicleRentingApplication
                         year = year.Replace("before", "").Trim();
                         int targetYear = Convert.ToInt32(year);
                         foundVehicles = vehicles
-                            .Where(v => v.Value.modelYear < targetYear)
+                            .Where(v => v.Value.ModelYear < targetYear)
                             .Select(v => v.Value)
                             .ToList();
                     }
@@ -702,7 +703,7 @@ namespace VehicleRentingApplication
                         year = year.Replace("after", "").Trim();
                         int targetYear = Convert.ToInt32(year);
                         foundVehicles = vehicles
-                            .Where(v => v.Value.modelYear > targetYear)
+                            .Where(v => v.Value.ModelYear > targetYear)
                             .Select(v => v.Value)
                             .ToList();
                     }
@@ -710,7 +711,7 @@ namespace VehicleRentingApplication
                     {
                         int targetYear = Convert.ToInt32(year);
                         foundVehicles = vehicles
-                            .Where(v => v.Value.modelYear == targetYear)
+                            .Where(v => v.Value.ModelYear == targetYear)
                             .Select(v => v.Value)
                             .ToList();
                     }
@@ -790,7 +791,7 @@ namespace VehicleRentingApplication
 
                     foreach (var vehicle in rentedVehicles)
                     {
-                        if (!rentedList.Any(v => v.reg.reg == vehicle.reg.reg))
+                        if (!rentedList.Any(v => v.Reg.Reg == vehicle.Reg.Reg))
                         {
                             rentedList.Add(vehicle);
                         }
@@ -815,11 +816,11 @@ namespace VehicleRentingApplication
                 switch (filterType.ToLower())
                 {
                     case "oldest":
-                        return vehicles.Values.OrderBy(v => v.modelYear).ToList();
+                        return vehicles.Values.OrderBy(v => v.ModelYear).ToList();
                     case "newest":
-                        return vehicles.Values.OrderByDescending(v => v.modelYear).ToList();
+                        return vehicles.Values.OrderByDescending(v => v.ModelYear).ToList();
                     case "bestcondition":
-                        return vehicles.Values.OrderByDescending(v => v.condition).ToList();
+                        return vehicles.Values.OrderByDescending(v => v.Condition).ToList();
                     default:
                         Console.WriteLine("Invalid filter type.");
                         return vehicles.Values.ToList();
@@ -844,7 +845,7 @@ namespace VehicleRentingApplication
                                 if (bestValue != null)
                                 {
                                     Console.WriteLine($"Best value vehicle based on condition and model year criteria:");
-                                    Console.WriteLine($"- {bestValue.manufacturer} {bestValue.model} ({bestValue.modelYear})");
+                                    Console.WriteLine($"- {bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})");
                                 }
                                 else { Console.WriteLine($"No vehicles to filter."); }
                             }
@@ -858,7 +859,7 @@ namespace VehicleRentingApplication
 
                                     foreach (var filteredVehicle in filteredVehicles)
                                     {
-                                        Console.WriteLine($"- {filteredVehicle.manufacturer} {filteredVehicle.model} ({filteredVehicle.modelYear})");
+                                        Console.WriteLine($"- {filteredVehicle.Manufacturer} {filteredVehicle.Model} ({filteredVehicle.ModelYear})");
                                     }
                                 }
                                 else { Console.WriteLine($"No vehicles to filter."); }
@@ -878,7 +879,7 @@ namespace VehicleRentingApplication
                 var bestVehicle = vehicles.Values
                     .OrderByDescending(v =>
                     {
-                        var weight = CalculateWeightedValue(v.condition, v.modelYear);
+                        var weight = CalculateWeightedValue(v.Condition, v.ModelYear);
                         return weight;
                     })
                     .FirstOrDefault();
@@ -923,19 +924,19 @@ namespace VehicleRentingApplication
             void UpdateVehicleLists()
             {
                 vehicles.Clear();
-                rentedVehicles.combinedVehicles.Clear();
+                rentedVehicles.CombinedVehicles.Clear();
 
                 // Read Vehicles from file.
                 ReadVehicleJSON("cars.json", cars, "cars");
                 ReadVehicleJSON("trucks.json", trucks, "trucks");
                 ReadVehicleJSON("motorbikes.json", motorbikes, "motorbikes");
-                ReadRentedVehicleJSON("rentedCars.json", rentedVehicles.rentedCars, "cars");
-                ReadRentedVehicleJSON("rentedTrucks.json", rentedVehicles.rentedTrucks, "trucks");
-                ReadRentedVehicleJSON("rentedMotorbikes.json", rentedVehicles.rentedMotorbikes, "motorbikes");
+                ReadRentedVehicleJSON("rentedCars.json", rentedVehicles.RentedCars, "cars");
+                ReadRentedVehicleJSON("rentedTrucks.json", rentedVehicles.RentedTrucks, "trucks");
+                ReadRentedVehicleJSON("rentedMotorbikes.json", rentedVehicles.RentedMotorbikes, "motorbikes");
 
                 // Combines all vehicles into one dictionary.
                 AddVehiclesToDictionary(vehicles, cars, trucks, motorbikes);
-                AddRentedVehiclesToList(rentedVehicles.combinedVehicles, rentedVehicles.rentedCars, rentedVehicles.rentedTrucks, rentedVehicles.rentedMotorbikes);
+                AddRentedVehiclesToList(rentedVehicles.CombinedVehicles, rentedVehicles.RentedCars, rentedVehicles.RentedTrucks, rentedVehicles.RentedMotorbikes);
             }
 
             void UpdateAccounts()
@@ -951,9 +952,9 @@ namespace VehicleRentingApplication
                 WriteVehicleJSON(cars, "cars.json");
                 WriteVehicleJSON(trucks, "trucks.json");
                 WriteVehicleJSON(motorbikes, "motorbikes.json");
-                WriteRentedVehicleJSON(rentedVehicles.rentedCars, "rentedCars.json");
-                WriteRentedVehicleJSON(rentedVehicles.rentedTrucks, "rentedTrucks.json");
-                WriteRentedVehicleJSON(rentedVehicles.rentedMotorbikes, "rentedMotorbikes.json");
+                WriteRentedVehicleJSON(rentedVehicles.RentedCars, "rentedCars.json");
+                WriteRentedVehicleJSON(rentedVehicles.RentedTrucks, "rentedTrucks.json");
+                WriteRentedVehicleJSON(rentedVehicles.RentedMotorbikes, "rentedMotorbikes.json");
             }
 
             void WriteAccountsToFiles()

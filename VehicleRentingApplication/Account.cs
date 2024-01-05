@@ -10,9 +10,9 @@ namespace VehicleRentingApplication
 {
     internal abstract class Account : IUser, IAccessCode
     {
-        protected string accessCode { get; set; } // This is protected so no other classes can access it other than customer and staff, the deriving classes
-        public string firstName { get; set; }
-        public string lastName { get; set; }
+        protected string AccessCode { get; set; } // This is protected so no other classes can access it other than customer and staff, the deriving classes
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
 
         public Account()
         {
@@ -37,11 +37,11 @@ namespace VehicleRentingApplication
             return codeBuilder.ToString();
         }
 
-        public string GetAccessCode() {  return accessCode; }
+        public string GetAccessCode() {  return AccessCode; }
 
         public void DisplayDetails()
         {
-            Console.WriteLine($"Account Type: {GetType()}\nFirstname: {firstName}\nLastname: {lastName}\n\nYour Code: {accessCode}");
+            Console.WriteLine($"Account Type: {GetType()}\nFirstname: {FirstName}\nLastname: {LastName}\n\nYour Code: {AccessCode}");
         }
     }
 }

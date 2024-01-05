@@ -8,6 +8,7 @@ namespace VehicleRentingApplication
 {
     internal class Menu
     {
+        // Used an array here as there was no need for a list, the capacity is pre-set and wont be searching through it.
         private string[] options;
 
         public Menu(string[] options)
