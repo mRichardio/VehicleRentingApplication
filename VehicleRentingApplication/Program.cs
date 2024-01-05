@@ -186,116 +186,126 @@ namespace VehicleRentingApplication
                             Console.WriteLine("Enter a staff code to view this menu: ");
                             string staffCode = Console.ReadLine().Trim();
                             bool isStaff = VerifyStaffCode(staffCode);
-                            //bool isStaff = true;
                             if (!isStaff) { Console.WriteLine("[ERROR] Invalid staff code\nPress ENTER to continue..."); Console.ReadLine(); break; }
                             else
                             {
-                                Console.ForegroundColor = ConsoleColor.Blue;
-                                Console.WriteLine("---| Staff Menu |---");
-                                Console.ResetColor();
-
-                                // Displays the staff menu
-                                Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers", "Add Staff", "[Back]" });
-                                staffMenu.DisplayMenu();
-                                int staffOption = 0;
-                                try { staffOption = int.Parse(Console.ReadLine()); }// Need a try catch here // Also need to go back                            }
-                                catch (Exception)
+                                while (isStaff == true)
                                 {
-                                    Console.WriteLine("[ERROR] Invalid input. Make sure to choose one of the the options from the menu. (e.g 1,2)\nPress ENTER to continue...");
-                                    Console.ReadLine();
-                                }
+                                    Console.ForegroundColor = ConsoleColor.Blue;
+                                    Console.WriteLine("---| Staff Menu |---");
+                                    Console.ResetColor();
 
-                                switch (staffOption)
-                                {
-                                    case 1:
+                                    // Displays the staff menu
+                                    Menu staffMenu = new Menu(new string[] { "Add Vehicle", "Remove Vehicle", "View Staff", "View Customers", "Add Staff", "[Back]" });
+                                    staffMenu.DisplayMenu();
+                                    int staffOption = 0;
+                                    try { staffOption = int.Parse(Console.ReadLine()); }// Need a try catch here // Also need to go back                            }
+                                    catch (Exception)
+                                    {
+                                        Console.WriteLine("[ERROR] Invalid input. Make sure to choose one of the the options from the menu. (e.g 1,2)\nPress ENTER to continue...");
+                                        Console.ReadLine();
                                         Console.Clear();
-                                        Console.WriteLine("Enter vehicle type: \n[ Car | Truck | Motorbike ]");
-                                        string vehicleType = Console.ReadLine().ToLower().Trim();
-                                        HandleVehicleInput(vehicleType);
-                                        WriteVehiclesToFiles();
-                                        break;
+                                        continue;
+                                    }
 
-                                    case 2:
-                                        Console.Clear();
-                                        Console.WriteLine("You entered 2. Remove Vehicle");
-                                        Console.WriteLine("Enter vehicle ID: ");
-                                        string inputID = Console.ReadLine().ToUpper().Trim();
-                                        if (vehicles.ContainsKey(inputID))
-                                        {
-                                            removeVehicleByID(inputID);
+                                    switch (staffOption)
+                                    {
+                                        case 1:
+                                            Console.Clear();
+                                            Console.WriteLine("Enter vehicle type: \n[ Car | Truck | Motorbike ]");
+                                            string vehicleType = Console.ReadLine().ToLower().Trim();
+                                            HandleVehicleInput(vehicleType);
                                             WriteVehiclesToFiles();
-                                            Console.WriteLine($"Vehicle: {inputID}, has been removed from the system.\nPress ENTER to continue...");
-                                            Console.ReadLine();
-                                        }
-                                        else { Console.WriteLine($"Vehicle with ID: {inputID} not found.\nPress ENTER to continue..."); Console.ReadLine(); }
-                                        break;
+                                            Console.Clear();
+                                            break;
 
-                                    case 3:
-                                        Console.Clear();
-                                        Console.WriteLine("---| Staff List |---");
-                                        if (staff != null)
-                                        {
-                                            foreach (var s in staff)
+                                        case 2:
+                                            Console.Clear();
+                                            Console.WriteLine("You entered 2. Remove Vehicle");
+                                            Console.WriteLine("Enter vehicle ID: ");
+                                            string inputID = Console.ReadLine().ToUpper().Trim();
+                                            if (vehicles.ContainsKey(inputID))
                                             {
-                                                Console.WriteLine($"\nName: {s.FirstName} {s.LastName}\nAccount: {s.GetType()}\nAccess Code: {s.GetAccessCode()}\nPast Customer?: {s.PastCustomerCheck()}");
+                                                removeVehicleByID(inputID);
+                                                WriteVehiclesToFiles();
+                                                Console.WriteLine($"Vehicle: {inputID}, has been removed from the system.\nPress ENTER to continue...");
+                                                Console.ReadLine();
                                             }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"\nStaff list is empty...\n");
-                                        }
-                                        Console.WriteLine("Press ENTER to continue...");
-                                        Console.ReadLine();
-                                        break;
+                                            else { Console.WriteLine($"Vehicle with ID: {inputID} not found.\nPress ENTER to continue..."); Console.ReadLine(); }
+                                            Console.Clear();
+                                            break;
 
-                                    case 4:
-                                        Console.Clear();
-                                        Console.WriteLine("---| Customer List |---");
-                                        if (customers != null)
-                                        {
-                                            foreach (var c in customers)
+                                        case 3:
+                                            Console.Clear();
+                                            Console.WriteLine("---| Staff List |---");
+                                            if (staff != null)
                                             {
-                                                Console.WriteLine($"\nName: {c.FirstName} {c.LastName}\nAccount: {c.GetType()}\nAccess Code: {c.AccessCode}");
+                                                foreach (var s in staff)
+                                                {
+                                                    Console.WriteLine($"\nName: {s.FirstName} {s.LastName}\nAccount: {s.GetType()}\nAccess Code: {s.GetAccessCode()}\nPast Customer?: {s.PastCustomerCheck()}");
+                                                }
                                             }
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine($"\nCustomer list is empty...\n");
-                                        }
-                                        Console.WriteLine("\nPress ENTER to continue...");
-                                        Console.ReadLine();
-                                        break;
-
-                                    case 5:
-                                        Console.WriteLine("Is this person an existing customer?");
-                                        string choice = Console.ReadLine().Trim().ToLower();
-                                        if (choice == "y" || choice == "yes")
-                                        {
-                                            Console.WriteLine("Enter the customers access code: ");
-                                            string customerCode = Console.ReadLine().Trim();
-                                            Customer customer = customers.FirstOrDefault(customer => customer.AccessCode == customerCode);
-                                            Staff newStaff = new Staff(customer);
-                                            staff.Add(newStaff);
-                                            customers.Remove(customer);
-                                            Console.WriteLine("Successfully created new staff member!\nPress ENTER to continue...");
+                                            else
+                                            {
+                                                Console.WriteLine($"\nStaff list is empty...\n");
+                                            }
+                                            Console.WriteLine("Press ENTER to continue...");
                                             Console.ReadLine();
-                                            WriteAccountsToFiles();
-                                        }
-                                        else if (choice == "n" || choice == "no")
-                                        {
-                                            Staff newStaff = new();
-                                            newStaff.RegisterStaff(staff);
-                                            WriteAccountsToFiles();
-                                        }
-                                        else { Console.WriteLine($"Invalid choice: {choice} not found\nPress ENTER to continue..."); Console.ReadLine(); }
-                                        break;
-                                    case 6: // Back button in staff menu
-                                        break;
+                                            Console.Clear();
+                                            break;
 
-                                    default:
-                                        Console.Clear();
-                                        Console.WriteLine("Invalid input. Please enter a number between 1 and 6.");
-                                        break;
+                                        case 4:
+                                            Console.Clear();
+                                            Console.WriteLine("---| Customer List |---");
+                                            if (customers != null)
+                                            {
+                                                foreach (var c in customers)
+                                                {
+                                                    Console.WriteLine($"\nName: {c.FirstName} {c.LastName}\nAccount: {c.GetType()}\nAccess Code: {c.AccessCode}");
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Console.WriteLine($"\nCustomer list is empty...\n");
+                                            }
+                                            Console.WriteLine("\nPress ENTER to continue...");
+                                            Console.ReadLine();
+                                            Console.Clear();
+                                            break;
+
+                                        case 5:
+                                            Console.WriteLine("Is this person an existing customer?");
+                                            string choice = Console.ReadLine().Trim().ToLower();
+                                            if (choice == "y" || choice == "yes")
+                                            {
+                                                Console.WriteLine("Enter the customers access code: ");
+                                                string customerCode = Console.ReadLine().Trim();
+                                                Customer customer = customers.FirstOrDefault(customer => customer.AccessCode == customerCode);
+                                                Staff newStaff = new Staff(customer);
+                                                staff.Add(newStaff);
+                                                customers.Remove(customer);
+                                                Console.WriteLine("Successfully created new staff member!\nPress ENTER to continue...");
+                                                Console.ReadLine();
+                                                WriteAccountsToFiles();
+                                            }
+                                            else if (choice == "n" || choice == "no")
+                                            {
+                                                Staff newStaff = new();
+                                                newStaff.RegisterStaff(staff);
+                                                WriteAccountsToFiles();
+                                            }
+                                            else { Console.WriteLine($"Invalid choice: {choice} not found\nPress ENTER to continue..."); Console.ReadLine(); }
+                                            Console.Clear();
+                                            break;
+                                        case 6: // Back button in staff menu
+                                            isStaff = false; // Exits staff loop
+                                            break;
+
+                                        default:
+                                            Console.Clear();
+                                            Console.WriteLine("Invalid input. Please enter a number between 1 and 6.");
+                                            break;
+                                    }
                                 }
                                 break;
                             }
