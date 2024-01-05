@@ -24,8 +24,8 @@ namespace VehicleRentingApplication
             // Polish up code and make useability better [TODO - Test entire application] 
             // Design/Make look nice [Optional]
             // Come up with a way to display the vehicles better when there are more than 10 [Optional] 
-            // Check if I have included some protected variables [TODO]
             // Properly document why I chose to do things in a certain way with comments and within video demonstration[TODO]
+            // Go through each topic, scan through lectures/slides and ensure all topics are properly covered [FINAL]
 
             // ---[ Topic Demonstration ]---
 
@@ -71,7 +71,7 @@ namespace VehicleRentingApplication
                     while (currentUser == null)
                     {
                         Console.Clear();
-                        Console.WriteLine("Do you have an account?: ");
+                        Console.WriteLine("Do you have an account? (Y/N): ");
                         string userInput = Console.ReadLine().ToLower().Trim();
                         if (userInput == "y" || userInput == "yes")
                         {
@@ -130,18 +130,18 @@ namespace VehicleRentingApplication
                             string rentVehicleType = "";
                             try { rentVehicleType = Console.ReadLine().ToLower().Trim(); }
                             catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
-                            if (rentVehicleType != "Car" || rentVehicleType != "Truck" || rentVehicleType != "Motorbike")
-                            {
-                                Console.WriteLine("Invalid vehicle type, must be: 'Car', 'Truck' or 'Motorbike'\nPress ENTER to continue...");
-                                Console.ReadLine();
-                                break;
-                            }
-                            else 
+                            if (rentVehicleType == "car" || rentVehicleType == "c" || rentVehicleType == "truck" || rentVehicleType == "t" || rentVehicleType == "motorbike" || rentVehicleType == "m")
                             {
                                 Console.WriteLine("Enter Vehicle Registration Number: ");
                                 string regPlateRent = Console.ReadLine().ToUpper().Trim();
                                 RentVehicles(rentVehicleType, regPlateRent);
                                 Console.WriteLine("Press ENTER to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
+                            else 
+                            {
+                                Console.WriteLine("Invalid vehicle type, must be: 'Car', 'Truck' or 'Motorbike'\nPress ENTER to continue...");
                                 Console.ReadLine();
                                 break;
                             }
@@ -691,7 +691,7 @@ namespace VehicleRentingApplication
                         Console.ReadLine();
                     }
                 }
-                else { Console.WriteLine($"Choice: {choice} not found."); }
+                //else { Console.WriteLine($"Choice: {choice} not found."); }
             }
 
             List<Vehicle> FindVehiclesByYear(string year)
