@@ -20,10 +20,11 @@ namespace VehicleRentingApplication
         static void Main(string[] args)
         {
             // ---[ Main Quests ]--- 
+
+            // Fix return vehicle
             // Work on validation [TODO - Test entire application] 
             // Polish up code and make useability better [TODO - Test entire application] 
             // Design/Make look nice [Optional]
-            // Come up with a way to display the vehicles better when there are more than 10 [Optional] 
             // Properly document why I chose to do things in a certain way with comments and within video demonstration[TODO]
             // Go through each topic, scan through lectures/slides and ensure all topics are properly covered [FINAL]
 
@@ -118,7 +119,7 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
-                            Console.WriteLine("Enter vehicle type you are looking for: ");
+                            Console.WriteLine("Types: [All] [Car] [Truck] [Motorbike]\nEnter vehicle type you are looking for: ");
                             string vehType = Console.ReadLine().Trim().ToLower();
                             if (vehType != null && vehType == "car" || vehType == "truck" || vehType == "motorbike" || vehType == "all")
                             {
@@ -158,18 +159,18 @@ namespace VehicleRentingApplication
                             string returnVehicleType = "";
                             try { returnVehicleType = Console.ReadLine().ToLower().Trim(); }
                             catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
-                            if (returnVehicleType != "Car" || returnVehicleType != "Truck" || returnVehicleType != "Motorbike")
-                            {
-                                Console.WriteLine("Invalid vehicle type, must be: 'Car', 'Truck' or 'Motorbike'\nPress ENTER to continue...");
-                                Console.ReadLine();
-                                break;
-                            }
-                            else
+                            if (returnVehicleType == "car" || returnVehicleType == "truck" || returnVehicleType == "motorbike")
                             {
                                 Console.WriteLine("Enter Vehicle Registration Number: ");
                                 string regPlateReturn = Console.ReadLine().ToUpper().Trim();
                                 ReturnVehicles(returnVehicleType, regPlateReturn);
                                 Console.WriteLine("Press ENTER to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid vehicle type, must be: 'Car', 'Truck' or 'Motorbike'\nPress ENTER to continue...");
                                 Console.ReadLine();
                                 break;
                             }
