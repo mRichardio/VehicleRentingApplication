@@ -118,8 +118,14 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
-                            DisplayAvailableVehicles();
-                            FilterAvailableVehicles(); // Filter Vehicles List
+                            Console.WriteLine("Enter vehicle type you are looking for: ");
+                            string vehType = Console.ReadLine().Trim().ToLower();
+                            if (vehType != null && vehType == "car" || vehType == "truck" || vehType == "motorbike" || vehType == "all")
+                            {
+                                DisplayAvailableVehicles(vehType);
+                                FilterAvailableVehicles();
+                            }
+                            else { Console.WriteLine("Invalid Vehicle Type: [Try, 'car', 'truck', 'motorbike', 'all']"); }
                             Console.WriteLine("Press ENTER to continue...");
                             Console.ReadLine();
                             break;
@@ -334,20 +340,32 @@ namespace VehicleRentingApplication
                 Console.WriteLine($"\nRented Vehicles: [{rentedVehicles.GetVehicleCount(currentUser)}/{currentUser.GetRentLimit()}]\n\nPress ENTER to continue...");
             }
 
-            void DisplayAvailableVehicles()
+            void DisplayAvailableVehicles(string type)
             {
                 Console.WriteLine("---| Available Vehicles |---\n");
 
                 if (vehicles != null && vehicles.Count > 0)
                 {
                     UpdateVehicleLists();
-                    Console.WriteLine($"{vehicles.Count} Results found\n");
+                    int counter = 0;
                     foreach (var (key, vehicle) in vehicles)
                     {
-                        // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
-                        vehicle.CalculatePrice();
-                        Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                        string vehicleType = vehicle.GetVehicleType().ToLower();
+                        if (vehicleType == type)
+                        {
+                            counter++;
+                            // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
+                            vehicle.CalculatePrice();
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                        }
+                        else if (type == "all")
+                        {
+                            counter++;
+                            vehicle.CalculatePrice();
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                        }
                     }
+                    Console.WriteLine($"{counter} Results found\n");
                 }
                 else { Console.WriteLine("No vehicles available to rent."); }
             }
@@ -560,8 +578,17 @@ namespace VehicleRentingApplication
                     if (args[0] == "available")
                     {
                         Console.Clear();
-                        DisplayAvailableVehicles();
+                        if (args[1] != null) 
+                        {
+                            args[1].ToLower();
 
+                            if (args[1] == "all" || args[1] == "car" || args[1] == "truck" || args[1] == "motorbike")
+                            {
+                                DisplayAvailableVehicles(args[1]);
+                            }
+                            else { Console.WriteLine("Invalid Vehicle Type [Available types: 'car' 'truck', 'motorbike', 'all']"); };
+                        }
+                        else { Console.WriteLine("Invalid Command Usage [e.g 'available car']\n[Available types: 'car' 'truck', 'motorbike', 'all']"); }
                     }
                     else if (args[0] == "rented")
                     {
