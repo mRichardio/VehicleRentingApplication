@@ -897,6 +897,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // This function was included to deal with the filtering in command line
             void RunFilter()
             {
                 if (args.Length >= 2)
@@ -948,7 +949,8 @@ namespace VehicleRentingApplication
             // Multi Line Algorithm
             Vehicle FindBestValue(Dictionary<string, Vehicle> vehicles)
             {
-                // This isn't the most performant way of handling this, however I did it this way as it was the simplest way I could think of to run this function on each vehicle
+                // This isn't the most performant way of handling this, however I did it this way
+                // as it was the simplest way I could think of to run this function on each vehicle
                 var bestVehicle = vehicles.Values
                     .OrderByDescending(v =>
                     {
@@ -960,18 +962,23 @@ namespace VehicleRentingApplication
                 return bestVehicle;
             }
 
+            // Writes staff hash to staff.json
             void WriteStaffJSON(HashSet<Staff> hash, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(fileName, jsonContent);
             }
 
+            // Writes customer hash to customer.json
             void WriteCustomerJSON(HashSet<Customer> hash, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(hash, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(fileName, jsonContent);
             }
 
+            // Multipurpose vehicle writing function can write all the different types of vehicles
+            // hence why I have made use of the <T> type. This function is modular so will allow
+            // to write different dictionaries to different json files.
             void WriteVehicleJSON<T>(Dictionary<string, T> dictionary, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(dictionary, new JsonSerializerOptions { WriteIndented = true });
@@ -994,6 +1001,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // This function is used to read from json files and update lists. I need this to ensure that the program updates during runtime.
             void UpdateVehicleLists()
             {
                 vehicles.Clear();
@@ -1012,6 +1020,7 @@ namespace VehicleRentingApplication
                 AddRentedVehiclesToList(rentedVehicles.CombinedVehicles, rentedVehicles.RentedCars, rentedVehicles.RentedTrucks, rentedVehicles.RentedMotorbikes);
             }
 
+            // Reads json data to update all account details.
             void UpdateAccounts()
             {
                 // Read Accounts from file.
@@ -1019,6 +1028,7 @@ namespace VehicleRentingApplication
                 ReadStaffJSON("staff.json", staff);
             }
 
+            // Writes all vehiciles to files. I needed this function to allow for saving after making a change during runtime. e.g creating vehicles
             void WriteVehiclesToFiles()
             {
                 // Write Vehicles to file.
@@ -1030,6 +1040,7 @@ namespace VehicleRentingApplication
                 WriteRentedVehicleJSON(rentedVehicles.RentedMotorbikes, "rentedMotorbikes.json");
             }
 
+            // Writes all the account data to files. Needed for if an account is registered during runtime.
             void WriteAccountsToFiles()
             {
                 // Write Accounts to file.
@@ -1046,8 +1057,12 @@ namespace VehicleRentingApplication
                 motorbikes.ToList().ForEach(motorbike => vehicles[motorbike.Key] = motorbike.Value);
             }
 
+            // This function is used to combine all of the rentedvehicles lists together into one which can be used during runtime.
+            // I did this in this way as it was hard to serialize and store objects with different types into json files.
+            // So instead I created json files for each type of vehicle.
             void AddRentedVehiclesToList(List<Vehicle> rentedVehicles, List<Car> cars, List<Truck> trucks, List<Motorbike> motorbikes)
             {
+                // I have made use of the AddRange method to concatenate all of the lists into one.
                 rentedVehicles.AddRange(cars);
                 rentedVehicles.AddRange(trucks);
                 rentedVehicles.AddRange(motorbikes);
