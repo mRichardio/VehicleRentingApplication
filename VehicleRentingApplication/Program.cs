@@ -13,6 +13,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Net.Http.Json;
 using System.Xml;
 using System.Diagnostics.Metrics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace VehicleRentingApplication
 {
@@ -361,10 +362,13 @@ namespace VehicleRentingApplication
             }
 
             // Program Functions
+
+            // Used for adding vehicles into the system (staff)
             void AddCar(Car car) { cars.Add($"{car.Reg.Reg}", car); }
             void AddTruck(Truck truck) { trucks.Add($"{truck.Reg.Reg}", truck); }
             void AddMotorbike(Motorbike motorbike) { motorbikes.Add($"{motorbike.Reg.Reg}", motorbike); }
 
+            // Displays the currently logged in customers profile.
             void DisplayProfile()
             {
                 Console.ForegroundColor = ConsoleColor.Blue;
@@ -375,6 +379,7 @@ namespace VehicleRentingApplication
                 Console.WriteLine($"\nRented Vehicles: [{rentedVehicles.GetVehicleCount(currentUser)}/{currentUser.GetRentLimit()}]\n\nPress ENTER to continue...");
             }
 
+            // This function will display all of the currently available vehicles to rent in the system.
             void DisplayAvailableVehicles(string type)
             {
                 Console.ForegroundColor = ConsoleColor.Blue;
@@ -407,6 +412,7 @@ namespace VehicleRentingApplication
                 else { Console.WriteLine("No vehicles available to rent."); }
             }
 
+            // This function will display the currently rented vehicles of the currently logged in customer.
             void DisplayedRentedVehicles()
             {
                 Console.ForegroundColor = ConsoleColor.Blue;
@@ -427,6 +433,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // This function is used to register the name of customers, and makes use of a tuple to fit everything into one function.
             (string FirstName, string LastName) RegisterName() // Uses a tuple to return to strings. Easier than creating two functions.
             {
                 Console.WriteLine("Enter your firstname: ");
@@ -438,6 +445,7 @@ namespace VehicleRentingApplication
                 return (fname, lname);
             }
 
+            // Used to verify if a customer code is found in the system or not.
             bool VerifyIdentity(string code)
             {
                 Customer selectedCustomer = customers.FirstOrDefault(c => c.AccessCode == code);
@@ -449,6 +457,7 @@ namespace VehicleRentingApplication
                 else { return false; }
             }
 
+            // Used to verify if a staff code is found in the system or not.
             bool VerifyStaffCode(string code)
             {
                 Staff selectedStaff = staff.FirstOrDefault(s => s.AccessCode == code);
@@ -456,6 +465,7 @@ namespace VehicleRentingApplication
                 else { return false; }
             }
 
+            // Used for looking throw the vehicles dictionary to find a specific vehicle by reg
             string FindVehicleByID(string vehID)
             {
                 var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
@@ -476,6 +486,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // Handles remove vehicles from the system. (This is a staff function)
             void removeVehicleByID(string vehID)
             {
                 if (vehID.StartsWith("C"))
@@ -495,6 +506,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // This function will handling the renting of different vehicle types
             void RentVehicles(string rentVehicleType, string rentID)
             {
                 switch (rentVehicleType)
@@ -544,6 +556,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // This function is for handling the returning of different vehicle types
             void ReturnVehicles(string returnVehicleType, string regPlate)
             {
                 switch (returnVehicleType.ToLower())
@@ -593,6 +606,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // This function will be ran if the program is executed through commandline. All of the CL functionality will be handled here
             void RunCommandLine()
             {
                 if (args.Contains("-v"))
@@ -678,6 +692,7 @@ namespace VehicleRentingApplication
                
             }
 
+            // This function is similar to the one below however will handle searching, and other filter methods such as manufacturer
             void FilterAvailableVehicles()
             {
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -690,7 +705,7 @@ namespace VehicleRentingApplication
                     Console.WriteLine("Enter Vehicle Registration Number:");
                     string vehID = Console.ReadLine().Trim().ToUpper();
 
-                    var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID);
+                    var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID); // Searched the vehicles list to find a vehicle by reg
 
                     Console.WriteLine(FindVehicleByID(vehID));
 
@@ -755,42 +770,80 @@ namespace VehicleRentingApplication
                         Console.ReadLine();
                     }
                 }
-                //else { Console.WriteLine($"Choice: {choice} not found."); }
             }
 
+            // This function has been included to allow the user to filter the available vehicle list by year.
             List<Vehicle> FindVehiclesByYear(string year)
             {
                 List<Vehicle> foundVehicles = new();
                 if (year.Contains("before"))
                 {
-                    // I use a .replace here as I am also using this function in my commandline
-                    //year = year.Replace("before", "").Trim();
-                    int targetYear = Convert.ToInt32(year);
-                    foundVehicles = vehicles
-                        .Where(v => v.Value.ModelYear < targetYear)
-                        .Select(v => v.Value)
-                        .ToList();
+                    // The below replace methods have been included as the string will = before{year} so if it contains before or after
+                    // the program will remove it allowing for the program to convert the integer properly.
+                    year = year.Replace("before", "").Trim();
+                    int targetYear = 0;
+                    try
+                    {
+                        targetYear = Convert.ToInt32(year); // The below try catches have been included to validate an exception
+                    }                                       // that I was getting when inputting invalid commands
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("[ERROR] - Invalid command format: (try 'before 2005' or 'before 2020')");
+                    }
+                    if (targetYear > 0)
+                    {
+                        // All of the algorithms in this function have been included to search and filter through the vehicles list to find
+                        // objects that are meeting the users search criteria.
+                        foundVehicles = vehicles
+                            .Where(v => v.Value.ModelYear < targetYear)
+                            .Select(v => v.Value)
+                            .ToList();
+                    }
+                    else { Console.WriteLine("Invalid year: (Year must be greater than 0)"); }
                 }
                 else if (year.Contains("after"))
                 {
-                    //year = year.Replace("after", "").Trim();
-                    int targetYear = Convert.ToInt32(year);
-                    foundVehicles = vehicles
-                        .Where(v => v.Value.ModelYear > targetYear)
-                        .Select(v => v.Value)
-                        .ToList();
+                    year = year.Replace("after", "").Trim();
+                    int targetYear = 0;
+                    try { targetYear = Convert.ToInt32(year); }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("[ERROR] - Invalid command format: (try 'after 2005' or 'after 2020')");
+                    }
+                    if (targetYear > 0)
+                    {
+                        foundVehicles = vehicles
+                            .Where(v => v.Value.ModelYear > targetYear)
+                            .Select(v => v.Value)
+                            .ToList();
+                    }
+                    else { Console.WriteLine("Invalid year: (Year must be greater than 0)");  }
                 }
                 else
                 {
-                    int targetYear = Convert.ToInt32(year);
-                    foundVehicles = vehicles
-                        .Where(v => v.Value.ModelYear == targetYear)
-                        .Select(v => v.Value)
-                        .ToList();
+                    int targetYear = 0;
+                    try
+                    {
+                        targetYear = Convert.ToInt32(year);
+                    }
+                    catch (FormatException)
+                    {
+                        Console.WriteLine("[ERROR] - Invalid command format: (try '2005' or '2020')");
+                    }
+                    if (targetYear > 0)
+                    {
+                        foundVehicles = vehicles
+                            .Where(v => v.Value.ModelYear == targetYear)
+                            .Select(v => v.Value)
+                            .ToList();
+                    }
+                    else { Console.WriteLine("Invalid year: (Year must be greater than 0)"); }
                 }
                 return foundVehicles;
             }
 
+            // This function is for creating new vehicle and has been made to handle different types of vehicle type inputs,
+            // so that the user can create different types of vehicles.
             void HandleVehicleInput(string vehicleType)
             {
                 switch (vehicleType)
@@ -823,6 +876,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // Function reads from the json file containing staff data and serialises it into a hash
             void ReadStaffJSON(string fileName, HashSet<Staff> hash)
             {
                 string jsonContent = File.ReadAllText(fileName);
@@ -834,6 +888,7 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // Function reads from the json file containing customer data.
             void ReadCustomerJSON(string fileName, HashSet<Customer> hash)
             {
                 string jsonContent = File.ReadAllText(fileName);
@@ -845,12 +900,15 @@ namespace VehicleRentingApplication
                 }
             }
 
+            // Function writes different types of rented vehicles to their respective json files.
             void WriteRentedVehicleJSON<T>(List<T> dictionary, string fileName)
             {
                 string jsonContent = JsonSerializer.Serialize(dictionary, new JsonSerializerOptions { WriteIndented = true });
                 File.WriteAllText(fileName, jsonContent);
             }
 
+            // Function been created in a modular way, which will allow me to read different types of vehicles from different json files.
+            // This makes this function reusable.
             void ReadRentedVehicleJSON<T>(string fileName, List<T> rentedList, string vehicleType) where T : Vehicle
             {
                 if (File.Exists(fileName) && new FileInfo(fileName).Length > 0)
