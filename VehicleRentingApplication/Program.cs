@@ -20,16 +20,15 @@ namespace VehicleRentingApplication
     {
         static void Main(string[] args)
         {
-            // ---[ Main Quests ]--- 
-
-            // Go through and style all titles and selection choices with colours! [TODO]
-            // Work on validation [TODO - Test entire application] 
-            // Polish up code and make useability better [TODO - Test entire application] 
-            // Design/Make look nice [Optional]
-            // Properly document why I chose to do things in a certain way with comments and within video demonstration[TODO]
-            // Go through each topic, scan through lectures/slides and ensure all topics are properly covered [FINAL]
-
             // ---[ Topic Demonstration ]---
+
+            // Topic 1 [DONE]
+            // Topic 2 [DONE]
+            // Topic 3 [In Progress]
+
+            // ALSO Some of the filters are still only filtering cars
+
+            // ---[ Video ]---
 
             // Make sure to combine topics
             // Also talk about why you have done something in a certain way
@@ -109,12 +108,12 @@ namespace VehicleRentingApplication
                     Console.ResetColor();
                     mainMenu.DisplayMenu();
 
+                    // I used a try catch here as this is one of the main conversions that will be used in the program
+                    // there can't be any issues here otherwise the program wouldn't work.
                     try { selected = Convert.ToInt32(Console.ReadLine()); }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine($"[Error]: {e.Message}\n"); // This message won't be seen due to the Clear console.
-                        continue;                                       // (It's there to stop program crashes incase of any bugs.)
-                    }
+                    catch (FormatException) { Console.WriteLine("[ERROR]: The string that you have inputted is in the incorrect format, (Try, '1', '2' etc)..."); continue; }
+                    catch (OverflowException) { Console.WriteLine("[ERROR]: Your input number is how of the range of conversion. (Please enter a number correlating to one of the menu options...)"); continue; }
+                    catch (ArgumentNullException) { Console.WriteLine("[ERROR]: Your input was null. (Make sure your input isn't empty!)"); continue; }
 
                     switch (selected)
                     {
@@ -620,18 +619,16 @@ namespace VehicleRentingApplication
                 {
                     if (args[0] == "available")
                     {
-                        Console.Clear();
-                        if (args[1] != null) 
+                        try // This try catch is ensuring that there is definately a second argument given
                         {
+                            Console.Clear();
                             args[1].ToLower();
-
-                            if (args[1] == "all" || args[1] == "car" || args[1] == "truck" || args[1] == "motorbike")
-                            {
-                                DisplayAvailableVehicles(args[1]);
-                            }
-                            else { Console.WriteLine("Invalid Vehicle Type [Available types: 'car' 'truck', 'motorbike', 'all']"); };
+                            DisplayAvailableVehicles(args[1]);
                         }
-                        else { Console.WriteLine("Invalid Command Usage [e.g 'available car']\n[Available types: 'car' 'truck', 'motorbike', 'all']"); }
+                        catch (IndexOutOfRangeException)
+                        {
+                            Console.WriteLine("Invalid command usage... (try 'available all', 'car' 'truck' 'motorbike')");
+                        }
                     }
                     else if (args[0] == "rented")
                     {
@@ -672,12 +669,9 @@ namespace VehicleRentingApplication
                         }
                         else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'return {access code} {vehicle type} {reg number}')\n\n"); }
                     }
-                    if (args.Length >= 2)
+                    else if (args[0] == "filter" )
                     {
-                        if (args[0] == "filter")
-                        {
-                            RunFilter();
-                        }
+                        RunFilter();
                     }
                 }
 
@@ -767,38 +761,34 @@ namespace VehicleRentingApplication
             List<Vehicle> FindVehiclesByYear(string year)
             {
                 List<Vehicle> foundVehicles = new();
-                try
+                if (year.Contains("before"))
                 {
-                    if (year.Contains("before"))
-                    {
-                        year = year.Replace("before", "").Trim();
-                        int targetYear = Convert.ToInt32(year);
-                        foundVehicles = vehicles
-                            .Where(v => v.Value.ModelYear < targetYear)
-                            .Select(v => v.Value)
-                            .ToList();
-                    }
-                    else if (year.Contains("after"))
-                    {
-                        year = year.Replace("after", "").Trim();
-                        int targetYear = Convert.ToInt32(year);
-                        foundVehicles = vehicles
-                            .Where(v => v.Value.ModelYear > targetYear)
-                            .Select(v => v.Value)
-                            .ToList();
-                    }
-                    else
-                    {
-                        int targetYear = Convert.ToInt32(year);
-                        foundVehicles = vehicles
-                            .Where(v => v.Value.ModelYear == targetYear)
-                            .Select(v => v.Value)
-                            .ToList();
-                    }
+                    // I use a .replace here as I am also using this function in my commandline
+                    //year = year.Replace("before", "").Trim();
+                    int targetYear = Convert.ToInt32(year);
+                    foundVehicles = vehicles
+                        .Where(v => v.Value.ModelYear < targetYear)
+                        .Select(v => v.Value)
+                        .ToList();
                 }
-                catch (Exception) { Console.WriteLine("[ERROR] Couldn't find any vehicles"); }
+                else if (year.Contains("after"))
+                {
+                    //year = year.Replace("after", "").Trim();
+                    int targetYear = Convert.ToInt32(year);
+                    foundVehicles = vehicles
+                        .Where(v => v.Value.ModelYear > targetYear)
+                        .Select(v => v.Value)
+                        .ToList();
+                }
+                else
+                {
+                    int targetYear = Convert.ToInt32(year);
+                    foundVehicles = vehicles
+                        .Where(v => v.Value.ModelYear == targetYear)
+                        .Select(v => v.Value)
+                        .ToList();
+                }
                 return foundVehicles;
-
             }
 
             void HandleVehicleInput(string vehicleType)
@@ -890,6 +880,7 @@ namespace VehicleRentingApplication
             }
 
 
+            // This function was implemented to cater for commandline filters.
             List<Vehicle> FilterVehicles(Dictionary<string, Vehicle> vehicles, string filterType)
             {
                 UpdateVehicleLists();
@@ -897,13 +888,12 @@ namespace VehicleRentingApplication
                 {
                     case "oldest":
                         return vehicles.Values.OrderBy(v => v.ModelYear).ToList();
-                    case "newest":
+                    case "newest": // Used OrderByDesc to ensure that the list is filtered oldest to newest so that the user can find older vehicles
                         return vehicles.Values.OrderByDescending(v => v.ModelYear).ToList();
-                    case "bestcondition":
+                    case "bestcondition": // Used OrderByDesc to ensure that the list is filtered newest to oldest so that the user can find newer vehicles
                         return vehicles.Values.OrderByDescending(v => v.Condition).ToList();
                     default:
-                        Console.WriteLine("Invalid filter type.");
-                        return vehicles.Values.ToList();
+                        return null;
                 }
             }
 
@@ -911,45 +901,48 @@ namespace VehicleRentingApplication
             {
                 if (args.Length >= 2)
                 {
-                    if (args[0] == "filter")
+                    string filterType = args[1].ToLower();
+
+                    // Filters the vehicle list to find the vehicle with best value.
+                    if (filterType == "value")
                     {
-                        if (args.Length >= 2)
+                        Vehicle bestValue = FindBestValue(vehicles);
+
+                        if (bestValue != null)
                         {
-                            string filterType = args[1].ToLower();
-
-                            // Filters the vehicle list to find the vehicle with best value.
-                            if (filterType == "value")
-                            {
-                                Vehicle bestValue = FindBestValue(vehicles);
-
-                                if (bestValue != null)
-                                {
-                                    Console.WriteLine($"Best value vehicle based on condition and model year criteria:");
-                                    Console.WriteLine($"- {bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})");
-                                }
-                                else { Console.WriteLine($"No vehicles to filter."); }
-                            }
-                            else
-                            {
-                                List<Vehicle> filteredVehicles = FilterVehicles(vehicles, filterType);
-
-                                if (filteredVehicles.Count > 0)
-                                {
-                                    Console.WriteLine($"Filtered vehicles based on '{filterType}':");
-
-                                    foreach (var filteredVehicle in filteredVehicles)
-                                    {
-                                        Console.WriteLine($"- {filteredVehicle.Manufacturer} {filteredVehicle.Model} ({filteredVehicle.ModelYear})");
-                                    }
-                                }
-                                else { Console.WriteLine($"No vehicles to filter."); }
-                            }
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.WriteLine($"\nBest value vehicle based on condition and model year criteria:");
+                            Console.ResetColor();
+                            Console.WriteLine($"- {bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})\n");
                         }
-                        else { Console.WriteLine("Not enough arguments for the 'filter' action."); }
+                        else { Console.WriteLine($"No vehicles to filter."); }
                     }
-                    else { Console.WriteLine("Invalid command. Use 'filter' to filter vehicles."); }
+                    else
+                    {
+                        try
+                        {
+                            List<Vehicle> filteredVehicles = FilterVehicles(vehicles, filterType);
+                            if (filteredVehicles.Count > 0)
+                            {
+                                Console.ForegroundColor = ConsoleColor.Blue;
+                                Console.WriteLine($"\nFiltered vehicles based on '{filterType}':");
+                                Console.ResetColor();
+
+                                foreach (var filteredVehicle in filteredVehicles)
+                                {
+                                    Console.WriteLine($"- {filteredVehicle.Manufacturer} {filteredVehicle.Model} ({filteredVehicle.ModelYear}) (Condition: {filteredVehicle.Condition}%) - {filteredVehicle.GetVehicleType()}");
+                                }
+                                Console.WriteLine("");
+                            }
+                            else { Console.WriteLine($"No vehicles to filter."); }
+                        }
+                        catch (NullReferenceException)
+                        {
+                            Console.WriteLine("The filter you are trying to use is not supported, (Try: 'newest' 'oldest' 'value' 'bestcondition')");
+                        }
+                    }
                 }
-                else { Console.WriteLine("No command specified."); }
+                else { Console.WriteLine("Not enough arguments for the 'filter' action. (Filters: 'newest' 'oldest' 'value' 'bestcondition')"); }
             }
 
             // Multi Line Algorithm
