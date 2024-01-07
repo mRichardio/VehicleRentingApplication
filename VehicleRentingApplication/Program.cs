@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 using System.Net.Http.Json;
 using System.Xml;
+using System.Diagnostics.Metrics;
 
 namespace VehicleRentingApplication
 {
@@ -21,7 +22,8 @@ namespace VehicleRentingApplication
         {
             // ---[ Main Quests ]--- 
 
-            // Fix return vehicle
+
+            // Go through and style all titles and selection choices with colours! [TODO]
             // Work on validation [TODO - Test entire application] 
             // Polish up code and make useability better [TODO - Test entire application] 
             // Design/Make look nice [Optional]
@@ -119,8 +121,12 @@ namespace VehicleRentingApplication
                     {
                         case 1:
                             Console.Clear();
-                            Console.WriteLine("Types: [All] [Car] [Truck] [Motorbike]\nEnter vehicle type you are looking for: ");
-                            string vehType = Console.ReadLine().Trim().ToLower();
+                            Console.Write("Types:");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.Write("[All] [Car] [Truck] [Motorbike]");
+                            Console.ResetColor(); 
+                            Console.WriteLine("\nEnter vehicle type you are looking for: ");
+                            string vehType = Console.ReadLine().Trim().ToLower(); Console.Clear();
                             if (vehType != null && vehType == "car" || vehType == "truck" || vehType == "motorbike" || vehType == "all")
                             {
                                 DisplayAvailableVehicles(vehType);
@@ -133,7 +139,12 @@ namespace VehicleRentingApplication
 
                         case 2: // Rent Vehicle Functionality
                             Console.Clear();
-                            Console.WriteLine("---| Rent a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.WriteLine("---| Rent a Vehicle |---");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("\n[Car] [Truck] [Motorbike]");
+                            Console.ResetColor();
+                            Console.WriteLine("\nEnter vehicle type: ");
                             string rentVehicleType = "";
                             try { rentVehicleType = Console.ReadLine().ToLower().Trim(); }
                             catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
