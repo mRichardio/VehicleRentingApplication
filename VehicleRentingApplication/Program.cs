@@ -22,7 +22,6 @@ namespace VehicleRentingApplication
         {
             // ---[ Main Quests ]--- 
 
-
             // Go through and style all titles and selection choices with colours! [TODO]
             // Work on validation [TODO - Test entire application] 
             // Polish up code and make useability better [TODO - Test entire application] 
@@ -166,7 +165,12 @@ namespace VehicleRentingApplication
 
                         case 3: // Return Vehicle Functionality
                             Console.Clear();
-                            Console.WriteLine("---| Return a Vehicle |---\n\n[Car] [Truck] [Motorbike]\n\nEnter vehicle type: ");
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.WriteLine("---| Return a Vehicle |---");
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine("\n[Car] [Truck] [Motorbike]");
+                            Console.ResetColor();
+                            Console.WriteLine("\nEnter vehicle type: ");
                             string returnVehicleType = "";
                             try { returnVehicleType = Console.ReadLine().ToLower().Trim(); }
                             catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
@@ -204,7 +208,12 @@ namespace VehicleRentingApplication
                             Console.WriteLine("Enter a staff code to view this menu: ");
                             string staffCode = Console.ReadLine().Trim();
                             bool isStaff = VerifyStaffCode(staffCode);
-                            if (!isStaff) { Console.WriteLine("[ERROR] Invalid staff code\nPress ENTER to continue..."); Console.ReadLine(); break; }
+                            if (!isStaff) 
+                            { 
+                                Console.WriteLine("[ERROR] Invalid staff code\nPress ENTER to continue...");
+                                Console.ReadLine();
+                                break;
+                            }
                             else
                             {
                                 while (isStaff == true)
@@ -230,7 +239,13 @@ namespace VehicleRentingApplication
                                     {
                                         case 1:
                                             Console.Clear();
-                                            Console.WriteLine("Enter vehicle type: \n[ Car | Truck | Motorbike ]");
+                                            Console.ForegroundColor = ConsoleColor.Blue;
+                                            Console.WriteLine("---| Add Vehicle |---");
+                                            Console.ResetColor();
+                                            Console.ForegroundColor = ConsoleColor.Yellow;
+                                            Console.WriteLine("\n[Car] [Truck] [Motorbike]");
+                                            Console.ResetColor();
+                                            Console.WriteLine("Enter vehicle type:");
                                             string vehicleType = Console.ReadLine().ToLower().Trim();
                                             HandleVehicleInput(vehicleType);
                                             WriteVehiclesToFiles();
@@ -239,7 +254,9 @@ namespace VehicleRentingApplication
 
                                         case 2:
                                             Console.Clear();
-                                            Console.WriteLine("You entered 2. Remove Vehicle");
+                                            Console.ForegroundColor = ConsoleColor.Blue;
+                                            Console.WriteLine("---| Remove Vehicle |---");
+                                            Console.ResetColor();
                                             Console.WriteLine("Enter vehicle ID: ");
                                             string inputID = Console.ReadLine().ToUpper().Trim();
                                             if (vehicles.ContainsKey(inputID))
@@ -255,7 +272,9 @@ namespace VehicleRentingApplication
 
                                         case 3:
                                             Console.Clear();
+                                            Console.ForegroundColor = ConsoleColor.Blue;
                                             Console.WriteLine("---| Staff List |---");
+                                            Console.ResetColor();
                                             if (staff != null)
                                             {
                                                 foreach (var s in staff)
@@ -274,7 +293,9 @@ namespace VehicleRentingApplication
 
                                         case 4:
                                             Console.Clear();
+                                            Console.ForegroundColor = ConsoleColor.Blue;
                                             Console.WriteLine("---| Customer List |---");
+                                            Console.ResetColor();
                                             if (customers != null)
                                             {
                                                 foreach (var c in customers)
@@ -347,14 +368,19 @@ namespace VehicleRentingApplication
 
             void DisplayProfile()
             {
-                Console.WriteLine($"---| Your Profile |---\nName: {currentUser.FirstName} {currentUser.LastName}");
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine($"---| Your Profile |---");
+                Console.ResetColor();
+                Console.WriteLine($"Name: {currentUser.FirstName} {currentUser.LastName}");
                 Console.WriteLine($"\nAccount: {currentUser.GetType()}\nAccess Code: {currentUser.AccessCode}");
                 Console.WriteLine($"\nRented Vehicles: [{rentedVehicles.GetVehicleCount(currentUser)}/{currentUser.GetRentLimit()}]\n\nPress ENTER to continue...");
             }
 
             void DisplayAvailableVehicles(string type)
             {
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("---| Available Vehicles |---\n");
+                Console.ResetColor();
 
                 if (vehicles != null && vehicles.Count > 0)
                 {
@@ -384,7 +410,9 @@ namespace VehicleRentingApplication
 
             void DisplayedRentedVehicles()
             {
+                Console.ForegroundColor = ConsoleColor.Blue;
                 Console.WriteLine("---| Currently Rented Vehicles |---");
+                Console.ResetColor();
                 foreach (var vehicle in rentedVehicles.CombinedVehicles)
                 {
                     Vehicle userVehicle = vehicle;
@@ -574,7 +602,10 @@ namespace VehicleRentingApplication
                 }
                 else if (args.Contains("-h"))
                 {
-                    Console.WriteLine("\n---| Vehicle Renting Application |---\n\nUseful commands: ");
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.WriteLine("\n---| Vehicle Renting Application |---");
+                    Console.ResetColor();
+                    Console.WriteLine("\nUseful commands: ");
                     Console.WriteLine("-v : Shows the current version number of the application");
                     Console.WriteLine("-h : Displays a list of the current available commands");
                     Console.WriteLine("available : Gets all of the vehicles that are available to rent");
