@@ -9,8 +9,26 @@ namespace VehicleRentingApplication
 {
     internal class Registration
     {
-/*        [JsonPropertyName("reg")]*/ // Used as I had a weird bug where my json deserialiser was setting this value to null (I think it was setting reg to Reg. Either way this fixes it.)
-        public string Reg { get; set; }
+        // Validation for this variable is handled in actual program however, I have included validation to make sure that
+        // the variable can not be longer than 7
+        public string Reg
+        {
+            get
+            {
+                return Reg;
+            }
+            set
+            {
+                if (Reg.Length > 7)
+                {
+                    Reg = value.Substring(0, 7);
+                }
+                else
+                {
+                    Reg = value;
+                }
+            }
+        }
 
         public Registration() { /*Default*/ }
 

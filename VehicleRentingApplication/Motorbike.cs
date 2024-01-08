@@ -8,6 +8,7 @@ namespace VehicleRentingApplication
 {
     internal class Motorbike : Vehicle
     {
+        private string priceCategory;
 
         public Motorbike()
         {
@@ -27,6 +28,11 @@ namespace VehicleRentingApplication
         public override string GetVehicleType()
         {
             return "Motorbike";
+        }
+
+        public string GetPriceCategory()
+        {
+            return priceCategory;
         }
 
         public override Motorbike CreateVehicle()

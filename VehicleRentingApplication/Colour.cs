@@ -10,9 +10,53 @@ namespace VehicleRentingApplication
 {
     internal class Colour
     {
-        public int Red { get; set; }
-        public int Green { get; set; }
-        public int Blue { get; set; }
+        // Added validation to these values, even though I have included validation in the create colour form,
+        // this protects the colours from being out of range if some other implementation interacts with these values as they are public.
+        public int Red
+        {
+            get
+            {
+                return Red;
+            }
+            set
+            {
+                if (Red > 255 || Red < 0)
+                {
+                    Red = 0;
+                }
+                else { Red = value; }
+            }
+        }
+        public int Green 
+        {
+            get
+            {
+                return Green;
+            }
+            set
+            {
+                if (Green > 255 || Green < 0)
+                {
+                    Red = 0;
+                }
+                else { Green = value; }
+            }
+        }
+        public int Blue 
+        {
+            get
+            {
+                return Blue;
+            }
+            set
+            {
+                if (Blue > 255 || Blue < 0)
+                {
+                    Blue = 0;
+                }
+                else { Blue = value; }
+            }
+        }
 
         public Colour()
         {

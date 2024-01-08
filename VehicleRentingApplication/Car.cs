@@ -13,10 +13,14 @@ namespace VehicleRentingApplication
 
         public int DoorCount { get; set; }
 
+        private string priceCategory;
+
+
+
         //public override string type => "Car"; // Originally I had this method setting each type of vehicle, however,
-                                                // I didn't want the type of vehicle to be changable so instead I set
-                                                // the type to be protected within the vehicle abstract class and have
-                                                // provided a function for each vehicle to recieve, the type
+        // I didn't want the type of vehicle to be changable so instead I set
+        // the type to be protected within the vehicle abstract class and have
+        // provided a function for each vehicle to recieve, the type
 
         public Car()
         {
@@ -38,6 +42,11 @@ namespace VehicleRentingApplication
         public override string GetVehicleType()
         {
             return "Car";
+        }
+
+        public string GetPriceCategory()
+        {
+            return priceCategory;
         }
 
         public override Car CreateVehicle()

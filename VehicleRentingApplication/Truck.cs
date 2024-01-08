@@ -12,8 +12,10 @@ namespace VehicleRentingApplication
         public float StorageCapacity { get; set; }
         public int DoorCount { get; set; }
 
+        private string priceCategory;
+
         //public override string type => "Truck"; // This was my old implementation of setting the type. However, I changes this to
-                                                  // a public get method in the parent class to prevent changes.
+        // a public get method in the parent class to prevent changes.
 
         public Truck()
         {
@@ -36,6 +38,11 @@ namespace VehicleRentingApplication
         public override string GetVehicleType()
         {
             return "Truck";
+        }
+
+        public string GetPriceCategory() 
+        {
+            return priceCategory;
         }
 
         public override void CalculatePrice() // Truck prices are calculated differently

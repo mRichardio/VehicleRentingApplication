@@ -10,7 +10,25 @@ namespace VehicleRentingApplication
 {
     internal abstract class Account : IUser, IAccessCode
     {
-        protected string AccessCode { get; set; } // This is protected so no other classes can access it other than customer and staff, the deriving classes
+        // This is protected so no other classes can access it other than customer and staff, the deriving classes
+        protected string AccessCode 
+        {
+            get 
+            { 
+                return AccessCode;
+            }
+            set 
+            {
+                if (AccessCode.Length > 3)
+                {
+                    AccessCode = value.Substring(0, 3);
+                }
+                else
+                {
+                    AccessCode = value;
+                }
+            }
+        }
         public string FirstName { get; set; }
         public string LastName { get; set; }
 

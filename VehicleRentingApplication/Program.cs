@@ -23,11 +23,14 @@ namespace VehicleRentingApplication
         {
             // ---[ Topic Demonstration ]---
 
+
             // Topic 1 [DONE]
             // Topic 2 [DONE]
-            // Topic 3 [In Progress]
+            // Topic 3 [DONE]
+            // Topic 4 [In Progress]
 
-            // ALSO Some of the filters are still only filtering cars
+            // Update vehicle displays to include price?
+            // Properly Comment on each section that is important in the code to explain why I have implemented something in a certain way
 
             // ---[ Video ]---
 
@@ -398,13 +401,15 @@ namespace VehicleRentingApplication
                             counter++;
                             // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
                             vehicle.CalculatePrice();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                            vehicle.SetPriceCategory();
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
                         else if (type == "all")
                         {
                             counter++;
                             vehicle.CalculatePrice();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\n");
+                            vehicle.SetPriceCategory();
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
                     }
                     Console.WriteLine($"{counter} Results found\n");
@@ -423,7 +428,9 @@ namespace VehicleRentingApplication
                     Vehicle userVehicle = vehicle;
                     if (userVehicle.RentedBy == currentUser.AccessCode)
                     {
-                        Console.WriteLine($"Type: {userVehicle.GetVehicleType()}\nManufacturer: {userVehicle.Manufacturer}\nModel: {userVehicle.Model}\nYear: {userVehicle.ModelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\n\n");
+                        userVehicle.CalculatePrice();
+                        userVehicle.SetPriceCategory();
+                        Console.WriteLine($"Type: {userVehicle.GetVehicleType()}\nManufacturer: {userVehicle.Manufacturer}\nModel: {userVehicle.Model}\nYear: {userVehicle.ModelYear}\nColour: {userVehicle.DisplayColour()}\nRegistration: {userVehicle.DisplayReg()}\nPrice: £{userVehicle.GetPrice()}/month\nPrice Category: [{userVehicle.GetPriceCategory()}]\n\n");
                     }
                 }
                 // Check if there are no vehicles to display to the user
@@ -782,11 +789,8 @@ namespace VehicleRentingApplication
                     // the program will remove it allowing for the program to convert the integer properly.
                     year = year.Replace("before", "").Trim();
                     int targetYear = 0;
-                    try
-                    {
-                        targetYear = Convert.ToInt32(year); // The below try catches have been included to validate an exception
-                    }                                       // that I was getting when inputting invalid commands
-                    catch (FormatException)
+                    try { targetYear = Convert.ToInt32(year); } // The below try catches have been included to validate an exception
+                    catch (FormatException)                     // that I was getting when inputting invalid commands
                     {
                         Console.WriteLine("[ERROR] - Invalid command format: (try 'before 2005' or 'before 2020')");
                     }
@@ -822,10 +826,7 @@ namespace VehicleRentingApplication
                 else
                 {
                     int targetYear = 0;
-                    try
-                    {
-                        targetYear = Convert.ToInt32(year);
-                    }
+                    try { targetYear = Convert.ToInt32(year); }
                     catch (FormatException)
                     {
                         Console.WriteLine("[ERROR] - Invalid command format: (try '2005' or '2020')");

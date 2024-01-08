@@ -11,8 +11,27 @@ namespace VehicleRentingApplication
 {
     internal class Customer : Account
     {
-        public string AccessCode { get; set; }
+        public string AccessCode 
+        {
+            get
+            {
+                return AccessCode;
+            }
+            set
+            {
+                if (AccessCode.Length > 3)
+                {
+                    AccessCode = value.Substring(0, 3);
+                }
+                else
+                {
+                    AccessCode = value;
+                }
+            }
+        }
+
         private int RentLimit;
+
         public int VehicleCount { get; private set; }
 
         //[JsonConstructor]
