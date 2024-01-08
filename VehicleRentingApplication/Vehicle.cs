@@ -28,7 +28,7 @@ namespace VehicleRentingApplication
                 {
                     this.modeYear = 2025;
                 }
-                else if (value > 1900)
+                else if (value < 1900)
                 {
                     this.modeYear = 1900;
                 }
