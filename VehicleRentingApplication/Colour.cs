@@ -12,49 +12,52 @@ namespace VehicleRentingApplication
     {
         // Added validation to these values, even though I have included validation in the create colour form,
         // this protects the colours from being out of range if some other implementation interacts with these values as they are public.
+        private int red;
         public int Red
         {
             get
             {
-                return Red;
+                return red;
             }
             set
             {
-                if (Red > 255 || Red < 0)
+                if (value > 255 || value < 0)
                 {
-                    Red = 0;
+                    this.red = 0;
                 }
-                else { Red = value; }
+                else { this.red = value; }
             }
         }
+        private int green;
         public int Green 
         {
             get
             {
-                return Green;
+                return green;
             }
             set
             {
-                if (Green > 255 || Green < 0)
+                if (value > 255 || value < 0)
                 {
-                    Red = 0;
+                    this.green = 0;
                 }
-                else { Green = value; }
+                else { this.green = value; }
             }
         }
+        private int blue;
         public int Blue 
         {
             get
             {
-                return Blue;
+                return blue;
             }
             set
             {
-                if (Blue > 255 || Blue < 0)
+                if (value > 255 || value < 0)
                 {
-                    Blue = 0;
+                    this.blue = 0;
                 }
-                else { Blue = value; }
+                else { this.blue = value; }
             }
         }
 

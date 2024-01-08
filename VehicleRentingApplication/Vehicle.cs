@@ -12,10 +12,60 @@ namespace VehicleRentingApplication
     internal abstract class Vehicle
     {
         protected virtual string type { get; set; } // virtual so it can be overridden in derived classes.
-        public int ModelYear { get; set; }
+
+        private int modeYear;
+        // Validation is provided here to make sure the set year for each vehicle is a realistic and viable year.
+        // While there is validation provide within the program, this also protects against vehicles added manually within the json file.
+        public int ModelYear 
+        {
+            get 
+            { 
+                return modeYear;
+            }
+            set 
+            {
+                if (value > 2025)
+                {
+                    this.modeYear = 2025;
+                }
+                else if (value > 1900)
+                {
+                    this.modeYear = 1900;
+                }
+                else { this.modeYear = value; }
+            }
+        }
         public string Manufacturer { get; set; }
         public string Model { get; set; }
-        public float Condition { get; set; }
+
+        private float condition;
+        // Provided validation for the condition to make sure it isn't out of the 0-100% condition range.
+        // There is validation within the program for this but again this just makes sure that there is no possibility that the value
+        // cannot be out of range no matter what.
+        // While there is validation provide within the program, this also protects against vehicles added manually within the json file.
+        public float Condition 
+        {
+            get 
+            {
+                return condition;
+            }
+            set 
+            {
+                if (value > 100)
+                {
+                    condition = 100;
+                }
+                else if (value < 0) 
+                {
+                    condition = 0;
+                }
+                else 
+                {
+                    condition = value;
+                }
+            }
+        }
+
         public bool IsAutomatic { get; set; }
         public Colour Paint { get; set; } // Validation is handled in the actual Colour class.
         public Registration Reg { get; set; } // Validation is handled in actual Registration class.

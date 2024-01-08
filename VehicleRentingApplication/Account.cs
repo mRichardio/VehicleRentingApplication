@@ -11,21 +11,23 @@ namespace VehicleRentingApplication
     internal abstract class Account : IUser, IAccessCode
     {
         // This is protected so no other classes can access it other than customer and staff, the deriving classes
+        private string accessCode;
+        // While there is validation provide within the program, this also protects against vehicles added manually within the json file.
         protected string AccessCode 
         {
             get 
             { 
-                return AccessCode;
+                return accessCode;
             }
             set 
             {
-                if (AccessCode.Length > 3)
+                if (value.Length > 3)
                 {
-                    AccessCode = value.Substring(0, 3);
+                    this.accessCode = value.Substring(0, 3);
                 }
                 else
                 {
-                    AccessCode = value;
+                    this.accessCode = value;
                 }
             }
         }

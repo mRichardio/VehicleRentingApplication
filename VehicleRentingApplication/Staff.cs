@@ -8,27 +8,30 @@ namespace VehicleRentingApplication
 {
     internal class Staff : Account
     {
-        private bool PastCustomer; // Here to check if a staff member used to be a customer or not.
+        // Here to check if a staff member used to be a customer or not.
+        // Wont need validation as it is automatically set to true or false when a new staff member is created.
+        private bool PastCustomer; 
+        // Validation was implemented when generating the access code, however I've added it in the setter here incase any other code
+        // conflicts with that validation to ensure that there can definately be no issues.
+        private string accessCode;
         public string AccessCode 
         {
             get
             {
-                return AccessCode;
+                return accessCode;
             }
             set
             {
-                if (AccessCode.Length > 3)
+                if (value.Length > 3)
                 {
-                    AccessCode = value.Substring(0, 3);
+                    this.accessCode = value.Substring(0, 3);
                 }
                 else
                 {
-                    AccessCode = value;
+                    this.accessCode = value;
                 }
             }
         }
-
-
 
         public Staff() { }
 

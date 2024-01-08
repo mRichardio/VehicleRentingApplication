@@ -23,14 +23,11 @@ namespace VehicleRentingApplication
         {
             // ---[ Topic Demonstration ]---
 
+            // Add condition to available vehicle displays
 
-            // Topic 1 [DONE]
-            // Topic 2 [DONE]
-            // Topic 3 [DONE]
-            // Topic 4 [In Progress]
-
-            // Update vehicle displays to include price?
-            // Properly Comment on each section that is important in the code to explain why I have implemented something in a certain way
+            // Properly Comment on each section that is important in the code to explain why I have implemented something in a certain way.
+            // Take a final look through all of the code and the systems functionalities and make sure everything works as intended.
+            // Format all of the code better and make sure everything is nice and readable.
 
             // ---[ Video ]---
 
@@ -38,28 +35,37 @@ namespace VehicleRentingApplication
             // Also talk about why you have done something in a certain way
 
             int selected; // For menu selection
+            // Provides validation and functionality to the currently logged in customer in the system.
             Customer currentUser = null;
 
             HashSet<Customer> customers = new HashSet<Customer>();// These are Hash Sets as there can only be 1 type of each account
             HashSet<Staff> staff = new HashSet<Staff>();
 
+            // I decided to use Dictionaries for my vehicle storage as it makes it easier and more performant execute searches/lookups
+            // Also using dictionaries helped me store the vehicles registration num as the key, with it's tied vehicle being the value
             Dictionary<string, Car> cars = new Dictionary<string, Car>();
             Dictionary<string, Truck> trucks = new Dictionary<string, Truck>();
             Dictionary<string, Motorbike> motorbikes = new Dictionary<string, Motorbike>();
             Dictionary<string, Vehicle> vehicles = new();
+
+            // Only one objects is instantiated as the lists of currently rented vehicles are stored within the class/object.
+            // This object will act as the handler of these lists/rentedVehicles
             RentedVehicles rentedVehicles = new();
 
             // Reads vehicle data from file
             UpdateVehicleLists();
             UpdateAccounts();
 
-            // Check if the deserialization was successful
+            // Checks if the deserialisation was successful.
+            // I initially added this functionality for debugging serialisation, however if the deserialisation does ever fail
+            // I think that it is better to keep this in the system so the user knows why it isn't working in the case of failure.
             if (cars != null && motorbikes != null && trucks != null)
             {
                 Console.WriteLine("Successfully loaded data!");
             }
             else { Console.WriteLine("Failed to deserialize JSON data."); }
 
+            // I made these functions as I serialise
             WriteVehiclesToFiles();
             WriteAccountsToFiles();
 
@@ -73,6 +79,7 @@ namespace VehicleRentingApplication
                 while (true)
                 {
                     // Identity Verification
+                    // This section will verify the customer code provided by the user to allow or deny access
                     while (currentUser == null)
                     {
                         Console.Clear();
@@ -83,10 +90,11 @@ namespace VehicleRentingApplication
                             while (true)
                             {
                                 Console.Clear();
-                                Console.WriteLine("Enter your access code: ");
+                                Console.WriteLine("Enter your access code (Enter '0 to go back'): ");
                                 string userCode = Console.ReadLine().Trim();
                                 bool IsVerified = VerifyIdentity(userCode);
                                 if (IsVerified) { break; }
+                                else if (userCode == "0") { break; }
                                 else { Console.WriteLine("[ERROR] Access code not found!\nPress ENTER to continue..."); }
                                 Console.ReadLine();
                             }
@@ -721,6 +729,7 @@ namespace VehicleRentingApplication
                 }
                 else if (choice == "filter" || choice == "2" || choice == "f")
                 {
+                    // Used an enumerable here as a temp collection to store a list of filtered vehicles from the main vehicles dictionary.
                     IEnumerable<Vehicle> filteredVehicles;
                     Console.Clear();
                     Console.WriteLine("Select filter type: ");

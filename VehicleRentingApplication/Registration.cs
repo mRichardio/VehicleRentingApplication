@@ -11,21 +11,22 @@ namespace VehicleRentingApplication
     {
         // Validation for this variable is handled in actual program however, I have included validation to make sure that
         // the variable can not be longer than 7
+        private string reg;
         public string Reg
         {
             get
             {
-                return Reg;
+                return reg;
             }
             set
             {
-                if (Reg.Length > 7)
+                if (value.Length > 7)
                 {
-                    Reg = value.Substring(0, 7);
+                    this.reg = value.Substring(0, 7);
                 }
                 else
                 {
-                    Reg = value;
+                    this.reg = value;
                 }
             }
         }

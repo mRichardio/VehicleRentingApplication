@@ -11,27 +11,33 @@ namespace VehicleRentingApplication
 {
     internal class Customer : Account
     {
+        private string accessCode;
+        // Validation was implemented when generating the access code, however I've added it in the setter here incase any other code
+        // conflicts with that validation to ensure that there can definately be no issues.
+        // While there is validation provide within the program, this also protects against vehicles added manually within the json file.
         public string AccessCode 
         {
             get
             {
-                return AccessCode;
+                return accessCode;
             }
             set
             {
-                if (AccessCode.Length > 3)
+                if (value.Length > 3)
                 {
-                    AccessCode = value.Substring(0, 3);
+                    this.accessCode = value.Substring(0, 3);
                 }
                 else
                 {
-                    AccessCode = value;
+                    this.accessCode = value;
                 }
             }
         }
 
         private int RentLimit;
 
+        // Validation isn't needed here as this int is calculated based off the amount of cars the customer has rented.
+        // There is also validation set within the program to ensure that the vehicle count count can't be higher than the rent limit.
         public int VehicleCount { get; private set; }
 
         //[JsonConstructor]
