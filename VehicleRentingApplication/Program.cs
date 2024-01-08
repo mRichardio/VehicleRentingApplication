@@ -93,8 +93,14 @@ namespace VehicleRentingApplication
                                 Console.WriteLine("Enter your access code (Enter '0 to go back'): ");
                                 string userCode = Console.ReadLine().Trim();
                                 bool IsVerified = VerifyIdentity(userCode);
-                                if (IsVerified) { break; }
-                                else if (userCode == "0") { break; }
+                                if (IsVerified)
+                                {
+                                    break;
+                                }
+                                else if (userCode == "0")
+                                {
+                                    break;
+                                }
                                 else { Console.WriteLine("[ERROR] Access code not found!\nPress ENTER to continue..."); }
                                 Console.ReadLine();
                             }
@@ -109,6 +115,13 @@ namespace VehicleRentingApplication
                             WriteAccountsToFiles();
                             break;
                         }
+                    }
+
+                    // This is here so if the user enters '0' to back out of logging, in the program will go back to
+                    // the beginning of the first while loop, looking as the the user has just canceled logging in.
+                    if (currentUser == null)
+                    {
+                        continue;
                     }
 
                     // Main Program
