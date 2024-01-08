@@ -38,6 +38,10 @@ namespace VehicleRentingApplication
 
         // Validation isn't needed here as this int is calculated based off the amount of cars the customer has rented.
         // There is also validation set within the program to ensure that the vehicle count count can't be higher than the rent limit.
+
+        // I don't want this stored in Json as it is calculated during runtime, based off of the amount of rented vehicle objects
+        // that contain the rentedBy {customer accessCode}
+        [JsonIgnore]
         public int VehicleCount { get; private set; }
 
         //[JsonConstructor]
