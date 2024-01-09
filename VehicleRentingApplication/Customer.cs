@@ -40,7 +40,8 @@ namespace VehicleRentingApplication
         // There is also validation set within the program to ensure that the vehicle count count can't be higher than the rent limit.
 
         // I don't want this stored in Json as it is calculated during runtime, based off of the amount of rented vehicle objects
-        // that contain the rentedBy {customer accessCode}
+        // that contain the rentedBy {customer accessCode}, it needs JsonIgnore as it is a public property but because it is calculated
+        // during runtime, the value would be stored as 0 anyway so there is no need to store this value.
         [JsonIgnore]
         public int VehicleCount { get; private set; }
 

@@ -14,6 +14,7 @@ using System.Net.Http.Json;
 using System.Xml;
 using System.Diagnostics.Metrics;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
 
 namespace VehicleRentingApplication
 {
@@ -65,9 +66,9 @@ namespace VehicleRentingApplication
             }
             else { Console.WriteLine("Failed to deserialize JSON data."); }
 
-            // I made these functions as I serialise
-            WriteVehiclesToFiles();
-            WriteAccountsToFiles();
+            // I made these functions to serialise data, they are called here to to ensure all json files are up to date
+            //WriteVehiclesToFiles();
+            //WriteAccountsToFiles();
 
             // Command Line Interface
             if (args.Length > 0)
@@ -108,6 +109,7 @@ namespace VehicleRentingApplication
                         }
                         else if (userInput == "n" || userInput == "no")
                         {
+                            // This is a tuple, makes it easier to combine two functionalities into one. e.g registering the first and last name variables
                             var (firstName, lastName) = RegisterName();
                             Customer newCustomer = new Customer(firstName, lastName);
                             currentUser = newCustomer;
@@ -134,7 +136,7 @@ namespace VehicleRentingApplication
                     mainMenu.DisplayMenu();
 
                     // I used a try catch here as this is one of the main conversions that will be used in the program
-                    // there can't be any issues here otherwise the program wouldn't work.
+                    // there can't be any issues here otherwise the program wouldn't work. Hence why I am trying to catch a lot of exceptions here.
                     try { selected = Convert.ToInt32(Console.ReadLine()); }
                     catch (FormatException) { Console.WriteLine("[ERROR]: The string that you have inputted is in the incorrect format, (Try, '1', '2' etc)..."); continue; }
                     catch (OverflowException) { Console.WriteLine("[ERROR]: Your input number is how of the range of conversion. (Please enter a number correlating to one of the menu options...)"); continue; }
@@ -150,6 +152,7 @@ namespace VehicleRentingApplication
                             Console.ResetColor(); 
                             Console.WriteLine("\nEnter vehicle type you are looking for: ");
                             string vehType = Console.ReadLine().Trim().ToLower(); Console.Clear();
+                            // I provided lots of different conditions to navigate the menu as I think it will improve the UX.
                             if (vehType != null && vehType == "car" || vehType == "truck" || vehType == "motorbike" || vehType == "all")
                             {
                                 DisplayAvailableVehicles(vehType);
@@ -421,6 +424,10 @@ namespace VehicleRentingApplication
                         {
                             counter++;
                             // Price is purely cosmetic in this implementation (could easily be added in but it was functionality that wasn't relevant to the assignment)
+                            // The reason why I decided to calculate price during runtime is simply because if changes were to be made to any vehicles properties,
+                            // whether it be manually through the text editor or in runtime, then the associated price and price category would need to be manually updated.
+                            // So doing it in runtime instead, means that if any changes happened to a vehicle then it's price will always correspond to those changes.
+                            // This will use a little bit of system processing power, but I think is a neccessary component to include.
                             vehicle.CalculatePrice();
                             vehicle.SetPriceCategory();
                             Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
@@ -476,6 +483,7 @@ namespace VehicleRentingApplication
             // Used to verify if a customer code is found in the system or not.
             bool VerifyIdentity(string code)
             {
+                // All customers are unique in the system as they are stored in a hash collection, allowing me to use a basic lookup to verify a staff code.
                 Customer selectedCustomer = customers.FirstOrDefault(c => c.AccessCode == code);
                 if (selectedCustomer != null)
                 {
@@ -488,6 +496,7 @@ namespace VehicleRentingApplication
             // Used to verify if a staff code is found in the system or not.
             bool VerifyStaffCode(string code)
             {
+                // All staff are unique in the system as they are stored in a hash collection, allowing me to use a basic lookup to verify a staff code.
                 Staff selectedStaff = staff.FirstOrDefault(s => s.AccessCode == code);
                 if (selectedStaff != null) { return true; }
                 else { return false; }
@@ -517,6 +526,9 @@ namespace VehicleRentingApplication
             // Handles remove vehicles from the system. (This is a staff function)
             void removeVehicleByID(string vehID)
             {
+                // Finds the first vehicle that has a key matching the reg plate. I can do it like this because I have implementation validation
+                // to all vehicle dictionaries to ensure that there can not be a duplicate reg. Also I believe that dictionaries will throw
+                // an error if there is a duplicate key. Making this method viable.
                 if (vehID.StartsWith("C"))
                 {
                     var selectedVehicle = cars.FirstOrDefault(v => v.Key == vehID);
@@ -639,10 +651,14 @@ namespace VehicleRentingApplication
             {
                 if (args.Contains("-v"))
                 {
-                    Console.WriteLine("Version Number: 1.12\n\n[If you are trying to run another command remove '-v' from your arguments]");
+                    // I chose the version number based of the number of git commits I had made to this repo, and added a 1.00 onto it so if I had 60
+                    // commits it would be 1.60 & 100 being 2.0 etc (Thought this was a nice way of doing it).
+                    Console.WriteLine("Version Number: 1.60\n\n[If you are trying to run another command remove '-v' from your arguments]");
                 }
                 else if (args.Contains("-h"))
                 {
+                    // Provided a -h help command to ensure that users making use of the command line feature will have some clue on what commands they can
+                    // make use of.
                     Console.ForegroundColor = ConsoleColor.Blue;
                     Console.WriteLine("\n---| Vehicle Renting Application |---");
                     Console.ResetColor();
@@ -736,9 +752,6 @@ namespace VehicleRentingApplication
                     var selectedVehicle = vehicles.FirstOrDefault(v => v.Key == vehID); // Searched the vehicles list to find a vehicle by reg
 
                     Console.WriteLine(FindVehicleByID(vehID));
-
-                    Console.WriteLine("\nPress ENTER to continue...");
-                    Console.ReadLine();
                 }
                 else if (choice == "filter" || choice == "2" || choice == "f")
                 {
@@ -764,13 +777,10 @@ namespace VehicleRentingApplication
                         {
                             foreach (var vehicle in filteredVehicles)
                             {
-                                Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\n");
+                                Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nRegistration: {vehicle.Reg.Reg}\nCondition: {vehicle.Condition}\nPrice: {vehicle.GetPrice()}\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                             }
                         }
                         else { Console.WriteLine("No vehicles found"); }
-
-                        Console.WriteLine("\nPress ENTER to continue...");
-                        Console.ReadLine();
                     }
                     else if (filterChoice == "year" || filterChoice == "2" || filterChoice == "y")
                     {
@@ -779,11 +789,8 @@ namespace VehicleRentingApplication
 
                         foreach (var vehicle in FindVehiclesByYear(inputYear))
                         {
-                            Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\n");
+                            Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nRegistration: {vehicle.Reg.Reg}\nCondition: {vehicle.Condition}\nPrice: {vehicle.GetPrice()}\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
-
-                        Console.WriteLine("\nPress ENTER to continue...");
-                        Console.ReadLine();
                     }
                     else if (filterChoice == "value" || filterChoice == "3" || filterChoice == "v")
                     {
@@ -792,11 +799,9 @@ namespace VehicleRentingApplication
                         if (bestValue != null)
                         {
                             Console.WriteLine($"Best value vehicle based on condition and model year criteria:");
-                            Console.WriteLine($"- {bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})\nRegistration: {bestValue.Reg.Reg}");
+                            Console.WriteLine($"- Type: {bestValue.GetVehicleType()}\n{bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})\nRegistration: {bestValue.Reg.Reg}\nCondition: {bestValue.Condition}\nPrice: {bestValue.GetPrice()}\nPrice Category: [{bestValue.GetPriceCategory()}]");
                         }
                         else { Console.WriteLine($"No vehicles to filter."); }
-                        Console.WriteLine("Press ENTER to continue...");
-                        Console.ReadLine();
                     }
                 }
             }
@@ -820,6 +825,9 @@ namespace VehicleRentingApplication
                     {
                         // All of the algorithms in this function have been included to search and filter through the vehicles list to find
                         // objects that are meeting the users search criteria.
+                        // I used an algorithm here to generate a list of vehicles based off of the search criteria, as I believe that it is the simplest
+                        // way to implement this search, using the least amount of required code. Also this is much faster than running a foreach loop here
+                        // to run conditions on each vehicle. This does a similar thing but faster and with less code.
                         foundVehicles = vehicles
                             .Where(v => v.Value.ModelYear < targetYear)
                             .Select(v => v.Value)
@@ -942,6 +950,8 @@ namespace VehicleRentingApplication
 
                     foreach (var vehicle in rentedVehicles)
                     {
+                        // This checks if the reg that is trying to be added to the list already exists, if it is, then the vehicle will
+                        // not be added. This is to prevent duplicated data.
                         if (!rentedList.Any(v => v.Reg.Reg == vehicle.Reg.Reg))
                         {
                             rentedList.Add(vehicle);
@@ -954,7 +964,7 @@ namespace VehicleRentingApplication
                 }
             }
 
-            // Sums up the vehicles value based off of it's condition and year it was made
+            // Sums up the vehicles weighted value based off of it's condition and year it was made
             float CalculateWeightedValue(float condition, int modelYear)
             {
                 return condition * 0.7f + modelYear * 0.3f;
@@ -1035,6 +1045,9 @@ namespace VehicleRentingApplication
                 var bestVehicle = vehicles.Values
                     .OrderByDescending(v =>
                     {
+                        // This basically creates a weighted value from the vehicles condition and it's model year and then runs the
+                        // calculation through the function and then will return the weighted value then that will be used to find the
+                        // the vehicle that is closest to that value.
                         var weight = CalculateWeightedValue(v.Condition, v.ModelYear);
                         return weight;
                     })
@@ -1075,6 +1088,8 @@ namespace VehicleRentingApplication
 
                 foreach (var vehicle in vehicles)
                 {
+                    // I added this condition to check is a vehicle with the same reg number already existed and stopped it from being
+                    // added to stop duplicated data and help improve system performance.
                     if (!vehicleDictionary.ContainsKey(vehicle.Key))
                     {
                         vehicleDictionary.Add(vehicle.Key, vehicle.Value);
@@ -1132,7 +1147,7 @@ namespace VehicleRentingApplication
             // Combines all separate dictionaries into one. (I had to do it this way as 'Vehicle' is an abstract class)
             void AddVehiclesToDictionary(Dictionary<string, Vehicle> vehicles, Dictionary<string, Car> cars, Dictionary<string, Truck> trucks, Dictionary<string, Motorbike> motorbikes)
             {
-                vehicles.Clear();
+                vehicles.Clear(); // I clear the list here to ensure that when the list is updated durin runtime, I am getting a properly updated list from the file as the data is wrote before it is updated
                 cars.ToList().ForEach(car => vehicles[car.Key] = car.Value);
                 trucks.ToList().ForEach(truck => vehicles[truck.Key] = truck.Value);
                 motorbikes.ToList().ForEach(motorbike => vehicles[motorbike.Key] = motorbike.Value);
