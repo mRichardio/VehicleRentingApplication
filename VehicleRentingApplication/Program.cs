@@ -430,14 +430,14 @@ namespace VehicleRentingApplication
                             // This will use a little bit of system processing power, but I think is a neccessary component to include.
                             vehicle.CalculatePrice();
                             vehicle.SetPriceCategory();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nCondition: {vehicle.Condition}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
                         else if (type == "all")
                         {
                             counter++;
                             vehicle.CalculatePrice();
                             vehicle.SetPriceCategory();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nCondition: {vehicle.Condition}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
                     }
                     Console.WriteLine($"{counter} Results found\n");
