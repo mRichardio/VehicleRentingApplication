@@ -103,7 +103,13 @@ namespace VehicleRentingApplication
                                 {
                                     break;
                                 }
-                                else { Console.WriteLine("[ERROR] Access code not found!\nPress ENTER to continue..."); }
+                                else 
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Red;
+                                    Console.WriteLine("[ERROR] Access code not found!");
+                                    Console.ResetColor();
+                                    Console.WriteLine("Press ENTER to continue...");
+                                }
                                 Console.ReadLine();
                             }
                             break;
@@ -139,9 +145,9 @@ namespace VehicleRentingApplication
                     // I used a try catch here as this is one of the main conversions that will be used in the program
                     // there can't be any issues here otherwise the program wouldn't work. Hence why I am trying to catch a lot of exceptions here.
                     try { selected = Convert.ToInt32(Console.ReadLine()); }
-                    catch (FormatException) { Console.WriteLine("[ERROR]: The string that you have inputted is in the incorrect format, (Try, '1', '2' etc)..."); continue; }
-                    catch (OverflowException) { Console.WriteLine("[ERROR]: Your input number is how of the range of conversion. (Please enter a number correlating to one of the menu options...)"); continue; }
-                    catch (ArgumentNullException) { Console.WriteLine("[ERROR]: Your input was null. (Make sure your input isn't empty!)"); continue; }
+                    catch (FormatException) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("[ERROR]: The string that you have inputted is in the incorrect format, (Try, '1', '2' etc)..."); Console.ResetColor(); continue; }
+                    catch (OverflowException) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("[ERROR]: Your input number is how of the range of conversion. (Please enter a number correlating to one of the menu options...)"); Console.ResetColor(); continue; }
+                    catch (ArgumentNullException) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("[ERROR]: Your input was null. (Make sure your input isn't empty!)"); Console.ResetColor(); continue; }
 
                     switch (selected)
                     {
@@ -174,7 +180,7 @@ namespace VehicleRentingApplication
                             Console.WriteLine("\nEnter vehicle type: ");
                             string rentVehicleType = "";
                             try { rentVehicleType = Console.ReadLine().ToLower().Trim(); }
-                            catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
+                            catch (Exception) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); Console.ResetColor(); }
                             if (rentVehicleType == "car" || rentVehicleType == "c" || rentVehicleType == "truck" || rentVehicleType == "t" || rentVehicleType == "motorbike" || rentVehicleType == "m")
                             {
                                 Console.WriteLine("Enter Vehicle Registration Number: ");
@@ -201,7 +207,7 @@ namespace VehicleRentingApplication
                             Console.WriteLine("\nEnter vehicle type: ");
                             string returnVehicleType = "";
                             try { returnVehicleType = Console.ReadLine().ToLower().Trim(); }
-                            catch (Exception) { Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); }
+                            catch (Exception) { Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("[ERROR] Invalid Vehicle Type (Available Types: 'Car' 'Truck' 'Motorbike')"); Console.ResetColor(); }
                             if (returnVehicleType == "car" || returnVehicleType == "truck" || returnVehicleType == "motorbike")
                             {
                                 Console.WriteLine("Enter Vehicle Registration Number: ");
@@ -237,8 +243,11 @@ namespace VehicleRentingApplication
                             string staffCode = Console.ReadLine().Trim();
                             bool isStaff = VerifyStaffCode(staffCode);
                             if (!isStaff) 
-                            { 
-                                Console.WriteLine("[ERROR] Invalid staff code\nPress ENTER to continue...");
+                            {
+                                Console.ForegroundColor = ConsoleColor.Red;
+                                Console.WriteLine("[ERROR] Invalid staff code");
+                                Console.ResetColor();
+                                Console.WriteLine("Press ENTER to continue...");
                                 Console.ReadLine();
                                 break;
                             }
@@ -257,7 +266,10 @@ namespace VehicleRentingApplication
                                     try { staffOption = int.Parse(Console.ReadLine()); }// Need a try catch here // Also need to go back                            }
                                     catch (Exception)
                                     {
-                                        Console.WriteLine("[ERROR] Invalid input. Make sure to choose one of the the options from the menu. (e.g 1,2)\nPress ENTER to continue...");
+                                        Console.ForegroundColor = ConsoleColor.Red;
+                                        Console.WriteLine("[ERROR] Invalid input. Make sure to choose one of the the options from the menu. (e.g 1,2)");
+                                        Console.ResetColor();
+                                        Console.WriteLine("Press ENTER to continue...");
                                         Console.ReadLine();
                                         Console.Clear();
                                         continue;
@@ -654,7 +666,7 @@ namespace VehicleRentingApplication
                 {
                     // I chose the version number based of the number of git commits I had made to this repo, and added a 1.00 onto it so if I had 60
                     // commits it would be 1.60 & 100 being 2.0 etc (Thought this was a nice way of doing it).
-                    Console.WriteLine("Version Number: 1.60\n\n[If you are trying to run another command remove '-v' from your arguments]");
+                    Console.WriteLine("Version Number: 1.62\n\n[If you are trying to run another command remove '-v' from your arguments]");
                 }
                 else if (args.Contains("-h"))
                 {
@@ -699,7 +711,7 @@ namespace VehicleRentingApplication
                             if (IsVerified) { DisplayedRentedVehicles(); }
                             else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
                         }
-                        else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); }
+                        else { Console.Clear(); Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rented {access code}')\n\n"); Console.ResetColor(); }
                     }
                     else if (args[0] == "rent")
                     {
@@ -713,7 +725,7 @@ namespace VehicleRentingApplication
                             if (IsVerified) { RentVehicles(rentVehicleType, rentID); }
                             else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
                         }
-                        else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rent {access code} {vehicle type} {reg number}')\n\n"); }
+                        else { Console.Clear(); Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'rent {access code} {vehicle type} {reg number}')\n\n"); Console.ResetColor(); }
                     }
                     else if (args[0] == "return")
                     {
@@ -726,7 +738,7 @@ namespace VehicleRentingApplication
                             if (IsVerified) { ReturnVehicles(returnVehicleType, regPlate); }
                             else { Console.Clear(); Console.WriteLine("\n\nThe access code your provided is not found...\n\n"); }
                         }
-                        else { Console.Clear(); Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'return {access code} {vehicle type} {reg number}')\n\n"); }
+                        else { Console.Clear(); Console.ForegroundColor = ConsoleColor.Red; Console.WriteLine("\n\n[ERROR] Invalid command usage, please provide your access code (e.g 'return {access code} {vehicle type} {reg number}')\n\n"); Console.ResetColor(); }
                     }
                     else if (args[0] == "filter" )
                     {
@@ -820,7 +832,9 @@ namespace VehicleRentingApplication
                     try { targetYear = Convert.ToInt32(year); } // The below try catches have been included to validate an exception
                     catch (FormatException)                     // that I was getting when inputting invalid commands
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("[ERROR] - Invalid command format: (try 'before 2005' or 'before 2020')");
+                        Console.ResetColor();
                     }
                     if (targetYear > 0)
                     {
@@ -843,7 +857,9 @@ namespace VehicleRentingApplication
                     try { targetYear = Convert.ToInt32(year); }
                     catch (FormatException)
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("[ERROR] - Invalid command format: (try 'after 2005' or 'after 2020')");
+                        Console.ResetColor();
                     }
                     if (targetYear > 0)
                     {
@@ -860,7 +876,9 @@ namespace VehicleRentingApplication
                     try { targetYear = Convert.ToInt32(year); }
                     catch (FormatException)
                     {
+                        Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine("[ERROR] - Invalid command format: (try '2005' or '2020')");
+                        Console.ResetColor();
                     }
                     if (targetYear > 0)
                     {
