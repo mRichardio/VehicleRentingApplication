@@ -33,7 +33,10 @@ namespace VehicleRentingApplication
             }
         }
 
-        public Staff() { }
+        public Staff() 
+        {
+
+        }
 
         public Staff(string fname, string lname)
         {

@@ -12,6 +12,7 @@ namespace VehicleRentingApplication
 
         public Motorbike()
         {
+
         }
 
         public Motorbike(int modelYear, bool isAutomatic, string manufacturer, string model, Colour paint, Registration reg, float condition)
@@ -30,11 +31,8 @@ namespace VehicleRentingApplication
             return "Motorbike";
         }
 
-        public string GetPriceCategory()
-        {
-            return priceCategory;
-        }
-
+        // I decided to implement the createvehicle function within all of the individual child vehicle classes as they all contain their own
+        // unique properties, meaning that this virtual function will need to be overrided.
         public override Motorbike CreateVehicle()
         {
             Console.WriteLine("---| Motorbike Creation |---\n");

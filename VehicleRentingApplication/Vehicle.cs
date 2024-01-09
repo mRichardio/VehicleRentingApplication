@@ -93,6 +93,12 @@ namespace VehicleRentingApplication
             this.Reg = reg;
             this.RentedBy = rentedBy;
         }
+
+        public virtual string GetVehicleType() // Virtual so that deriving classes can alter this functionality.
+        {
+            return "Vehicle";
+        }
+
         public string DisplayColour()
         {
             return $" R:{Paint.Red} G:{Paint.Green} B:{Paint.Blue}";
@@ -130,6 +136,8 @@ namespace VehicleRentingApplication
             return this.priceCategory;
         }
 
+        // I decided to implement the createvehicle function within all of the individual child vehicle classes as they all contain their own
+        // unique properties, meaning that this virtual function will need to be overrided.
         public virtual Vehicle CreateVehicle()
         {
             Console.WriteLine("---| Vehicle Creation |---\n");
@@ -137,11 +145,6 @@ namespace VehicleRentingApplication
             // Virtual member function for vehicle creation.
 
             return null;
-        }
-
-        public virtual string GetVehicleType() // Virtual so that deriving classes can alter this functionality.
-        {
-            return "Vehicle";
         }
     }
 }

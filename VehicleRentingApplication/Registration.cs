@@ -31,7 +31,10 @@ namespace VehicleRentingApplication
             }
         }
 
-        public Registration() { /*Default*/ }
+        public Registration() 
+        {
+
+        }
 
         public Registration(string reg)
         {
@@ -43,7 +46,7 @@ namespace VehicleRentingApplication
             while (true)
             {
                 Console.WriteLine("Enter vehicles registration: ");
-                string input = Console.ReadLine().Trim();
+                string input = Console.ReadLine().Trim().ToUpper();
                 if (input.Length != 7) { Console.WriteLine("[Error]: Invalid reg length (reg must have a length of 7!)"); }
                 else { return new Registration(input); }
             }

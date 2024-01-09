@@ -46,7 +46,7 @@ namespace VehicleRentingApplication
         public int VehicleCount { get; private set; }
 
         //[JsonConstructor]
-        public Customer() : base()
+        public Customer() /*: base()*/
         {
             this.RentLimit = 3;
             this.VehicleCount = 0;
@@ -61,15 +61,21 @@ namespace VehicleRentingApplication
             this.VehicleCount = 0;
         }
 
-        public override string GetType() { return "Customer"; }
+        public override string GetType()
+        {
+            return "Customer";
+        }
 
+        // I had to implement all of this functionality within the customer class as seperate functions as for one this functionality is only tied to
+        // the customer, but I was having trouble with polymorphism, the cars were all being converted to different class objects. This basically
+        // fixed that issue.
         public void RentCar(Car car, string carID, RentedVehicles rentedVehicles)
         {
             if (VehicleCount < RentLimit)
             {
                 car.RentedBy = this.AccessCode;
                 rentedVehicles.RentedCars.Add(car);
-                VehicleCount++;
+                VehicleCount++; // Added this here so the vehicle count can update in realtime without having to write vehicles to file.
 
                 Console.WriteLine($"Vehicle {carID} rented successfully.\n\n");
             }

@@ -73,6 +73,8 @@ namespace VehicleRentingApplication
             Blue = b;
         }
 
+        // This function is used within vehicle creation to ensure that when a colour is being set by a user, that the colour is within a specifc
+        // RGB, colour range.
         private int GetValidColour(string colorComponent)
         {
             while (true)
@@ -97,6 +99,8 @@ namespace VehicleRentingApplication
             }
         }
 
+        // These two functions basically work together to display within the code. This implementation reduces
+        // redundant and duplicated code.
         public Colour CreateColour()
         {
             int red = GetValidColour("R");
@@ -105,9 +109,5 @@ namespace VehicleRentingApplication
 
             return new Colour(red, green, blue);
         }
-
-        public int GetRed() { return this.Red; }
-        public int GetGreen() { return this.Green; }
-        public int GetBlue() { return this.Blue; }
     }
 }

@@ -24,11 +24,12 @@ namespace VehicleRentingApplication
         {
             // ---[ Topic Demonstration ]---
 
-            // Add condition to available vehicle displays
+            // Properly Comment each of the classes and interfaces with justification and reasons behind why code?
 
-            // Properly Comment on each section that is important in the code to explain why I have implemented something in a certain way.
             // Take a final look through all of the code and the systems functionalities and make sure everything works as intended.
             // Format all of the code better and make sure everything is nice and readable.
+
+            // START RECORDING VIDEO!
 
             // ---[ Video ]---
 
@@ -306,7 +307,7 @@ namespace VehicleRentingApplication
                                             {
                                                 foreach (var s in staff)
                                                 {
-                                                    Console.WriteLine($"\nName: {s.FirstName} {s.LastName}\nAccount: {s.GetType()}\nAccess Code: {s.GetAccessCode()}\nPast Customer?: {s.PastCustomerCheck()}");
+                                                    Console.WriteLine($"\nName: {s.FirstName} {s.LastName}\nAccount: {s.GetType()}\nAccess Code: {s.AccessCode}\nPast Customer?: {s.PastCustomerCheck()}");
                                                 }
                                             }
                                             else
@@ -340,7 +341,7 @@ namespace VehicleRentingApplication
                                             break;
 
                                         case 5:
-                                            Console.WriteLine("Is this person an existing customer?");
+                                            Console.WriteLine("Is this person an existing customer? (Y/N)");
                                             string choice = Console.ReadLine().Trim().ToLower();
                                             if (choice == "y" || choice == "yes")
                                             {
@@ -430,14 +431,14 @@ namespace VehicleRentingApplication
                             // This will use a little bit of system processing power, but I think is a neccessary component to include.
                             vehicle.CalculatePrice();
                             vehicle.SetPriceCategory();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nCondition: {vehicle.Condition}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nCondition: {vehicle.Condition}%\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
                         else if (type == "all")
                         {
                             counter++;
                             vehicle.CalculatePrice();
                             vehicle.SetPriceCategory();
-                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nCondition: {vehicle.Condition}\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
+                            Console.WriteLine($"ID: {key}, Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nPaint: {vehicle.DisplayColour()}\nRegistration: {vehicle.DisplayReg()}\nCondition: {vehicle.Condition}%\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
                     }
                     Console.WriteLine($"{counter} Results found\n");
@@ -777,7 +778,7 @@ namespace VehicleRentingApplication
                         {
                             foreach (var vehicle in filteredVehicles)
                             {
-                                Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nRegistration: {vehicle.Reg.Reg}\nCondition: {vehicle.Condition}\nPrice: {vehicle.GetPrice()}\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
+                                Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nRegistration: {vehicle.Reg.Reg}\nCondition: {vehicle.Condition}%\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                             }
                         }
                         else { Console.WriteLine("No vehicles found"); }
@@ -789,7 +790,7 @@ namespace VehicleRentingApplication
 
                         foreach (var vehicle in FindVehiclesByYear(inputYear))
                         {
-                            Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nRegistration: {vehicle.Reg.Reg}\nCondition: {vehicle.Condition}\nPrice: {vehicle.GetPrice()}\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
+                            Console.WriteLine($"Vehicle Type: {vehicle.GetVehicleType()}\nYear: {vehicle.ModelYear}\nManufacturer: {vehicle.Manufacturer}\nModel: {vehicle.Model}\nRegistration: {vehicle.Reg.Reg}\nCondition: {vehicle.Condition}%\nPrice: £{vehicle.GetPrice()}/month\nPrice Category: [{vehicle.GetPriceCategory()}]\n");
                         }
                     }
                     else if (filterChoice == "value" || filterChoice == "3" || filterChoice == "v")
@@ -799,7 +800,7 @@ namespace VehicleRentingApplication
                         if (bestValue != null)
                         {
                             Console.WriteLine($"Best value vehicle based on condition and model year criteria:");
-                            Console.WriteLine($"- Type: {bestValue.GetVehicleType()}\n{bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})\nRegistration: {bestValue.Reg.Reg}\nCondition: {bestValue.Condition}\nPrice: {bestValue.GetPrice()}\nPrice Category: [{bestValue.GetPriceCategory()}]");
+                            Console.WriteLine($"- Type: {bestValue.GetVehicleType()}\n{bestValue.Manufacturer} {bestValue.Model} ({bestValue.ModelYear})\nRegistration: {bestValue.Reg.Reg}\nCondition: {bestValue.Condition}%\nPrice: £{bestValue.GetPrice()}/month\nPrice Category: [{bestValue.GetPriceCategory()}]");
                         }
                         else { Console.WriteLine($"No vehicles to filter."); }
                     }
@@ -901,7 +902,7 @@ namespace VehicleRentingApplication
                         break;
 
                     default:
-                        Console.WriteLine("Unknown vehicle type. (try: car, truck, motorbike\nPress ENTER to continue...)");
+                        Console.WriteLine("Unknown vehicle type. (try: car, truck, motorbike)\nPress ENTER to continue...");
                         Console.ReadLine();
                         break;
                 }

@@ -24,6 +24,7 @@ namespace VehicleRentingApplication
 
         public Car()
         {
+
         }
 
 
@@ -39,16 +40,14 @@ namespace VehicleRentingApplication
             this.Condition = condition;
         }
 
+        // Overrides the virtual type set by the abstract vehicle class
         public override string GetVehicleType()
         {
             return "Car";
         }
 
-        public string GetPriceCategory()
-        {
-            return priceCategory;
-        }
-
+        // I decided to implement the createvehicle function within all of the individual child vehicle classes as they all contain their own
+        // unique properties, meaning that this virtual function will need to be overrided.
         public override Car CreateVehicle()
         {
             Console.WriteLine("---| Car Creation |---\n");
@@ -80,15 +79,26 @@ namespace VehicleRentingApplication
                 }
             }
 
-            Console.WriteLine("Enter door count: ");
             int doors = 0;
-            try
+            while (true)
             {
-                doors = Convert.ToInt32(Console.ReadLine());
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("[ERROR] Invalid input, please input an integer number");
+                Console.WriteLine("Enter door count: ");
+                try
+                {
+                    doors = Convert.ToInt32(Console.ReadLine());
+                    if (doors > 5 || doors < 3)
+                    {
+                        Console.WriteLine("Invalid door count: (Ensure that you are in the range of 3-5 Doors)");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("[ERROR] Invalid input, please input an integer number");
+                }
             }
 
             int year = 0;

@@ -40,11 +40,8 @@ namespace VehicleRentingApplication
             return "Truck";
         }
 
-        public string GetPriceCategory() 
-        {
-            return priceCategory;
-        }
-
+        // I decided to implement the createvehicle function within all of the individual child vehicle classes as they all contain their own
+        // unique properties, meaning that this virtual function will need to be overrided.
         public override void CalculatePrice() // Truck prices are calculated differently
         {
             double price = 0;
@@ -86,15 +83,26 @@ namespace VehicleRentingApplication
                 }
             }
 
-            Console.WriteLine("Enter door count: ");
             int doors = 0;
-            try
+            while (true)
             {
-                doors = Convert.ToInt32(Console.ReadLine());
-            }
-            catch (FormatException)
-            {
-                Console.WriteLine("[ERROR] Invalid input, please input an integer number");
+                Console.WriteLine("Enter door count: ");
+                try
+                {
+                    doors = Convert.ToInt32(Console.ReadLine());
+                    if (doors > 5 || doors < 3)
+                    {
+                        Console.WriteLine("Invalid door count: (Ensure that you are in the range of 3-5 Doors)");
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                catch (FormatException)
+                {
+                    Console.WriteLine("[ERROR] Invalid input, please input an integer number");
+                }
             }
 
             Console.WriteLine("Storage Capacity: ");
